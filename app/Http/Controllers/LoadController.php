@@ -1,0 +1,257 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\House_Skill;
+use Auth;
+
+class LoadController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function loadall()
+    {
+        $currentuser =  \App\User::whereId(3)->first();
+        Auth::login($currentuser);
+        $this->loadlevels();
+        $this->loadcourses();
+        $this->loadtracks();
+        $this->loadskills();
+        $this->loadquestions();
+        $this->loadsolutions();
+        $this->loadhouses();
+        $this->loadroles();
+//        $this->loadtests();
+        return "all uploaded is done and ok";
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return database is loaded with tracks
+     */
+    public function loadtracks()
+    {
+        Excel::selectSheets('tracks')->load('public/questions.xlsx', function ($reader) {
+            $tracks = $reader->all();
+            foreach ($tracks as $track) {
+                \App\Track::create($track->toArray());
+            }
+        });
+
+        Excel::selectSheets('course_track')->load('public/questions.xlsx', function ($reader) {
+            $course_tracks = $reader->all();
+            foreach ($course_tracks as $track) {
+                \App\Course_Track::create($track->toArray());
+            }
+        });
+
+        Excel::selectSheets('track_track')->load('public/questions.xlsx', function ($reader) {
+            $track_tracks = $reader->all();
+            foreach ($track_tracks as $track) {
+                \App\Track_Track::create($track->toArray());
+            }
+        });
+
+//        Excel::selectSheets('track_user')->load('public/questions.xlsx', function ($reader) {
+  //          $track_users = $reader->all();
+    //        foreach ($track_users as $track_user) {
+      //          \App\TrackUser::create($track_user->toArray());
+        //    }
+     //   });
+
+        Excel::selectSheets('field_user')->load('public/questions.xlsx', function ($reader) {
+            $field_users = $reader->all();
+            foreach ($field_users as $field_user) {
+                \App\FieldUser::create($field_user->toArray());
+            }
+        });
+    }
+
+   /**
+     * Store levels loaded from excel into the databast
+     *
+     * @param excel spread sheet
+     * @return
+     */
+    public function loadlevels()
+    {
+        Excel::selectSheets('levels')->load('public/questions.xlsx', function ($reader) {
+            $levels = $reader->all();
+            foreach ($levels as $level) {
+                \App\Level::create($level->toArray());
+            }
+        });
+    }
+
+    /**
+     * Store courses loaded from excel into the databast
+     *
+     * @param excel spread sheet
+     * @return
+     */
+    public function loadcourses()
+    {
+        Excel::selectSheets('courses')->load('public/questions.xlsx', function ($reader) {
+            $courses = $reader->all();
+            foreach ($courses as $course) {
+                \App\Course::create($course->toArray());
+            }
+        });
+    }
+
+    /**
+     * Store levels loaded from excel into the databast
+     *
+     * @param excel spread sheet
+     * @return
+     */
+
+    public function loadskills()
+    {
+        Excel::selectSheets('skills')->load('public/questions.xlsx', function ($reader) {
+            $skills = $reader->all();
+            foreach ($skills as $skill) {
+                \App\Skill::create($skill->toArray());
+            }
+        });
+
+        Excel::selectSheets('skill_track')->load('public/questions.xlsx', function ($reader) {
+            $skill_tracks = $reader->all();
+            foreach ($skill_tracks as $skill_track) {
+                \App\Skill_Track::create($skill_track->toArray());
+            }
+        });
+    }
+
+    /**
+     * Store levels loaded from excel into the databast
+     *
+     * @param excel spread sheet
+     * @return
+     */
+
+    public function loadquestions ()
+    {
+        Excel::selectSheets('test_questions')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+    }
+
+    /**
+     * Store levels loaded from excel into the databast
+     *
+     * @param excel spread sheet
+     * @return
+     */
+
+    public function loadsolutions ()
+    {
+        Excel::selectSheets('solutions')->load('public/questions.xlsx', function ($reader) {
+            $solutions = $reader->all();
+            foreach ($solutions as $solution) {
+                \App\Solution::create($solution->toArray());
+            }
+        });
+    }
+
+    /**
+     * Store roles loaded from excel into the databast
+     *
+     * @param excel spread sheet
+     * @return
+     */
+
+    public function loadroles ()
+    {
+        Excel::selectSheets('role_user')->load('public/questions.xlsx', function ($reader) {
+            $house_role_users = $reader->all();
+            foreach ($house_role_users as $house_role_user) {
+                \App\Enrolment::create($house_role_user->toArray());
+            }
+        });
+
+        Excel::selectSheets('permission_role')->load('public/questions.xlsx', function ($reader) {
+            $permission_roles = $reader->all();
+            foreach ($permission_roles as $permission_role) {
+                \App\Permission_Role::create($permission_role->toArray());
+            }
+        });
+    }
+
+   public function loadhouses ()
+    {
+        Excel::selectSheets('houses')->load('public/questions.xlsx', function ($reader) {
+            $houses = $reader->setDateFormat('Y-m-d')->all();
+            foreach ($houses as $house) {
+                \App\House::create($house->toArray());
+            }
+        });
+
+        Excel::selectSheets('house_track')->load('public/questions.xlsx', function ($reader) {
+            $house_tracks = $reader->setDateFormat('Y-m-d')->all();
+            foreach ($house_tracks as $house_track) {
+                \App\House_Track::create($house_track->toArray());
+            }
+        });
+    }
+
+    /**
+     * Store tests loaded from excel into the database
+     *
+     * @param excel spread sheet
+     * @return
+     */
+
+    public function loadtests ()
+    {
+        Excel::selectSheets('tests')->load('public/questions.xlsx', function ($reader) {
+            $tests = $reader->all();
+            foreach ($tests as $test) {
+                \App\Test::create($test->toArray());
+            }
+        });
+        Excel::selectSheets('test_user')->load('public/questions.xlsx', function ($reader) {
+            $test_users = $reader->all();
+            foreach ($test_users as $test_user) {
+                \App\TestUser::create($test_user->toArray());
+            }
+        });
+        Excel::selectSheets('question_test')->load('public/questions.xlsx', function ($reader) {
+            $question_tests = $reader->all();
+            foreach ($question_tests as $question_test) {
+                \App\QuestionTest::create($question_test->toArray());
+            }
+        });
+
+        Excel::selectSheets('activity')->load('public/questions.xlsx', function ($reader) {
+            $activities = $reader->all();
+            foreach ($activities as $activity) {
+                \App\Activity::create($activity->toArray());
+            }
+        });
+    }
+
+}

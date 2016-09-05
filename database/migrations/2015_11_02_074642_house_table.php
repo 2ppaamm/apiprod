@@ -1,0 +1,69 @@
+<?php
+
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class HouseTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('houses', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('house');
+            $table->string('description');
+            $table->integer('user_id')->unsigned()->default(1);
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('course_id')->unsigned()->default(1);
+            $table->foreign('course_id')->references('id')->on('courses');
+            $table->string('image')->nullable();
+            $table->integer('status_id')->unsigned()->default(4);
+            $table->foreign('status_id')->references('id')->on('statuses');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('house_role_user', function (Blueprint $table) {
+            $table->integer('house_id')->unsigned()->index()->default(1);
+            $table->foreign('house_id')->references('id')->on('houses')->onDelete('cascade');
+            $table->integer('role_id')->unsigned()->index();
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->integer('user_id')->unsigned()->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('house_maxile')->default(0);
+            $table->timestamps();
+            $table->primary(['house_id','role_id', 'user_id']);
+        });
+        DB::statement('ALTER Table house_role_user add id INTEGER NOT NULL UNIQUE AUTO_INCREMENT;');
+
+        Schema::create('house_track', function (Blueprint $table) {
+            $table->integer('house_id')->unsigned();
+            $table->foreign('house_id')->references('id')->on('houses')->onDelete('cascade');
+            $table->integer('track_id')->unsigned();
+            $table->foreign('track_id')->references('id')->on('tracks')->onDelete('cascade');
+            $table->float('track_order')->nullable()->default(9999.99);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->primary(['house_id','track_id']);
+            $table->timestamps();
+        });        
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('house_role_user');
+        Schema::drop('house_track');
+        Schema::drop('houses');        
+    }
+}
