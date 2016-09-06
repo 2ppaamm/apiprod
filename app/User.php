@@ -125,7 +125,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function skill_user(){
-        return $this->belongsToMany(Skill::class)->withPivot('skill_maxile', 'skill_test_date','noOfTries','noOfPasses','skill_passed','difficulty_passed');
+        return $this->belongsToMany(Skill::class)->withPivot('skill_test_date','skill_passed','skill_maxile','noOfTries','noOfPasses','difficulty_passed', 'noOfFails');
     }
 
     public function skillMaxile(){
@@ -204,6 +204,14 @@ class User extends Model implements AuthenticatableContract,
 
     public function testedTracks(){
         return $this->belongsToMany(Track::class)->withPivot('track_maxile','track_passed','track_test_date')->withTimestamps();
+    }
+
+    public function tracksPassed(){
+        return $this->testedTracks()->whereTrackPassed(TRUE);
+    }
+
+    public function tracksFailed(){
+        return $this->testedTracks()->whereTrackPassed(FALSE);
     }
 
     public function trackResults(){

@@ -44,6 +44,10 @@ class Question extends Model
         return $this->belongsToMany(User::class)->withPivot('question_answered', 'answered_date','correct', 'test_id','attempts')->withTimestamps();
     }
 
+    public function tests(){
+        return $this->belongsToMany(Test::class, 'question_user')->withPivot('question_answered', 'answered_date','correct', 'user_id','attempts')->withTimestamps();
+    }
+
     public function attempts($userid){
         return $this->users()->whereUserId($userid)->select('attempts')->first()->attempts;
     }
@@ -53,7 +57,7 @@ class Question extends Model
      */
     public function assigned($user, $test){
         $this->skill->users()->sync([$user->id], false);
-        $this->users()->sync([$user->id], ['test_id'=>$test->id], false);
+        $this->tests()->sync(['test_id'=>$test->id,'user_id'=>$user->id], false);
         return $test;
     }
 

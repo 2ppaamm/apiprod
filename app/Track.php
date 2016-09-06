@@ -133,4 +133,9 @@ class Track extends Model
             'track_maxile' => $track_maxile];
         $this->users()->updateExistingPivot($user->id, $record);
     }
+
+    public function skillsFailed($user){
+        return $this->skills->intersect($user->skill_user()->whereSkillPassed(FALSE)->get());
+    }
+
 }

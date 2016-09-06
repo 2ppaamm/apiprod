@@ -31,14 +31,14 @@ class DiagnosticController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-    	$user = Auth::user();
+        $user = Auth::user();
         //first time user error
         if (!$user->date_of_birth) return response()->json(['message'=>'First time user', 'code'=>203]);
             $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
             $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
-            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Test ".count($user->completedtests)+1, 'diagnostic'=>FALSE]):
+            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Daily Test", 'diagnostic'=>FALSE]):
             $user->currenttest[0];
-   	
+    
         return $test->fieldQuestions($user);                // output
     }
 
@@ -92,12 +92,12 @@ class DiagnosticController extends Controller
         }
         return $test->fieldQuestions($user, $test);
     }
-    	// Initialize output
-/*    	$user = Auth::user();
-    	$message =[];
-    	$new_question_batch = [];
+        // Initialize output
+/*      $user = Auth::user();
+        $message =[];
+        $new_question_batch = [];
 
-    	$test = \App\Test::find($request->test);
+        $test = \App\Test::find($request->test);
 
         //return $test->diagnostic ? $this->answerDiagnostic($request, $test) : null;
 
@@ -153,7 +153,7 @@ class DiagnosticController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function answerDiagnostic($request, $test){
+/*    public function answerDiagnostic($request, $test){
         $user = Auth::user();
         $total_maxile = 0;
         $current_level = 0;
@@ -189,9 +189,9 @@ class DiagnosticController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function createNewTest(Boolean $diagnostic){
+/*    public function createNewTest(Boolean $diagnostic){
         $test = $diagnostic ? $user->tests()->create(['test'=>$user->name." Test".count($user->completedtests)+1,'description'=> $user->name."Test".count($user->completedtests)+1, 'diagnostic'=>FALSE]):null;
     }
-
+*/
 
 }

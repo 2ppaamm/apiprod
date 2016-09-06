@@ -45,6 +45,9 @@ return [
     'number_to_fail' =>2,
     'questions_per_quiz' =>5,
     'questions_per_test' => 15,
+    'number_of_track_per_day' => 3,
+    'number_of_skill_per_day' =>5,
+    'number_of_questions_per_skill_per_day' =>3,
 
     /*
     |--------------------------------------------------------------------------

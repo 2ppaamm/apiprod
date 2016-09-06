@@ -9,6 +9,7 @@ use Auth;
 use App\Question;
 use App\Http\Requests\CreateQuizAnswersRequest;
 use DateTime;
+use App\User;
 
 class CheckAnswerController extends Controller
 {
@@ -25,25 +26,23 @@ class CheckAnswerController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-    	$user = Auth::user();
+    	$user = User::find(1);
       	$questions = null;
     	$test = count($user->currenttest)<1 ?  $user->tests()->create(['test'=>$user->name."'s QA test",'description'=> $user->name."'s QA test", 'diagnostic'=>FALSE]) : $user->currenttest[0];
 
-        $questions = !count($test->questions) ? Question::where('id','>', 386)->get() : null;
+        $questions = count($test->questions) < 1 ? Question::where('id','>', 386)->get():0;
 	    if ($questions) {
             foreach($questions as $question) {
                 $question->assigned($user, $test);
                 $track = $question->skill->tracks->first();
                 $track->users()->sync([$user->id], false);
     	    }
-            return; 
         }
-
         return $test->fieldQuestions($user);
     }
 
     public function answer(CreateQuizAnswersRequest $request){
-    	$user = Auth::user();
+    	$user = User::find(1);
         $old_maxile = $user->maxile_level;
     	$test = \App\Test::find($request->test);
     	if (!$test){
@@ -64,7 +63,8 @@ class CheckAnswerController extends Controller
                 return response()->json(['message'=>'Question ',$question_id.' not assigned to '. $user->name, 'code'=>403]);                                
             }
             if ($question->type_id == 2) {
-                $answers = $request->answer[$key];
+                $answers = isset($request->answer[$key]) ? $request->answer[$key] : null;
+//                return count($answers);
                 $correct3 = sizeof($answers) > 3 ? $answers[3] == $question->answer3 ? TRUE : FALSE : TRUE;
                 $correct2 = sizeof($answers) > 2 ? $answers[2] == $question->answer2 ? TRUE : FALSE : TRUE;
                 $correct1 = sizeof($answers) > 1 ? $answers[1] == $question->answer1 ? TRUE : FALSE : TRUE;
@@ -78,6 +78,6 @@ class CheckAnswerController extends Controller
             $user_maxile = $user->calculateUserMaxile();             
 		}
 
-        return $test->fieldQuestions($user->id);
+        return $test->fieldQuestions($user);
     }
 }

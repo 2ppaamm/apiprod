@@ -34,10 +34,9 @@ class Skill extends Model
     public function tracks() {
         return $this->belongsToMany(Track::class)->withPivot('start_date','end_date', 'skill_order')->withTimestamps()->select('id','track','description','level_id', 'field_id', 'skill_order');
     }
-
     //user's skill maxile score
     public function users(){
-        return $this->belongsToMany(User::class)->withPivot('skill_test_date','skill_passed','skill_maxile','noOfTries','noOfPasses')->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('skill_test_date','skill_passed','skill_maxile','noOfTries','noOfPasses','difficulty_passed', 'noOfFails')->withTimestamps();
     }
 
     public function noOfTries($userid){
