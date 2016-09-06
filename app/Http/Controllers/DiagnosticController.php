@@ -34,11 +34,11 @@ class DiagnosticController extends Controller
         $user = Auth::user();
         //first time user error
         if (!$user->date_of_birth) return response()->json(['message'=>'First time user', 'code'=>203]);
-            $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
-            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
-            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Daily Test", 'diagnostic'=>FALSE]):
-            $user->currenttest[0];
-    
+        $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
+        $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
+        $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Daily Test", 'diagnostic'=>FALSE]):
+        $user->currenttest[0];
+
         return $test->fieldQuestions($user);                // output
     }
 
@@ -85,6 +85,7 @@ class DiagnosticController extends Controller
             } else $correctness = $question->correct_answer != $request->answer[$key] ? FALSE:TRUE;
             $answered = $question->answered($user, $correctness, $test);
             $track = $question->skill->tracks->intersect($user->testedTracks)->first();
+            // calculate and saves maxile at 3 levels: skill, track and user
             $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
             //return count($test->uncompletedQuestions);

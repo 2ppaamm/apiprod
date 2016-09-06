@@ -57,7 +57,7 @@ class Question extends Model
      */
     public function assigned($user, $test){
         $this->skill->users()->sync([$user->id], false);
-        $this->tests()->sync(['test_id'=>$test->id,'user_id'=>$user->id], false);
+        $this->users()->sync([$user->id],['test_id'=>$test->id], false);
         return $test;
     }
 

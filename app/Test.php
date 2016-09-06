@@ -25,6 +25,10 @@ class Test extends Model
         return $this->belongsToMany(User::class, 'question_user')->withPivot('correct','question_answered','answered_date', 'attempts', 'question_id')->withTimestamps();
     }
 
+    public function testee(){
+        return $this->belongsToMany(User::class, 'test_user')->withPivot('test_completed', 'completed_date', 'result', 'attempts')->withTimestamps();
+    }
+
     public function tester(){
         return $this->belongsTo(User::class);
     }
@@ -46,7 +50,7 @@ class Test extends Model
     }
 
     public function attempts($userid){
-        return $this->testee()->whereUserId($userid)->select('attempts')->first()->attempts;
+        return $this->users()->whereUserId($userid)->select('attempts')->first()->attempts;
     }
 
     public function markTest($userid){
@@ -61,8 +65,8 @@ class Test extends Model
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 $level = !count($this->questions) ? Level::find(2): // Level::myLevel()->first()
                 Level::whereLevel($new_starting_maxile)->first();  
-
                 // get question for each track in level                
+
                 foreach ($level->tracks as $track){
                     $track->users()->sync([$user->id], false);          //log tracks for user
                     $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id', 'desc')->first();
