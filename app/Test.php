@@ -74,20 +74,14 @@ class Test extends Model
                 }
             } else {                        // not diagnostic
                 $level = Level::whereLevel($new_starting_maxile)->first();  // get level
-                return $level_tracks_failed = $level->tracks->intersect($user->tracksFailed);
-                return $user->tracksFailed;//()->whereLevelId($level->id)->get();//In('track_id',$level->tracks()->lists('id'))->get();
-                $failedTracks = $user->tracksFailed()->orderBy('track_maxile')->get();
-       Config::get('app.number_of_track_per_day');// - count($failedTracks) : Config::get('app.number_of_track_per_day');
-                $level = Level::whereLevel($new_starting_maxile)->first();  
-                $add_tracks= $level->tracks()->take($no_of_new_tracks);
-                    return $skill = $failedTrack->skills;
-                    $track_questions = Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id', 'asc')->take(Config::get('app.questions_per_test'))->get();
-                    if (count($track_questions)){
-                        foreach ($track_questions as $question) {
-                            $new_question->assigned($user, $this);
-                        }
-                    } else {
-
+                $tracks_to_test = $level->tracks->intersect($user->tracksFailed);
+                if (count($tracks_to_test) < 3) {
+                    $tracks_to_test->merge(Level::where('level','>',$level->level)->first()->tracks()->take(3-count($tracks_to_test))->get());
+                }
+                foreach ($tracks_to_test as $track){
+                    $track->users()->sync([$user->id], false);          //log tracks for user
+                    $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id')->take(5)->get();
+                    $new_question ? $new_question->assigned($user, $this) : null;
                 }
             }
         }
