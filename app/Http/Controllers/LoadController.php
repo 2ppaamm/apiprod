@@ -146,13 +146,26 @@ class LoadController extends Controller
                 \App\Question::create($question->toArray());
             }
         });
-        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
+/*        Excel::selectSheets('imp5')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+
+*/        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
             }
         });
         Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+        Excel::selectSheets('imp5')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
