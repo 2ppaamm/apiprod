@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 
-class CreateEnrolmentRequest extends Request
+class CreateMasterCodeRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,12 @@ class CreateEnrolmentRequest extends Request
     public function rules()
     {
         return [
-            'role' => 'string',
-            'mastercode'=> 'numeric | min:100'
+            'house_id' => 'required',
+            'user_id' => 'required'
         ];
     }
 
     public function response(array $errors) {
         return response()->json(['message' => $errors,'code'=>422], 422);
     }
-
 }

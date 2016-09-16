@@ -13,7 +13,7 @@ use App\Http\Requests\CreateCourseRequest;
 class CourseController extends Controller
 {
     public function __construct(){
-        $this->middleware('cors');
+        $this->middleware('auth0.jwt');
     }
     /**
      * Display a listing of the resource.

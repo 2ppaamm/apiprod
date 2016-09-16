@@ -36,13 +36,21 @@ class HouseTable extends Migration
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('house_maxile')->default(0);
+            $table->string('payment_email')->nullable();
+            $table->integer('purchaser_id')->unsigned()->nullable();
+            $table->foreign('purchaser_id')->references('id')->on('users')->onDelete('cascade');
+            $table->date('start_date')->nullable();
+            $table->date('expiry_date')->nullable();
+            $table->integer('places_alloted')->default(0);            
             $table->timestamps();
             $table->primary(['house_id','role_id', 'user_id']);
         });
         DB::statement('ALTER Table house_role_user add id INTEGER NOT NULL UNIQUE AUTO_INCREMENT;');
+        DB::statement('ALTER Table house_role_user add mastercode INTEGER UNIQUE;');
 
         Schema::create('house_track', function (Blueprint $table) {
             $table->integer('house_id')->unsigned();
+     
             $table->foreign('house_id')->references('id')->on('houses')->onDelete('cascade');
             $table->integer('track_id')->unsigned();
             $table->foreign('track_id')->references('id')->on('tracks')->onDelete('cascade');

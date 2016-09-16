@@ -45,8 +45,8 @@ class User extends Model implements AuthenticatableContract,
     protected $dates = ['date_of_birth', 'last_test_date', 'next_test_date'];
 
     // relationships
-    public function currentResult(){
-        return $this->hasOne(MyCurrentResult::class);
+    public function mastercodes(){
+        return $this->hasMany(Mastercode::class);
     }
 
     public function questions() {                        // question setter
@@ -79,13 +79,13 @@ class User extends Model implements AuthenticatableContract,
 
     // enrolment
     public function enrolledClasses(){
-        return $this->roleHouses()->groupBy('house_id')
+        return $this->enrolment()->groupBy('house_id')
         ->where('end_date', '>=', date("Y-m-d"))
         ->orderBy('end_date','asc');
     }
 
     public function expiredClasses(){
-        return $this->roleHouses()->withPivot('role_id')->groupBy('house_id')
+        return $this->enrolment()->withPivot('role_id')->groupBy('house_id')
         ->where('end_date', '<', date("Y-m-d"))
         ->orderBy('end_date','desc');
     }
@@ -95,12 +95,16 @@ class User extends Model implements AuthenticatableContract,
         return $this->belongsToMany(Role::class, 'house_role_user')->withPivot('house_id')->withTimestamps();
     }
 
-    public function roleHouses(){
-        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id')->withTimestamps();
+    public function enrolment(){
+        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'house_maxile', 'payment_email','purchaser_id')->withTimestamps();
+    }
+
+    public function validEnrolment($courseid){
+        return $this->enrolment()->whereIn('course_id', $courseid)->where('expiry_date','>=', new DateTime('today'))->get();
     }
 
     public function teachingHouses(){
-        return $this->roleHouses()->where('role_id','<',6)->groupBy('house_id');
+        return $this->enrolment()->where('role_id','<',6)->groupBy('house_id');
     }
 
     //user's roles in selected class
@@ -230,8 +234,11 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany(ErrorLog::class);
     }
 
-    public function calculateUserMaxile(){
-        $user_maxile = $this->testedTracks()->avg('track_maxile');
+    public function calculateUserMaxile($test){
+        $highest_diagnostic_level_tested = Level::whereIn('id', $this->testedTracks()->lists('level_id'))->orderBy('level', 'desc')->first();
+
+        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'):
+            $this->testedTracks()->avg('track_maxile');
         $this->maxile_level = $user_maxile;
         $this->save();
         return $user_maxile;

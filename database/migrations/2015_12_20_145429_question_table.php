@@ -48,7 +48,7 @@ class QuestionTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->boolean('question_answered')->default(false);
             $table->boolean('correct')->default(false);
-            $table->date('answered_date')->nullable();
+            $table->datetime('answered_date')->nullable();
             $table->integer('attempts')->default(0);
             $table->primary(['question_id','user_id', 'test_id']);
             $table->timestamps();

@@ -11,13 +11,13 @@ use App\User;
 use App\Http\Requests\CreateEnrolmentRequest;
 use Auth;
 use App\Enrolment;
+use DateTime;
 
 class HouseUserController extends Controller
 {
     public function __construct(){
- //       $this->middleware('cors');
-        $this->middleware('auth0.jwt');
-    }
+        //$this->middleware('auth0.jwt');
+\Auth::login(User::find(10));    }
 
     /**
      * Display a listing of the resource.
@@ -39,6 +39,78 @@ class HouseUserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function store(CreateEnrolmentRequest $request, House $houses)
+    {   
+        //check if it is student self-enrolling, then check for mastercode. If are places left then update. If no more places, give a warning.
+        if ($request->mastercode) {
+            return $this->selfEnrol($request->mastercode, $houses);  // self-enrol with mastercode
+        }
+        $user = Auth::user();
+        $date = new DateTime('now');
+        $most_powerful = $user->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
+        $role_to_enrol = Role::where('role','LIKE',$request->role)->first();
+        if (!$role_to_enrol) {
+            return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
+        }
+        if ($most_powerful < $role_to_enrol->id || $user->is_admin) {        // administrator 
+            $user_id = $request->user_id ? $request->user_id : $user->id; 
+
+        }
+        if (!$request->user_id) return $this->adminEnrol(Auth::user()->id, $houses, $request->role); // admin self-enrol to another role
+        else return $this->adminEnrol($request->user_id,$houses, $request->role); // admin enrolling others with no mastercode
+    }
+
+    /**
+     *  Called by $this->store function.
+     *
+     * @param  \Illuminate\Http\Request  $mastercode, $houses
+     * @return \Illuminate\Http\Response
+     */
+    public function selfEnrol($mastercode, House $houses) {
+        $user = Auth::user();
+        $check_mastercode = Enrolment::whereMastercode($mastercode)->first();
+        if (!$check_mastercode) return response()->json(['message'=>'Your mastercode is wrong.', 'code'=>404], 404);
+        $date = new DateTime('now');
+        if ($check_mastercode->places_alloted) {
+            $check_mastercode->places_alloted -= 1;
+            $mastercode = $check_mastercode->places_alloted < 1 ? null : $mastercode;
+            $check_mastercode->fill(['mastercode'=>$mastercode])->save();
+            $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$houses->id, 'role_id'=>6]);
+            $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
+            return response()->json(['message'=>'Your mastercode has been accepted and your enrolment is successful.', 'code'=>201], 201);
+        }
+        return response()->json(['message'=>'There is no more places left for this mastercode.', 'code'=>404], 404);
+    }
+
+    /**
+     * Enrolment by admin or user enrolled in the class with super access: Principal, teacher, 
+     * Department Head  - no mastercode required     
+     *
+     * @param  \Illuminate\Http\Request  $enrol_user, House, Role->role
+     * @return \Illuminate\Http\Response
+     */
+    public function adminEnrol($enrol_user, House $houses, $role) {
+        $user = Auth::user();
+        $most_powerful = $user->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
+        $role_to_enrol = Role::where('role','LIKE',$role)->first();
+        if (!$role_to_enrol) {
+            return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
+        }
+        $date = new DateTime('now');
+        if ($most_powerful < $role_to_enrol->id || $user->is_admin) {        // administrator can do enrol anyone
+            $enrolment = Enrolment::firstOrNew(['user_id'=>$enrol_user, 'role_id'=>$role_to_enrol->id, 'house_id'=>$houses->id]);
+            $enrolment->fill(['start_date'=>$date, 'expiry_date'=>$date->modify('+1 year')])->save();
+            return response()->json(['message'=>'Enrolment successful.', 'code'=>201], 201);
+        } else {
+            return response()->json(['message'=>'Not authorized to enrol.', 'code'=>401], 401);
+        }
+    }
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     
     public function store(CreateEnrolmentRequest $request, $id)
     {    
         $outmsg=[];

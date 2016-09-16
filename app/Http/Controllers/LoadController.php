@@ -25,9 +25,10 @@ class LoadController extends Controller
         $this->loadtracks();
         $this->loadskills();
         $this->loadquestions();
-        $this->loadsolutions();
+//        $this->loadsolutions();
         $this->loadhouses();
         $this->loadroles();
+//        $this->loadmastercodes();
 //        $this->loadtests();
         return "all uploaded is done and ok";
     }
@@ -140,7 +141,13 @@ class LoadController extends Controller
 
     public function loadquestions ()
     {
-        Excel::selectSheets('test_questions')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('testing')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+/*        Excel::selectSheets('test_questions')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
@@ -153,7 +160,7 @@ class LoadController extends Controller
             }
         });
 
-*/        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
@@ -171,7 +178,7 @@ class LoadController extends Controller
                 \App\Question::create($question->toArray());
             }
         });
-    }
+ */   }
 
     /**
      * Store levels loaded from excel into the databast
@@ -232,37 +239,18 @@ class LoadController extends Controller
     }
 
     /**
-     * Store tests loaded from excel into the database
+     * Store mastercodes loaded from excel into the database
      *
      * @param excel spread sheet
      * @return
      */
 
-    public function loadtests ()
+    public function loadmastercodes ()
     {
-        Excel::selectSheets('tests')->load('public/questions.xlsx', function ($reader) {
-            $tests = $reader->all();
-            foreach ($tests as $test) {
-                \App\Test::create($test->toArray());
-            }
-        });
-        Excel::selectSheets('test_user')->load('public/questions.xlsx', function ($reader) {
-            $test_users = $reader->all();
-            foreach ($test_users as $test_user) {
-                \App\TestUser::create($test_user->toArray());
-            }
-        });
-        Excel::selectSheets('question_test')->load('public/questions.xlsx', function ($reader) {
-            $question_tests = $reader->all();
-            foreach ($question_tests as $question_test) {
-                \App\QuestionTest::create($question_test->toArray());
-            }
-        });
-
-        Excel::selectSheets('activity')->load('public/questions.xlsx', function ($reader) {
-            $activities = $reader->all();
-            foreach ($activities as $activity) {
-                \App\Activity::create($activity->toArray());
+        Excel::selectSheets('mastercodes')->load('public/questions.xlsx', function ($reader) {
+            $mastercodes = $reader->all();
+            foreach ($mastercodes as $mastercode) {
+                \App\Mastercode::create($mastercode->toArray());
             }
         });
     }

@@ -65,7 +65,7 @@ class Skill extends Model
         $skill_passed = $userSkill->skill_passed;
 
         if ($correct) {
-            $noOfPasses += 1;
+            $difficulty_passed <= $difficulty ? $noOfPasses += 1 : 1;
             $noOfFails -= 1;
         }
         if (!$correct) {
@@ -76,7 +76,7 @@ class Skill extends Model
         $difficulty_passed = $diagnostic ? $correct ? $difficulty : 0 : $noOfPasses >= Config::get('app.number_to_pass') ? $difficulty_passed < $difficulty ? $difficulty : $difficulty_passed : $difficulty_passed;
         $skill_passed = $difficulty_passed < Config::get('app.difficulty_levels') ? FALSE : TRUE;
         // calculate skill_maxile
-        $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : max($track->level->start_maxile_level, $userSkill->skill_maxile) ; 
+        $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0; 
         $record = [
             'skill_test_date' => new DateTime('now'),
             'skill_passed' => $skill_passed,
