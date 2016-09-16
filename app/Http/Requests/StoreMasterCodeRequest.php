@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use App\Http\Requests\Request;
 
-Fclass CreateMasterCodeRequest extends Request
+class StoreMasterCodeRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,10 @@ Fclass CreateMasterCodeRequest extends Request
     public function rules()
     {
         return [
-            'house_id' => 'required',
-            'user_id' => 'required'
+            'firstname' => 'string | required',
+            'lastname'=> 'string | required',
+            'mastercode' => 'numeric | required',
+            'birthdate' => 'date | required'
         ];
     }
 

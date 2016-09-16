@@ -24,8 +24,6 @@ class LoadController extends Controller
         $this->loadcourses();
         $this->loadtracks();
         $this->loadskills();
-        $this->loadquestions();
-//        $this->loadsolutions();
         $this->loadhouses();
         $this->loadroles();
 //        $this->loadmastercodes();
@@ -128,71 +126,6 @@ class LoadController extends Controller
             $skill_tracks = $reader->all();
             foreach ($skill_tracks as $skill_track) {
                 \App\Skill_Track::create($skill_track->toArray());
-            }
-        });
-    }
-
-    /**
-     * Store levels loaded from excel into the databast
-     *
-     * @param excel spread sheet
-     * @return
-     */
-
-    public function loadquestions ()
-    {
-        Excel::selectSheets('testing')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
-/*        Excel::selectSheets('test_questions')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
-/*        Excel::selectSheets('imp5')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
-
-        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
-        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
-        Excel::selectSheets('imp5')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
- */   }
-
-    /**
-     * Store levels loaded from excel into the databast
-     *
-     * @param excel spread sheet
-     * @return
-     */
-
-    public function loadsolutions ()
-    {
-        Excel::selectSheets('solutions')->load('public/questions.xlsx', function ($reader) {
-            $solutions = $reader->all();
-            foreach ($solutions as $solution) {
-                \App\Solution::create($solution->toArray());
             }
         });
     }

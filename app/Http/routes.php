@@ -8,6 +8,7 @@
 Route::resource('/', 'DashboardController');
 
 Route::get('/loadall', 'LoadController@loadall');
+Route::get('/loadquestions', 'LoadQuestions@loadall');
 
 Route::post('/qa', 'CheckAnswerController@index');
 Route::post('/qa/answer', 'CheckAnswerController@answer');
@@ -15,7 +16,7 @@ Route::post('/qa/answer', 'CheckAnswerController@answer');
 Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
 Route::resource('courses', 'CourseController', ['except' =>['create', 'edit']]);
-Route::resource('mastercodes', 'MasterCodeController', ['except' =>['create', 'edit']]);
+Route::resource('mastercodes', 'MasterCodeController', ['except' =>['create', 'edit', 'update']]);
 Route::resource('houses', 'HouseController', ['except' =>['create', 'edit']]);
 Route::resource('levels', 'LevelController', ['except' =>['create', 'edit']]);
 Route::resource('courses.houses', 'CourseHouseController', ['except' => ['edit', 'create']]);
@@ -44,6 +45,7 @@ Route::get('logs', 'LogController@index');
 
 Route::get('/api/protected', 'DashboardController@index');
 Route::post('/test/protected', 'DiagnosticController@index');
+Route::post('test/mastercode', 'DiagnosticController@store');
 Route::post('/test/answers', 'DiagnosticController@answer');
 
 /* Post answers and game scores

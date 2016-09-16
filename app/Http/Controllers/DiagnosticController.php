@@ -14,12 +14,14 @@ use App\User;
 use Config;
 use App\Error;
 use App\Course;
+use App\Enrolment;
+use App\Role;
+use App\Http\Requests\StoreMasterCodeRequest;
 
 class DiagnosticController extends Controller
 {
     public function __construct(){
         $this->middleware('auth0.jwt');
-\Auth::login(User::find(3));
     }
 
     /**
@@ -29,19 +31,41 @@ class DiagnosticController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request){
-        return $request->mastercode;
+    public function store(StoreMasterCodeRequest $request){
+        $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
+        $user = Auth::user();
+        $check_mastercode = Enrolment::whereMastercode($request->mastercode)->first();
+        if (!$check_mastercode) return response()->json(['message'=>'Your mastercode is wrong.', 'code'=>404], 404);
+        if ($check_mastercode->places_alloted) {
+            $date = new DateTime('now');
+            $check_mastercode->places_alloted -= 1;
+            $mastercode = $check_mastercode->places_alloted < 1 ? null : $request->mastercode;
+            $check_mastercode->fill(['mastercode'=>$mastercode])->save();
+            $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
+            $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
+            return $this->index();
+        }
+        return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
+    }
+
+    /**
+     *
+     * One question from the highest skill of each track from the appropriate level
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(){
         $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
         $user = Auth::user();
         $enrolled = $user->validEnrolment($courses);
-        //first time user error
-        if (!$user->date_of_birth || !count($enrolled)) return response()->json(['message'=>'First time user', 'code'=>203]);
+
+        if (!$user->date_of_birth || !count($enrolled)) return response()->json(['message'=>'Not properly enrolled or first time user', 'code'=>203]);
         $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
             $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
             $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Daily Test".count($user->completedtests)+1, 'diagnostic'=>FALSE]):
             $user->currenttest[0];
 
-        return $test->fieldQuestions($user);                // output
+        return $test->fieldQuestions($user);                // output test questions
     }
 
     /**

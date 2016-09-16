@@ -63,7 +63,6 @@ class Test extends Model
         if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 $level = !count($this->questions) || $user->maxile_level == 0 ? Level::find(2):
-                //Level::where('Level' '>=', $user->tracks()->max('level_id'))
                 Level::where('level', '>=', round($user->calculateUserMaxile($this)/100)*100)->first();  
                 // get question for each track in level                
                 foreach ($level->tracks as $track){
@@ -108,9 +107,7 @@ return response()->json(['message' => 'Request executed successfully', 'test'=>$
             $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
             return response()->json(['message' => 'Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
         }
-        
         $test_questions = count($questions)< 6 ? $questions : $questions->take(5);
-        $test_questions = Question::all();
         return response()->json(['message' => 'Request executed successfully', 'test'=>$this->id, 'questions'=>$test_questions, 'code'=>201]);
     }
 }
