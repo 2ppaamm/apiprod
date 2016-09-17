@@ -75,7 +75,7 @@ class CheckAnswerController extends Controller
             $track = $question->skill->tracks->intersect($user->testedTracks)->first();
             $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
-            $user_maxile = $user->calculateUserMaxile();             
+            $user_maxile = $user->calculateUserMaxile($test);             
 		}
 
         return $test->fieldQuestions($user);
