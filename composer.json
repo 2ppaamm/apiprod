@@ -9,7 +9,6 @@
         "laravel/framework": "5.2.*",
         "maatwebsite/excel": "~2.0",
         "barryvdh/laravel-cors": "^0.8.0",
-        "laravel/socialite": "^2.0",
         "auth0/login": "~3.0"
             },
     "require-dev": {
@@ -17,8 +16,7 @@
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",
         "symfony/css-selector": "~3.0",
-        "symfony/dom-crawler": "~3.0",
-        "lucadegasperi/oauth2-server-laravel":"5.1.x"                 
+        "symfony/dom-crawler": "~3.0"
     },
     "autoload": {
         "classmap": [

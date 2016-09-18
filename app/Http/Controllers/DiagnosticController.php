@@ -25,6 +25,28 @@ class DiagnosticController extends Controller
     }
 
     /**
+     *
+     * One question from the highest skill of each track from the appropriate level
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(){
+//for testing        return response()->json(['message' => 'Test question', 'questions'=>Question::where('id','>',880)->where('id','<',890)->get(), 'code'=>201]);
+
+        $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
+        $user = Auth::user();
+        $enrolled = $user->validEnrolment($courses);
+
+        if (!$user->date_of_birth || !count($enrolled)) return response()->json(['message'=>'Not properly enrolled or first time user', 'code'=>203]);
+        $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
+            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
+            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Daily Test".count($user->completedtests)+1, 'diagnostic'=>FALSE]):
+            $user->currenttest[0];
+
+        return $test->fieldQuestions($user);                // output test questions
+    }
+
+    /**
      * Sends a list of questions of the test number to the front end
      *
      * One question from the highest skill of each track from the appropriate level
@@ -43,30 +65,12 @@ class DiagnosticController extends Controller
             $check_mastercode->fill(['mastercode'=>$mastercode])->save();
             $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
             $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
-            return $this->index();
+//Have to fill out user's details!!!!!!
+            return response()->json(['message'=>'Successfully registered mastercode. You are now enrolled. Press start to continue', 'code'=>200], 200);
         }
         return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
     }
 
-    /**
-     *
-     * One question from the highest skill of each track from the appropriate level
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(){
-        $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
-        $user = Auth::user();
-        $enrolled = $user->validEnrolment($courses);
-
-        if (!$user->date_of_birth || !count($enrolled)) return response()->json(['message'=>'Not properly enrolled or first time user', 'code'=>203]);
-        $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
-            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
-            $user->tests()->create(['test'=>$user->name."'s test",'description'=> $user->name."'s Daily Test".count($user->completedtests)+1, 'diagnostic'=>FALSE]):
-            $user->currenttest[0];
-
-        return $test->fieldQuestions($user);                // output test questions
-    }
 
     /**
      * Checks answers and then sends a new set of questions, according to correctness of 
