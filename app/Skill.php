@@ -56,7 +56,7 @@ class Skill extends Model
     }
 
     public function handleAnswer($userid, $difficulty, $correct, $track, $diagnostic) {
-        $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
+return        $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
 
         $noOfTries = $userSkill->noOfTries + 1;
         $noOfPasses = $userSkill->noOfPasses;

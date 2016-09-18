@@ -66,7 +66,7 @@ class DiagnosticController extends Controller
             $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
             $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
 //Have to fill out user's details!!!!!!
-            return response()->json(['message'=>'Successfully registered mastercode. You are now enrolled. Press start to continue', 'code'=>200], 200);
+            return $this->index();
         }
         return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
     }
