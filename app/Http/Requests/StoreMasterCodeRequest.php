@@ -27,7 +27,7 @@ class StoreMasterCodeRequest extends Request
             'firstname' => 'string | required',
             'lastname'=> 'string | required',
             'mastercode' => 'numeric | required',
-            'birthdate' => 'date | required'
+            'date_of_birth' => 'date | required'
         ];
     }
 

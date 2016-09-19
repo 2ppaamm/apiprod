@@ -65,10 +65,9 @@ class DiagnosticController extends Controller
             $check_mastercode->fill(['mastercode'=>$mastercode])->save();
             $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
             $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
-//Have to fill out user's details!!!!!!
-            return $this->index();
-        }
-        return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
+            $user->update($request->all());
+        } else return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
+        return $this->index();
     }
 
 
@@ -108,9 +107,9 @@ class DiagnosticController extends Controller
                 $correctness = $correct + $correct1 + $correct2 + $correct3 > 3? TRUE: FALSE;
             } else $correctness = $question->correct_answer != $request->answer[$key] ? FALSE:TRUE;
             $answered = $question->answered($user, $correctness, $test);
-            $track = $question->skill->tracks->intersect($user->testedTracks)->first();
+            $track = $question->skill->tracks;
             // calculate and saves maxile at 3 levels: skill, track and user
-            $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
+return            $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
             //return count($test->uncompletedQuestions);
             $user_maxile = $user->calculateUserMaxile($test);             

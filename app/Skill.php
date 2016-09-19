@@ -56,13 +56,17 @@ class Skill extends Model
     }
 
     public function handleAnswer($userid, $difficulty, $correct, $track, $diagnostic) {
-return        $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
+        $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
 
-        $noOfTries = $userSkill->noOfTries + 1;
-        $noOfPasses = $userSkill->noOfPasses;
-        $noOfFails = $userSkill->noOfFails;
-        $difficulty_passed = $userSkill->difficulty_passed;
-        $skill_passed = $userSkill->skill_passed;
+        if ($userSkill) {
+            $noOfTries = $userSkill->noOfTries + 1;
+            $noOfPasses = $userSkill->noOfPasses;
+            $noOfFails = $userSkill->noOfFails;
+            $difficulty_passed = $userSkill->difficulty_passed;
+            $skill_passed = $userSkill->skill_passed;
+        } else {
+            $noOfFails = $noOfPasses = $noOfTries = $difficulty_passed =$skill_passed =0;
+        }
 
         if ($correct) {
             $difficulty_passed <= $difficulty ? $noOfPasses += 1 : 1;
@@ -76,7 +80,7 @@ return        $userSkill= $this->users()->whereUserId($userid)->select('noOfPass
         $difficulty_passed = $diagnostic ? $correct ? $difficulty : 0 : $noOfPasses >= Config::get('app.number_to_pass') ? $difficulty_passed < $difficulty ? $difficulty : $difficulty_passed : $difficulty_passed;
         $skill_passed = $difficulty_passed < Config::get('app.difficulty_levels') ? FALSE : TRUE;
         // calculate skill_maxile
-        $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0; 
+return $track->with('level')->get();       $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0; 
         $record = [
             'skill_test_date' => new DateTime('now'),
             'skill_passed' => $skill_passed,
@@ -95,7 +99,7 @@ return        $userSkill= $this->users()->whereUserId($userid)->select('noOfPass
      * 4. If skill has been cleared before, getting question wrong resets it
      * 5. If passes skill for the first time, increment maxile
      * return int cleared_status : 0- nothing cleared, 1- difficulty cleared, 2- skill cleared 
-     */ 
+      
     public function answerRight($userid, $difficultyid, $track, $max_skill_maxile, $maxile_earned){
         $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
         $difficulty_cleared = $userSkill->noOfPasses + 1 < Config::get('app.number_to_pass') ? $userSkill->difficulty_passed : $userSkill->difficulty_passed+ 1;

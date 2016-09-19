@@ -58,28 +58,26 @@ class Test extends Model
     }
 
     public function fieldQuestions($user){
-        $diagnostic_complete = FALSE;
         $level = null;
         $questions = null;
         if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
-                if (!count($this->question)) {
+                if (count($this->question)) {
                     if (!$user->maxile_level) {
-                        $diagnostic_complete = TRUE;
                         return response()->json(['message'=>'Completed test at lowest level', 'code'=>200], 200);
                     } else {
-                        $level = Level::find(2);
+                        $level = Level::where('level', '>=', round($user->calculateUserMaxile($this)/100)*100)->first();
                     }
-                } else $level = Level::where('level', '>=', round($user->calculateUserMaxile($this)/100)*100)->first();
+                } else $level = Level::find(2);
                 // get question for each track in level                
                 foreach ($level->tracks as $track){
                     $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->whereDifficultyId(3)->inRandomOrder()->first();
                     if ($new_question){
                         $new_question->assigned($user, $this);
-                        $track->users()->sync([$user->id], false);        //log tracks for user
+ //                       $track->users()->sync([$user->id], false);        //log tracks for user
                     }
                 }
-            } elseif (!count($this->questions)) {           // not diagnostic, new test
+return $user->questions;            } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get level
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks; // test failed tracks, add 
                 if (count($tracks_to_test) < 3) {

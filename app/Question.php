@@ -62,6 +62,7 @@ class Question extends Model
     }
 
     public function answered($user, $correctness, $test){
+//        $attempts = $this->attempts($user->id);
         $record = ['question_answered' => TRUE,
             'answered_date' => new DateTime('now'),
             'correct' =>$correctness,
