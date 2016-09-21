@@ -124,10 +124,6 @@ class User extends Model implements AuthenticatableContract,
         return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date')->select('field', 'field_test_date', 'field_maxile')->groupBy('field');
     }
 
-    public function trackMaxile(){
-        return $this->belongsToMany(Track::class)->withPivot('track_maxile', 'track_test_date','track_passed')->select('track', 'track_test_date', 'track_maxile','track_passed')->groupBy('track');
-    }
-
     public function skill_user(){
         return $this->belongsToMany(Skill::class)->withPivot('skill_test_date','skill_passed','skill_maxile','noOfTries','noOfPasses','difficulty_passed', 'noOfFails');
     }
@@ -138,10 +134,6 @@ class User extends Model implements AuthenticatableContract,
 
     public function completedSkills(){
         return $this->skillMaxile()->whereSkillPassed(True);
-    }
-
-    public function passedTracks(){
-        return $this->trackMaxile()->whereTrackPassed(TRUE);
     }
 
     // manage logs
@@ -235,17 +227,13 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function calculateUserMaxile($test){
-        $highest_diagnostic_level_tested = Level::whereIn('id', $this->testedTracks()->lists('level_id'))->orderBy('level', 'desc')->first();
+        $highest_level_passed = Level::whereIn('id', $this->tracksPassed()->lists('level_id'))->orderBy('level', 'desc')->first();
 
-        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'):
-            $this->testedTracks()->avg('track_maxile');
+        $user_maxile = max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level);
+
+//        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'): $this->testedTracks()->avg('track_maxile');
         $this->maxile_level = $user_maxile;
         $this->save();
         return $user_maxile;
     }
-
-    public function failedTracks() {
-        return $this->testedTracks()->whereTrackPassed(FALSE)->orderBy('track_maxile')->lists('id');
-    }
-
 }

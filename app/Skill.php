@@ -55,6 +55,10 @@ class Skill extends Model
         return $this->users()->whereUserId($userid)->select('skill_maxile')->first()->skill_maxile;
     }
 
+    /** 
+     * Determines if difficulty passed, skill passed calculate skill maxile
+     * 
+     */
     public function handleAnswer($userid, $difficulty, $correct, $track, $diagnostic) {
         $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
 
@@ -80,7 +84,7 @@ class Skill extends Model
         $difficulty_passed = $diagnostic ? $correct ? $difficulty : 0 : $noOfPasses >= Config::get('app.number_to_pass') ? $difficulty_passed < $difficulty ? $difficulty : $difficulty_passed : $difficulty_passed;
         $skill_passed = $difficulty_passed < Config::get('app.difficulty_levels') ? FALSE : TRUE;
         // calculate skill_maxile
-return $track->with('level')->get();       $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0; 
+        $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0; 
         $record = [
             'skill_test_date' => new DateTime('now'),
             'skill_passed' => $skill_passed,

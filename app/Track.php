@@ -67,7 +67,7 @@ class Track extends Model
     }
 
     public function level(){
-        return $this->belongsTo(Level::class)->select('id','level','description','start_maxile_level','end_maxile_level');
+        return $this->belongsTo(Level::class);//->select('id','level','description','start_maxile_level','end_maxile_level');
     }
 
     public function unit(){

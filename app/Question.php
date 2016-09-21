@@ -56,13 +56,12 @@ class Question extends Model
      *  Assigns skill to users, questions to users, questions to test
      */
     public function assigned($user, $test){
-//        $this->skill->users()->sync([$user->id], false);
+        $this->skill->users()->sync([$user->id], false);
         $this->users()->sync([$user->id =>['test_id'=>$test->id]], false);
         return $test;
     }
 
     public function answered($user, $correctness, $test){
-//        $attempts = $this->attempts($user->id);
         $record = ['question_answered' => TRUE,
             'answered_date' => new DateTime('now'),
             'correct' =>$correctness,

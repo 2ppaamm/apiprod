@@ -60,13 +60,18 @@ class Test extends Model
     public function fieldQuestions($user){
         $level = null;
         $questions = null;
-        if (!count($this->uncompletedQuestions)) {    // no more questions
+return 'hello';        if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
-                if (count($this->question)) {
-                    if (!$user->maxile_level) {
+                if (count($this->questions)) {
+                    if (!$user->maxile_level) {   
                         return response()->json(['message'=>'Completed test at lowest level', 'code'=>200], 200);
                     } else {
-                        $level = Level::where('level', '>=', round($user->calculateUserMaxile($this)/100)*100)->first();
+                        $suggest_level = Level::where('level', '>=', round($user->calculateUserMaxile($this)/100)*100)->first();
+                        if ($user->maxile_level > $suggest_level->start_maxile_level){
+                            count($this->questions) < $this->questions()->sum('question_answered') ? null:
+                            $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id)]);
+                            return response()->json(['message' => 'Diagnostic Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
+                        } else $level = $suggest_level;
                     }
                 } else $level = Level::find(2);
                 // get question for each track in level                
@@ -74,10 +79,10 @@ class Test extends Model
                     $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->whereDifficultyId(3)->inRandomOrder()->first();
                     if ($new_question){
                         $new_question->assigned($user, $this);
- //                       $track->users()->sync([$user->id], false);        //log tracks for user
+                        $track->users()->sync([$user->id], false);        //log tracks for user
                     }
                 }
-return $user->questions;            } elseif (!count($this->questions)) {           // not diagnostic, new test
+            } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get level
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks; // test failed tracks, add 
                 if (count($tracks_to_test) < 3) {
@@ -85,7 +90,7 @@ return $user->questions;            } elseif (!count($this->questions)) {       
                     $tracks_to_test->merge($next_level->tracks()->take(3-count($tracks_to_test))->get());
                 } else $tracks_to_test = $tracks_to_test->take(3);
                 foreach ($tracks_to_test as $track){
-//                    $track->users()->sync([$user->id], false);          //log tracks for user
+                    $track->users()->sync([$user->id], false);          //log tracks for user
                     foreach ($track->skills->diff($user->skill_user()->whereSkillPassed(true)->get()) as $skill) {               // only test unpassed skills
                         $difficulty_passed = $skill->users()->whereUserId($user->id)->first() ? $skill->users()->whereUserId($user->id)->select('difficulty_passed')->first()->difficulty_passed : 0;
                         //find 5 questions in the track that are not already fielded and higher difficulty if some difficulty already passed
