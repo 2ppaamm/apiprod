@@ -35,7 +35,7 @@ class DiagnosticController extends Controller
 //for testing        return response()->json(['message' => 'Test question', 'questions'=>Question::where('id','>',880)->where('id','<',890)->get(), 'code'=>201]);
 
         $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
-return        $user = Auth::user();
+        $user = Auth::user();
         $enrolled = $user->validEnrolment($courses);
 
         if (!$user->date_of_birth || !count($enrolled)) return response()->json(['message'=>'Not properly enrolled or first time user', 'code'=>203]);
