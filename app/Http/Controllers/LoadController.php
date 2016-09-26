@@ -26,7 +26,7 @@ class LoadController extends Controller
         $this->loadskills();
         $this->loadhouses();
         $this->loadroles();
-//        $this->loadquestions();
+        $this->loadquestions();
 //        $this->loadmastercodes();
 //        $this->loadtests();
         return "all uploaded is done and ok";
