@@ -26,6 +26,7 @@ class CheckAnswerController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
+    	$user = Auth::user();
       	$questions = null;
     	$test = count($user->currenttest)<1 ?  $user->tests()->create(['test'=>$user->name."'s QA test",'description'=> $user->name."'s QA test", 'diagnostic'=>FALSE]) : $user->currenttest[0];
 
