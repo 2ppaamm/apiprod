@@ -57,6 +57,9 @@ class DiagnosticController extends Controller
     public function store(StoreMasterCodeRequest $request){
         $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
         $user = Auth::user();
+        if ($user->validEnrolment($courses)){
+          return response()->json(['message'=>'Already enrolled in course', "code"=>404], 404);  
+        }
         $check_mastercode = Enrolment::whereMastercode($request->mastercode)->first();
         if (!$check_mastercode) return response()->json(['message'=>'Your mastercode is wrong.', 'code'=>404], 404);
         if ($check_mastercode->places_alloted) {
@@ -70,7 +73,6 @@ class DiagnosticController extends Controller
         } else return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
         return $this->index();
     }
-
 
     /**
      * Checks answers and then sends a new set of questions, according to correctness of 

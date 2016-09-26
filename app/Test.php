@@ -54,7 +54,7 @@ class Test extends Model
     }
 
     public function markTest($userid){
-        return count($this->questions) ? $this->questions()->sum('correct')/count($this->questions) * 100 : 0;
+        return count($this->questions) ? number_format($this->questions()->sum('correct')/count($this->questions) * 100, 2, '.', '') : 0;
     }
 
     public function fieldQuestions($user){
@@ -66,11 +66,12 @@ class Test extends Model
                     if (!$user->maxile_level) {   
                         return response()->json(['message'=>'Completed test at lowest level', 'code'=>200], 200);
                     } else {
-                        $suggest_level = Level::where('level', '>=', round($user->calculateUserMaxile($this)/100)*100)->first();
-                        if ($user->maxile_level > $suggest_level->start_maxile_level){
-                            count($this->questions) < $this->questions()->sum('question_answered') ? null:
-                            $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id)]);
-                            return response()->json(['message' => 'Diagnostic Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
+                        $suggest_level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
+                        if ($user->maxile_level <= $suggest_level->start_maxile_level){
+                            if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
+                               $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=>1]);
+                                return response()->json(['message' => 'Diagnostic Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
+                            }
                         } else $level = $suggest_level;
                     }
                 } else $level = Level::find(2);
