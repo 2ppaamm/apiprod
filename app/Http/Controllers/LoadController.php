@@ -26,11 +26,34 @@ class LoadController extends Controller
         $this->loadskills();
         $this->loadhouses();
         $this->loadroles();
+        $this->loadquestions();
 //        $this->loadmastercodes();
 //        $this->loadtests();
         return "all uploaded is done and ok";
     }
 
+    public function loadquestions ()
+    {
+        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+
+        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+        Excel::selectSheets('imp3')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
+    }
     /**
      * Show the form for creating a new resource.
      *
