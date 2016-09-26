@@ -21,8 +21,8 @@ use App\Http\Requests\StoreMasterCodeRequest;
 class DiagnosticController extends Controller
 {
     public function __construct(){
-      //  $this->middleware('auth0.jwt');
-        Auth::login(User::find(18));
+        $this->middleware('auth0.jwt');
+//        Auth::login(User::find(18));
     }
 
     /**
