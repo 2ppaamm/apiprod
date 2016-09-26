@@ -26,7 +26,6 @@ class CheckAnswerController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-return    	$user = Auth::user();
       	$questions = null;
     	$test = count($user->currenttest)<1 ?  $user->tests()->create(['test'=>$user->name."'s QA test",'description'=> $user->name."'s QA test", 'diagnostic'=>FALSE]) : $user->currenttest[0];
 
@@ -42,7 +41,7 @@ return    	$user = Auth::user();
     }
 
     public function answer(CreateQuizAnswersRequest $request){
-    	$user = User::find(1);
+    	$user = Auth::user();
         $old_maxile = $user->maxile_level;
     	$test = \App\Test::find($request->test);
     	if (!$test){
