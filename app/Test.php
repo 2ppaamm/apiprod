@@ -66,13 +66,13 @@ class Test extends Model
                     if (!$user->maxile_level) {   
                         return response()->json(['message'=>'Completed test at lowest level', 'code'=>200], 200);
                     } else {
-                        $suggest_level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
-                        if ($user->maxile_level <= $suggest_level->start_maxile_level){
+                        $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
+                        if ($user->maxile_level >= $level->start_maxile_level){
                             if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
                                $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=>1]);
                                 return response()->json(['message' => 'Diagnostic Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
                             }
-                        } else $level = $suggest_level;
+                        }
                     }
                 } else $level = Level::find(2);
                 // get question for each track in level                
