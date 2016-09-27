@@ -40,7 +40,10 @@ class CheckAnswerController extends Controller
                 $track->users()->sync([$user->id], false);
     	    }
         }
-        return $test->fieldQuestions($user);
+        $questions = $test->uncompletedQuestions;        
+        $test_questions = count($questions)< 6 ? $questions : $questions->take(5);
+        return response()->json(['message' => 'Request executed successfully', 'test'=>$test->id, 'questions'=>$test_questions, 'code'=>201]);
+//         return $test->fieldQuestions($user);
     }
 
     public function answer(CreateQuizAnswersRequest $request){
@@ -80,6 +83,8 @@ class CheckAnswerController extends Controller
             $user_maxile = $user->calculateUserMaxile($test);             
 		}
 
-        return $test->fieldQuestions($user);
+        $questions = $test->uncompletedQuestions;        
+        $test_questions = count($questions)< 6 ? $questions : $questions->take(5);
+        return response()->json(['message' => 'Request executed successfully', 'test'=>$test->id, 'questions'=>$test_questions, 'code'=>201]);
     }
 }
