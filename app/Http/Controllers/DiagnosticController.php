@@ -57,7 +57,7 @@ class DiagnosticController extends Controller
     public function store(StoreMasterCodeRequest $request){
         $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
         $user = Auth::user();
-        if ($user->validEnrolment($courses)){
+        if (count($user->validEnrolment($courses))){
           return response()->json(['message'=>'Already enrolled in course', "code"=>404], 404);  
         }
         $check_mastercode = Enrolment::whereMastercode($request->mastercode)->first();

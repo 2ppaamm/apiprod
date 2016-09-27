@@ -104,7 +104,7 @@ class Test extends Model
             }
         }        
         // when there are questions linked to test
-        $questions = $this->uncompletedQuestions;
+        $questions = $this->uncompletedQuestions()->get();
         if (!count($questions)){                //no question to test
             $attempts = $this->attempts($user->id);
             $attempts = $attempts ? $attempts->attempts : 0;

@@ -11,6 +11,12 @@ class Enrolment extends Model
 
     protected $table = 'house_role_user';
     protected $fillable = ['mastercode','purchaser_id','payment_email','user_id','role_id', 'house_id','expiry_date', 'start_date', 'places_alloted'];
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = ['mastercode', 'payment_email', 'places_alloted'];
 
     public function users(){
     	return $this->belongsTo(User::class);
