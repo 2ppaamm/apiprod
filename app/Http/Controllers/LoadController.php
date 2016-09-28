@@ -47,12 +47,6 @@ class LoadController extends Controller
                 \App\Question::create($question->toArray());
             }
         });
-        Excel::selectSheets('imp3')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
     }
     /**
      * Show the form for creating a new resource.
