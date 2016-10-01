@@ -64,8 +64,8 @@ class Test extends Model
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
                     if (!$user->maxile_level) {   
-                        return response()->json(['message'=>'Completed test at lowest level', 'code'=>200], 200);
-                    } else {
+                        return response()->json(['message'=>'Completed test at beginning level. Please check if child is too young for course.', 'code'=>200], 200);
+                    } else {  // end of diagnostic test
                         $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
                         if ($user->maxile_level > $level->start_maxile_level){
                             if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
@@ -74,8 +74,9 @@ class Test extends Model
                             }
                         }
                     }
-                } else $level = Level::find(2);
-                // get question for each track in level                
+                } else $level = Level::find(2); // start of diagnostic test
+
+                // get questions, then log track, assign question to user               
                 foreach ($level->tracks as $track){
                     $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->whereDifficultyId(3)->inRandomOrder()->first();
                     if ($new_question){
@@ -83,13 +84,16 @@ class Test extends Model
                         $track->users()->sync([$user->id], false);        //log tracks for user
                     }
                 }
+
             } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get level
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks; // test failed tracks, add 
-                if (count($tracks_to_test) < 3) {
+                if (count($tracks_to_test) < 3) {  // test 3 tracks a day
                     $next_level = Level::where('level','>',$level->level)->first();
                     $tracks_to_test->merge($next_level->tracks()->take(3-count($tracks_to_test))->get());
                 } else $tracks_to_test = $tracks_to_test->take(3);
+
+                // non diagnostic, log track_user
                 foreach ($tracks_to_test as $track){
                     $track->users()->sync([$user->id], false);          //log tracks for user
                     foreach ($track->skills->diff($user->skill_user()->whereSkillPassed(true)->get()) as $skill) {               // only test unpassed skills
@@ -114,7 +118,7 @@ class Test extends Model
             }
             count($this->questions) < $this->questions()->sum('question_answered') ? null:
             $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
-            return response()->json(['message' => 'Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
+            return response()->json(['message' => 'Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this, $result), 'maxile'=> $user->calculateUserMaxile($this, $result), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
         }
 /*        if (!count($this->questions)) {
             return response()->json(['message'=>'No question can be fielded. Please print this screen and contact administrator at info.all-gifted@gmail.com', 'code'=>404], 404);

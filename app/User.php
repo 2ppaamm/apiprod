@@ -229,9 +229,10 @@ class User extends Model implements AuthenticatableContract,
     public function calculateUserMaxile($test){
 //        if ($this->id == 1) return $user->maxile_level;
         $highest_level_passed = Level::whereIn('id', $this->tracksPassed()->lists('level_id'))->orderBy('level', 'desc')->first();
-        $user_maxile = max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level);
+        $user_maxile = number_format(max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level), 2,'.','');
 
 //        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'): $this->testedTracks()->avg('track_maxile');
+        $this->game_level += $test->questions()->sum('correct');  // add kudos
         $this->maxile_level = $user_maxile;
         $this->save();
         return $user_maxile;
