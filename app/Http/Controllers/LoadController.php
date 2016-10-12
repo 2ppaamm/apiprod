@@ -34,14 +34,7 @@ class LoadController extends Controller
 
     public function loadquestions ()
     {
-        Excel::selectSheets('testing')->load('public/questions.xlsx', function ($reader) {
-            $questions = $reader->all();
-            foreach ($questions as $question) {
-                \App\Question::create($question->toArray());
-            }
-        });
-
-/*        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
@@ -54,7 +47,7 @@ class LoadController extends Controller
                 \App\Question::create($question->toArray());
             }
         });
- */   }
+    }
     /**
      * Show the form for creating a new resource.
      *

@@ -59,18 +59,20 @@ class Test extends Model
 
     public function fieldQuestions($user){
         $level = null;
-        $questions = null;        
+        $questions = null;
+        $message = '';        
         if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
-                    if (!$user->maxile_level) {   
-                        return response()->json(['message'=>'Completed test at beginning level. Please check if child is too young for course.', 'code'=>200], 200);
+                    if (!$user->maxile_level) {
+                        $message = 'Completed test at beginning level. Please check if child is too young for course.';
+                        return $this->completeTest($message, $user);
                     } else {  // end of diagnostic test
                         $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
                         if ($user->maxile_level > $level->start_maxile_level){
                             if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
-                               $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=>1]);
-                                return response()->json(['message' => 'Diagnostic Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
+                                $message = "Diagnostic test completed";
+                                return $this->completeTest($message, $user);
                             }
                         }
                     }
@@ -109,21 +111,24 @@ class Test extends Model
         }        
         // when there are questions linked to test
         $questions = $this->uncompletedQuestions()->get();
-        if (!count($questions)){                //no question to test
-            $attempts = $this->attempts($user->id);
-            $attempts = $attempts ? $attempts->attempts : 0;
+        if (!count($questions)){                //no more questions unanswered
             if (!count($this->questions)){      // new test
-                $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
-                return response()->json(['message'=>'Exceeding level... no question can be fielded. Please print this screen and contact administrator at info.all-gifted@gmail.com', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),'code'=>206], 206);
+                $message = 'Exceeding level... no question can be fielded. Please print this screen and contact administrator at info.all-gifted@gmail.com';
             }
-            count($this->questions) < $this->questions()->sum('question_answered') ? null:
-            $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
-            return response()->json(['message' => 'Test ended successfully', 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this, $result), 'maxile'=> $user->calculateUserMaxile($this, $result), 'diagnostic', $user->diagnostic, 'code'=>206], 206);
+            if (count($this->questions) < $this->questions()->sum('question_answered')){
+                $message = 'Test ended successfully';
+            }
+            return $this->completeTest($message, $user);
         }
-/*        if (!count($this->questions)) {
-            return response()->json(['message'=>'No question can be fielded. Please print this screen and contact administrator at info.all-gifted@gmail.com', 'code'=>404], 404);
-        }
-*/        $test_questions = count($questions)< 6 ? $questions : $questions->take(5);
+        // field unanswered questions
+        $test_questions = count($questions)< 6 ? $questions : $questions->take(5);
         return response()->json(['message' => 'Request executed successfully', 'test'=>$this->id, 'questions'=>$test_questions, 'code'=>201]);
+    }
+
+    public function completeTest($message, $user){
+        $attempts = $this->attempts($user->id);
+        $attempts = $attempts ? $attempts->attempts : 1;
+        $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
+        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),'code'=>206], 206);
     }
 }

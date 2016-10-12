@@ -10,7 +10,7 @@ class Result extends Model
         return $this->morphTo();
     }
 
-    public function quiz(){
+    public function test(){
         return $this->belongsTo(Test::class);
     }
 }
