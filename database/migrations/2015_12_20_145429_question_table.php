@@ -36,8 +36,7 @@ class QuestionTable extends Migration
             $table->text('source')->nullable();
             $table->integer('type_id')->unsigned()->default(1);
             $table->foreign('type_id')->references('id')->on('types');
-            $table->boolean('calculator')->nullable()->default(FALSE);
-            $table->boolean('scratch_pix')->nullable()->default(FALSE);
+            $table->string('calculator')->nullable();
             $table->timestamps();
         });
 
