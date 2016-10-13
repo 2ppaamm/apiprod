@@ -15,7 +15,7 @@ class CheckAnswerController extends Controller
 {
     public function __construct(){
 //        $this->middleware('cors');
-//        $this->middleware('auth0.jwt');
+         $this->middleware('auth0.jwt');
          Auth::login(User::find(1));
 
     }
@@ -32,7 +32,7 @@ class CheckAnswerController extends Controller
       	$questions = null;
     	$test = count($user->currenttest)<1 ?  $user->tests()->create(['test'=>$user->name."'s QA test",'description'=> $user->name."'s QA test", 'diagnostic'=>FALSE]) : $user->currenttest[0];
 
-        $questions = count($test->questions) < 1 ? Question::where('id','<',18 )->where('id','>',80)->take(500)->get():0;
+        $questions = count($test->questions) < 1 ? Question::where('id','>',80)->take(500)->get():0;
 	    if ($questions) {
             foreach($questions as $question) {
                 $question->assigned($user, $test);
