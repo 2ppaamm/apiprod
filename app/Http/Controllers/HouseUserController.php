@@ -12,13 +12,13 @@ use App\Http\Requests\CreateEnrolmentRequest;
 use Auth;
 use App\Enrolment;
 use DateTime;
+use App\Role;
 
 class HouseUserController extends Controller
 {
     public function __construct(){
-        //$this->middleware('auth0.jwt');
-\Auth::login(User::find(10));    }
-
+        $this->middleware('auth0.jwt');
+}
     /**
      * Display a listing of the resource.
      *
