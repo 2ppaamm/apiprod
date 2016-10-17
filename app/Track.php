@@ -107,6 +107,10 @@ class Track extends Model
         return $allpassed;        
     }
 
+    public function trackScore(){
+        return 'hello';
+    }
+
     public function calculateMaxile($user, $diagnostic){
         $track_maxile = $user->skill_user()->whereIn('skill_id', $this->skills()->lists('id'))->avg('skill_maxile');
         $record = [
