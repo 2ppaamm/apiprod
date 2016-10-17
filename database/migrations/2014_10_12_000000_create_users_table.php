@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->date('date_of_birth');
             $table->dateTime('last_test_date')->nullable();
             $table->dateTime('next_test_date')->nullable();
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
