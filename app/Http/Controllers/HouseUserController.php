@@ -97,40 +97,6 @@ class HouseUserController extends Controller
         $enrolment->fill(['start_date'=>$date, 'payment_email'=>$user->email,'expiry_date'=>$date->modify('+1 year')])->save();
         return response()->json(['message'=>'Enrolment successful.', 'code'=>201], 201);
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     
-    public function store(CreateEnrolmentRequest $request, $id)
-    {    
-        $outmsg=[];
-        $errormsg=[];
-        $roles = $request->roles;
-
-        if ($request->get('user_id')){
-            $user = User::find($request->get('user_id'));
-            if (!$user) return response()->json(['message' => 'This user does not exist', 'code'=>404], 404);
-        } else $user = Auth::user();
-        $house = \App\House::find($id);
-        if (!$house) return response()->json(['message' => 'This class does not exist', 'code'=>404], 404);
-        foreach ($roles as $key => $role) {
-            $role = \App\Role::find($role);
-            //Try to enrol if user has the access rights. - not done yet
-            try {
-                //enrol user to the house in house_role_user
-                Enrolment::create(['user_id'=>$user->id, 'role_id'=>$role->id, 'house_id'=>$id]);
-                $house->enrolUser($role_id);
-                array_push($outmsg, $user->name.' is successfully enrolled in '.$house->house.' as a '.$role->role);
-            }
-            catch(\Exception $exception) {
-                array_push($errormsg, $user->name.' is already enrolled in '.$house->house.' as a '.$role->role);
-            }
-        }
-        $controller = new DashboardController;
-        return response()->json(['message'=>$outmsg, 'errormessage'=>$errormsg], 201);
-    }
 
     /**
      * Display the specified resource.
@@ -155,18 +121,20 @@ class HouseUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CreateEnrolmentRequest $request, $id, $users)
+    public function update(CreateEnrolmentRequest $request, House $houses, User $users)
     {
         $msg = "";
-        $role = $request->get('roles');
-        $house = \App\House::find($id);
-//        return $house->enrolledUsers()->wherePivotRoleId($role)->get();//detach($users);
-        if (!$house) {
-            return response()->json(['message' => 'This class does not exist', 'code'=>404], 404);
+        $most_powerful = $users->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
+        $role_to_enrol = Role::where('role','LIKE',$request->role)->first();
+        if (!$role_to_enrol) {
+            return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
+        }
+        if ($most_powerful > $role_to_enrol->id && !$user->is_admin) {        // administrator 
+            return response()->json(['message'=>'No authorization to enrol', 'code'=>203], 203);
         }
         try {
             //unenrol user to the house in house_role_user
-            $house->unenrollUser($users, $role);
+            $houses->unenrollUser($users->id, $role_to_enrol->id);
             $msg = 'Successfully unenrolled';
         }
         catch(\Exception $exception) {
@@ -183,6 +151,14 @@ class HouseUserController extends Controller
      */
     public function destroy(House $houses, User $users)
     {
+        $most_powerful = $users->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
+        $role_to_enrol = Role::where('role','LIKE',$request->role)->first();
+        if (!$role_to_enrol) {
+            return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
+        }
+        if ($most_powerful > $role_to_enrol->id && !$user->is_admin) {        // administrator 
+            return response()->json(['message'=>'No authorization to enrol', 'code'=>203], 203);
+        }
         try {
             $houses->enrolledUsers()->detach($users);
         } catch(\Exception $exception){

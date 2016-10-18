@@ -53,6 +53,20 @@ class UsersSeeder extends Seeder
             'image' => 'https://placeimg.com/50/50/people'
         ]);
 
+        User::create ([
+            'name' =>'Elvin',
+            'firstName' =>'Elvin',
+            'lastName' => 'Ong',
+            'email'=> 'elvinong@thedottsolutions.com',
+            'password' => Hash::make('123456'),
+            'is_admin' => TRUE,
+            'date_of_birth' => '1986-03-29',
+            'last_test_date' => $faker->dateTimeThisYear,
+            'next_test_date' => $faker->dateTimeThisYear,
+            'maxile_level' => 0,
+            'image' =>'http://www.johndoe.pro/img/John_Doe.jpg'
+        ]);
+
         for ($i =0; $i<14; $i++){
             User::create([
                 'name'=>$faker->firstName,
