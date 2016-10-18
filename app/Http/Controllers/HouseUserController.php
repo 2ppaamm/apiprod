@@ -47,17 +47,18 @@ class HouseUserController extends Controller
         }
         $user = Auth::user();
         $date = new DateTime('now');
+        $enrol_user  = User::findorfail($request->user_id);
         $most_powerful = $user->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
         $role_to_enrol = Role::where('role','LIKE',$request->role)->first();
         if (!$role_to_enrol) {
             return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
         }
-        if ($most_powerful < $role_to_enrol->id || $user->is_admin) {        // administrator 
-            $user_id = $request->user_id ? $request->user_id : $user->id; 
-
+        if ($most_powerful > $role_to_enrol->id && !$user->is_admin) {        // administrator 
+            return response()->json(['message'=>'No authorization to enrol', 'code'=>203], 203);
         }
-        if (!$request->user_id) return $this->adminEnrol(Auth::user()->id, $houses, $request->role); // admin self-enrol to another role
-        else return $this->adminEnrol($request->user_id,$houses, $request->role); // admin enrolling others with no mastercode
+        
+        $user_id = $enrol_user ? $enrol_user->id : $user->id; 
+        return $this->adminEnrol($user_id, $houses, $role_to_enrol->id); // admin enrolling others any role
     }
 
     /**
@@ -91,19 +92,10 @@ class HouseUserController extends Controller
      */
     public function adminEnrol($enrol_user, House $houses, $role) {
         $user = Auth::user();
-        $most_powerful = $user->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
-        $role_to_enrol = Role::where('role','LIKE',$role)->first();
-        if (!$role_to_enrol) {
-            return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
-        }
         $date = new DateTime('now');
-        if ($most_powerful < $role_to_enrol->id || $user->is_admin) {        // administrator can do enrol anyone
-            $enrolment = Enrolment::firstOrNew(['user_id'=>$enrol_user, 'role_id'=>$role_to_enrol->id, 'house_id'=>$houses->id]);
-            $enrolment->fill(['start_date'=>$date, 'expiry_date'=>$date->modify('+1 year')])->save();
-            return response()->json(['message'=>'Enrolment successful.', 'code'=>201], 201);
-        } else {
-            return response()->json(['message'=>'Not authorized to enrol.', 'code'=>401], 401);
-        }
+        $enrolment = Enrolment::firstOrNew(['user_id'=>$enrol_user, 'house_id'=>$houses->id, 'role_id'=>$role]);
+        $enrolment->fill(['start_date'=>$date, 'payment_email'=>$user->email,'expiry_date'=>$date->modify('+1 year')])->save();
+        return response()->json(['message'=>'Enrolment successful.', 'code'=>201], 201);
     }
     /**
      * Store a newly created resource in storage.

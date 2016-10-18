@@ -39,7 +39,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token', 'is_admin','pivot','created_at','updated_at'];
+    protected $hidden = ['password', 'remember_token', 'pivot','created_at','updated_at'];
 
     // make dates carbon so that carbon google that out
     protected $dates = ['date_of_birth', 'last_test_date', 'next_test_date'];
