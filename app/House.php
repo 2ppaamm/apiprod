@@ -70,8 +70,7 @@ class House extends Model
     }
 
     public function enrolledStudents(){
-    	return $this->enrolledUsers()
-    		->where('house_role_user.role_id','=',6);
+    	return $this->enrolledUsers()->where('house_role_user.role_id','LIKE','STUDENT');
     }
 
     public function asStudent(){

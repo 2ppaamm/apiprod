@@ -30,7 +30,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $age = date_diff(date_create($user->date_of_birth), date_create('today'))->y;
         $user['highest_scores'] = $user->highest_scores();
-        $test = new \App\Test;
+//        $test = new \App\Test;
         $logs = $user->logs;
 
         $percentCorrect = count($user->myQuestions)>0 ? intval((count($user->myquestions)-count($user->incorrectQuestions))/count($user->myQuestions)*100):0;
@@ -38,7 +38,8 @@ class DashboardController extends Controller
         $roles = \App\Role::select('id','role')->get();
         $courses = \App\Course::with('created_by','houses', 'tracks.skills')->get();
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
-        $dashboard = User::profile($user->id);
+
+return        $dashboard = User::profile($user->id);
 
 //        return House::userTracksResults();
         return response()->json(['message' => 'Request executed successfully', 'user'=>$dashboard, 'houses'=>$houses, 'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'logs'=>$logs, 'correctness'=>$percentCorrect,'code'=>201]);

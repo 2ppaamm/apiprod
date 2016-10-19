@@ -39,7 +39,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token', 'pivot','created_at','updated_at'];
+    protected $hidden = ['password', 'remember_token', 'created_at','updated_at'];
 
     // make dates carbon so that carbon google that out
     protected $dates = ['date_of_birth', 'last_test_date', 'next_test_date'];
@@ -121,7 +121,7 @@ class User extends Model implements AuthenticatableContract,
 
     // maxile logs
     public function fieldMaxile(){
-        return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date')->select('field', 'field_test_date', 'field_maxile')->groupBy('field');
+        return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date')->select('field', 'field_test_date', 'field_maxile')->withTimestamps();
     }
 
     public function skill_user(){
@@ -191,11 +191,11 @@ class User extends Model implements AuthenticatableContract,
             return date_diff(date_create(Auth::user()->date_of_birth), date_create('today'))->y;
     }
 
-    public function scopeProfile($query, $id)
+   public function scopeProfile($query, $id)
     {
-        return $query->whereId($id)->with(['teachingHouses.enrolledStudents.trackResults','enrolledClasses.tracks.trackScore','fieldMaxile','enrolledClasses.created_by','enrolledClasses.asStudent','enrolledClasses.roles','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills',
-            //'expiredClasses.tracks.skills','expiredClasses.activities.classwork',
-            'unansweredQuestions'])->first();
+        return $query->whereId($id)->with(['teachingHouses.enrolledStudents.trackResults','enrolledClasses.tracks.track_maxile','fieldMaxile','enrolledClasses.created_by','enrolledClasses.enrolledStudents','enrolledClasses.roles','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills',
+            //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
+            ])->first();
     }
 
     public function testedTracks(){
