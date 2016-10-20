@@ -9,13 +9,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
 use App\User;
 use Auth;
+use App\Http\Requests\GameScoreRequest;
 
 class UserController extends Controller
 {
     public function __construct(){
         $this->middleware('auth0.jwt');
-        $currentuser =  \App\User::whereId(3)->first();
-                \Auth::login($currentuser);
     }
 
     /**
@@ -25,7 +24,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        return $users = User::with('roles','enrolledClasses','maxile','logs')->get();
+        $user = Auth::user();
+        $user->is_admin;
+        return $user->is_admin ? $users = User::with('enrolledClasses.roles','logs')->get() : response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
 
 //        return response()->json(['data'=>$users], 200);
     }
@@ -36,13 +37,13 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateUserRequest $request)
+/*    public function store(CreateUserRequest $request)
     {
         $user = $request->all();
         return User::create($user);
         return response()->json(['message' => 'User correctly added', 'data'=>$user, 'code'=>201]);
     }
-
+*/
     /**
      * Display the specified resource.
      *
@@ -51,16 +52,10 @@ class UserController extends Controller
      */
     public function show(User $users)
     {
-        //check to see if user has role in the class
-//        dd($users->hasClassRole('Teacher','4'));
-
-        //user's roles in selected class
-  //      return $houseRole = $users->houseRoles()->with(['userHouses'=>function($q) use ($house){
-    //        $q->whereHouseId($house)->groupBy('house_id');
-      //  }])->groupBy('id')->whereHouseId($house)->get();
-
-
-
+        $logon_user = Auth::user();
+        if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to view user','code'=>401], 401);     
+        }
         $users = User::profile($users->id);
         $users['highest_scores'] = $users->highest_scores();
         return $users;
@@ -75,8 +70,14 @@ class UserController extends Controller
      */
     public function update(Request $request, User $users)
     {
+        $logon_user = Auth::user();
+        if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update user', 'code'=>401], 401);     
+        }
+        if ($request->email) {
+            return response()->json(['message' => 'You cannot change the email address of an account', 'data'=>$users, 'code'=>500], 500);
+        } 
         $users->fill($request->all())->save();
-
         return $users;
 
     }
@@ -89,15 +90,22 @@ class UserController extends Controller
      */
     public function destroy(User $users)
     {
+        $logon_user = Auth::user();
+        if (!$logon_user->is_admin){
+            return response()->json(['message' => 'You have no access rights to delete user', 'data'=>$user, 'code'=>500], 500);
+        }
         $users->delete();
         return response()->json(['message'=>'User has been deleted.'], 200);     
     }
 
-    public function game_score(User $users, Request $request)
+    public function game_score(GameScoreRequest $request)
     {
         $user = Auth::user();
-        $request->old_game_level == $user->game_level ? $user->game_level = $request->new_game_level : null;
+        if ($request->old_game_level != $user->game_level){
+            return response()->json(['message'=>'Old game score is incorrect. Cannot update new score', 'code'=>500], 500);
+        }
+        $user->game_level = $request->new_game_level;
         $user->save();
-        return User::find($user->id);
+        return User::profile($user->id);
     }
 }

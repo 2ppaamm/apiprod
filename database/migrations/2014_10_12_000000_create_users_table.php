@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->rememberToken();
             $table->boolean('is_admin');
             $table->decimal('maxile_level', 8,2)->default(0.00);
-            $table->integer('game_level')->nullable();
+            $table->integer('game_level')->default(0);
             $table->date('date_of_birth');
             $table->dateTime('last_test_date')->nullable();
             $table->dateTime('next_test_date')->nullable();
