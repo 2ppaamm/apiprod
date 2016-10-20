@@ -126,9 +126,10 @@ class Test extends Model
     }
 
     public function completeTest($message, $user){
+        $user->game_level += $this->questions()->sum('correct')->save();
         $attempts = $this->attempts($user->id);
         $attempts = $attempts ? $attempts->attempts : 1;
-        $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
+        $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $kudos, 'attempts'=> $attempts + 1]);
         return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),'code'=>206], 206);
     }
 }
