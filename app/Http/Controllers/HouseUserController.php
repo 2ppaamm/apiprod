@@ -50,9 +50,6 @@ class HouseUserController extends Controller
         $enrol_user  = User::findorfail($request->user_id);
         $most_powerful = $user->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
         $role_to_enrol = Role::where('role','LIKE',$request->role)->first();
-        if (!$role_to_enrol) {
-            return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
-        }
         if ($most_powerful > $role_to_enrol->id && !$user->is_admin) {        // administrator 
             return response()->json(['message'=>'No authorization to enrol', 'code'=>203], 203);
         }

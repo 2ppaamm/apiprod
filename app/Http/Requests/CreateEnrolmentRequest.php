@@ -24,9 +24,9 @@ class CreateEnrolmentRequest extends Request
     public function rules()
     {
         return [
-            'role' => 'exists:roles,role',
+            'role' => 'required|exists:roles,role',
             'mastercode'=> 'numeric | min:100',
-            'user_id' =>'exists:users,id'
+            'user_id' =>'required|exists:users,id'
         ];
     }
 
