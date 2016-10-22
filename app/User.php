@@ -198,8 +198,12 @@ class User extends Model implements AuthenticatableContract,
             ])->first();
     }
 
-    public function scopeLeader($query){
-        return $query->orderBy('game_level','desc')->take(100);
+    public function scopeGameleader($query){
+        return $query->orderBy('game_level','desc')->select('game_level', 'last_test_date as leader_since', 'name')->take(100)->get();
+    }
+
+    public function scopeMaxileleader($query){
+        return $query->orderBy('maxile_level','desc')->select('maxile_level', 'last_test_date as leader_since', 'name')->take(100)->get();        
     }
 
     public function testedTracks(){

@@ -32,7 +32,6 @@ class DiagnosticController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-        return User::gameLeader();
 //for testing        return response()->json(['message' => 'Test question', 'questions'=>Question::where('id','>',880)->where('id','<',890)->get(), 'code'=>201]);
 
         $courses = Course::where('course', 'LIKE', '%K to 6 Math%')->lists('id');
