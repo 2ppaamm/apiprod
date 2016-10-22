@@ -32,7 +32,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','firstname', 'lastname', 'email','password','image'];
+    protected $fillable = ['name','firstname', 'lastname', 'email','password','image', 'maxile_level', 'game_level'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -100,7 +100,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function validEnrolment($courseid){
-        return $this->enrolment()->whereIn('house_id', House::whereIn('course_id', $courseid)->lists('id'))->where('expiry_date','>=', new DateTime('today'))->get();
+        return $this->enrolment()->whereRoleId(Role::where('role', 'LIKE', '%Student')->lists('id'))->whereIn('house_id', House::whereIn('course_id', $courseid)->lists('id'))->where('expiry_date','>=', new DateTime('today'))->get();
     }
 
     public function teachingHouses(){
@@ -192,10 +192,14 @@ class User extends Model implements AuthenticatableContract,
     }
 
    public function scopeProfile($query, $id)
-    {
-        return $query->whereId($id)->with(['teachingHouses.enrolledStudents.trackResults','enrolledClasses.tracks.track_maxile','fieldMaxile','enrolledClasses.created_by','enrolledClasses.enrolledStudents','enrolledClasses.roles','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills',
+    {        
+        return $query->whereId($id)->with(['teachingHouses.enrolledStudents.trackResults','enrolledClasses.tracks.track_maxile','fieldMaxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills',
             //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
             ])->first();
+    }
+
+    public function scopeLeader($query){
+        return $query->orderBy('game_level','desc')->take(100);
     }
 
     public function testedTracks(){
@@ -232,7 +236,6 @@ class User extends Model implements AuthenticatableContract,
         $user_maxile = number_format(max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level), 2,'.','');
 
 //        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'): $this->testedTracks()->avg('track_maxile');
-        $this->game_level += $test->questions()->sum('correct');  // add kudos
         $this->maxile_level = $user_maxile;
         $this->save();
         return $user_maxile;
