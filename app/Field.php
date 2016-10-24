@@ -16,11 +16,19 @@ class Field extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function users(){
+        return $this->belongsToMany(User::class)->withPivot('field_maxile', 'field_test_date', 'month_achieved')->withTimestamps();
+    }
+
     public function status() {
         return $this->belongsTo(Status::class);
     }
 
     public function tracks(){
         return $this->hasMany(Track::class);
+    }
+
+    public function user_maxile(){
+        return $this->hasManyThrough(TrackUser::class, Track::class)->select('track_maxile', 'track_passed', 'track_test_date')->where('track_maxile', '>', 0);
     }
 }

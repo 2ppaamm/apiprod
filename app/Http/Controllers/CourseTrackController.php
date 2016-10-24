@@ -26,7 +26,7 @@ class CourseTrackController extends Controller
     public function index(Course $courses)
     {
         $tracks = $courses->tracks()->with('level')->with('skills')->with('unit')
-            ->orderBy('pivot_track_order')
+            ->orderBy('track_order')
             ->get();
 
         return response()->json(['message'=>'Course tracks retrieved','code'=>201, 'tracks'=>$tracks],201);

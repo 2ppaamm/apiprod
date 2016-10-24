@@ -75,7 +75,7 @@ class Track extends Model
     }
 
     public function track_maxile(){
-        return $this->users()->whereUserId(Auth::user()->id)->select('track_maxile');
+        return $this->users()->whereUserId(Auth::user()->id)->select('track_maxile', 'track_test_date', 'track_passed');
     }
 
     public function allSkillsPassed($userid, $max_track_maxile){

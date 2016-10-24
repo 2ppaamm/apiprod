@@ -114,9 +114,8 @@ class DiagnosticController extends Controller
             // calculate and saves maxile at 3 levels: skill, track and user
             $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
-            //return count($test->uncompletedQuestions);
+            $user->storefieldmaxile($track_maxile, $track->field_id);
         }
-//        $user_maxile = $user->calculateUserMaxile($test);             
         return $test->fieldQuestions($user, $test);
     }
     /**

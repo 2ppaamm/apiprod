@@ -32,11 +32,11 @@ class House extends Model
     }
 
     public function tracks(){
-    	return $this->belongsToMany(Track::class)->withPivot('track_order','start_date', 'end_date')->orderBy('pivot_track_order');
+    	return $this->belongsToMany(Track::class)->withPivot('track_order','start_date', 'end_date')->orderBy('track_order');
     }
 
     public function maxTrack($house){
-        return $this->belongsToMany(Track::class)->withPivot('track_order','start_date', 'end_date')->orderBy('pivot_track_order','desc')->select('track_order')->whereHouseId($house)->first();
+        return $this->belongsToMany(Track::class)->withPivot('track_order','start_date', 'end_date')->orderBy('track_order','desc')->select('track_order')->whereHouseId($house)->first();
     }
 
     public function created_by(){
@@ -46,7 +46,7 @@ class House extends Model
     public function enrolledUsers(){    	
         return $this->belongsToMany(User::class, 'house_role_user')->withPivot('role_id','mastercode', 'house_maxile', 'payment_email','purchaser_id')->with(['roles'=>function($query){
     			$query->select('role', 'role_id')->groupBy('role');
-    	}])->withTimestamps();
+    	}])->groupBy('user_id')->withTimestamps();
     }
 
     public function enrolment(){

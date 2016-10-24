@@ -31,7 +31,7 @@ class HouseTable extends Migration
         Schema::create('house_role_user', function (Blueprint $table) {
             $table->integer('house_id')->unsigned()->index()->default(1);
             $table->foreign('house_id')->references('id')->on('houses')->onDelete('cascade');
-            $table->integer('role_id')->unsigned()->index();
+            $table->integer('role_id')->unsigned()->default(6);
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -39,8 +39,8 @@ class HouseTable extends Migration
             $table->string('payment_email')->nullable();
             $table->integer('purchaser_id')->unsigned()->nullable();
             $table->foreign('purchaser_id')->references('id')->on('users')->onDelete('cascade');
-            $table->date('start_date')->nullable();
-            $table->date('expiry_date')->nullable();
+            $table->date('start_date')->default(date('Y-m-d'));
+            $table->date('expiry_date')->default(date('Y-m-d', strtotime('+1 year')));
             $table->integer('places_alloted')->default(0);            
             $table->timestamps();
             $table->primary(['house_id','role_id', 'user_id']);

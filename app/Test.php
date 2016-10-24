@@ -90,10 +90,10 @@ class Test extends Model
             } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get level
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks; // test failed tracks, add 
-                if (count($tracks_to_test) < 3) {  // test 3 tracks a day
+                if (count($tracks_to_test) < 2) {  // test 3 tracks a day
                     $next_level = Level::where('level','>',$level->level)->first();
-                    $tracks_to_test->merge($next_level->tracks()->take(3-count($tracks_to_test))->get());
-                } else $tracks_to_test = $tracks_to_test->take(3);
+                    $tracks_to_test->merge($next_level->tracks()->take(2-count($tracks_to_test))->get());
+                } else $tracks_to_test = $tracks_to_test->take(2);
 
                 // non diagnostic, log track_user
                 foreach ($tracks_to_test as $track){
@@ -129,6 +129,7 @@ class Test extends Model
         $attempts = $this->attempts($user->id);
         $attempts = $attempts ? $attempts->attempts : 1;
         $maxile = $user->calculateUserMaxile($this);
+        $user->enrolclass($maxile);
         $user->game_level = $user->game_level + $this->questions()->sum('correct');  // add kudos
         $user->save();
         $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);

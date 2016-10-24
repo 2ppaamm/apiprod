@@ -75,7 +75,7 @@ class CourseController extends Controller
                 ->select('description','id','track','level_id')->with('level')
                 ->with(['skills' => function ($query) {
                   $query->select('track_id','skill')->orderBy('track_order');}])
-                ->orderBy('pivot_track_order'); 
+                ->orderBy('track_order'); 
             }])->find($id);
 
         if (!$course) {

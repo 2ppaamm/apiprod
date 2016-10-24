@@ -77,9 +77,29 @@ class User extends Model implements AuthenticatableContract,
         return $this->hasMany(Skill::class);              //originator of skills
     }
 
+    public function fields(){
+        return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date', 'month_achieved')->withTimestamps();
+    }
+
+    public function storefieldmaxile($maxile, $field_id){
+        $field_user = $this->fields()->whereFieldId($field_id)->whereMonthAchieved(date('Ym', time()))->select('field_maxile')->first();
+        $old_maxile = $field_user ? $field_user->field_maxile : 0;
+
+        return ($old_maxile < $maxile) ? 
+            $this->fields()->sync([$field_id => ['field_maxile'=>$maxile, 'field_test_date'=> new DateTime('now'), 'month_achieved'=>date('Ym', time())]], false) : "maxile achieved lower than before";
+    }
+
+    public function getmyresults(){
+        return $this->with('fields.user_maxile')->get();
+    }
+
+    public function getfieldmaxile(){
+        return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date', 'month_achieved')->withTimestamps()->select('field_maxile', 'field_test_date','month_achieved','field');
+    }
+
     // enrolment
     public function enrolledClasses(){
-        return $this->enrolment()->groupBy('house_id')
+        return $this->enrolment()->where('expiry_date','>=',date("Y-m-d"))->groupBy('house_id')
         ->where('end_date', '>=', date("Y-m-d"))
         ->orderBy('end_date','asc');
     }
@@ -97,6 +117,12 @@ class User extends Model implements AuthenticatableContract,
 
     public function enrolment(){
         return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'house_maxile', 'payment_email','purchaser_id')->withTimestamps();
+    }
+
+    public function enrolclass($user_maxile){
+        $houses = House::whereIn('course_id',Course::where('start_maxile_score','<=' ,round($user_maxile/100)*100)->lists('id'))->lists('id')->all();
+        $this->enrolment()->sync($houses,false);
+        return 'enrolment created';
     }
 
     public function validEnrolment($courseid){
@@ -193,7 +219,7 @@ class User extends Model implements AuthenticatableContract,
 
    public function scopeProfile($query, $id)
     {        
-        return $query->whereId($id)->with(['teachingHouses.enrolledStudents.trackResults','enrolledClasses.tracks.track_maxile','fieldMaxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills',
+        return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','teachingHouses.enrolledUsers','enrolledClasses.tracks.track_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills', 'enrolledClasses.tracks.skills.skill_passed'
             //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
             ])->first();
     }
@@ -237,11 +263,15 @@ class User extends Model implements AuthenticatableContract,
     public function calculateUserMaxile($test){
 //        if ($this->id == 1) return $user->maxile_level;
         $highest_level_passed = Level::whereIn('id', $this->tracksPassed()->lists('level_id'))->orderBy('level', 'desc')->first();
-        $user_maxile = number_format(max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level), 2,'.','');
+        $user_maxile = $highest_level_passed ? number_format(max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level), 2,'.','') : 0;
 
 //        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'): $this->testedTracks()->avg('track_maxile');
         $this->maxile_level = $user_maxile;
         $this->save();
         return $user_maxile;
+    }
+
+    public function accuracy(){
+        return $this->myQuestions()->sum('correct')."/".$this->myQuestions()->sum('question_answered');
     }
 }

@@ -33,18 +33,14 @@ class DashboardController extends Controller
 //        $test = new \App\Test;
         $logs = $user->logs;
 
-        $percentCorrect = count($user->myQuestions)>0 ? intval((count($user->myquestions)-count($user->incorrectQuestions))/count($user->myQuestions)*100):0;
         $statuses = \App\Status::select('id','status','description')->get();
         $roles = \App\Role::select('id','role')->get();
         $courses = \App\Course::with('created_by','houses', 'tracks.skills')->get();
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
-        $game_leaders = User::gameleader();
 
         $dashboard = User::profile($user->id);
-
         
-//        return House::userTracksResults();
-        return response()->json(['message' => 'Request executed successfully', 'user'=>$dashboard, 'game_leaders'=>User::gameleader(), 'maxile_leaders'=>User::maxileleader(),'houses'=>$houses, 'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'logs'=>$logs, 'correctness'=>$percentCorrect,'code'=>201]);
+        return response()->json(['message' => 'Request executed successfully', 'user'=>$dashboard, 'game_leaders'=>User::gameleader(), 'maxile_leaders'=>User::maxileleader(),'houses'=>$houses, 'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'logs'=>$logs, 'correctness'=>$user->accuracy(), 'my_results'=>$user->getfieldmaxile(), 'code'=>201]);
 
 	}
 }

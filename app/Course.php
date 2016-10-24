@@ -9,7 +9,7 @@ class Course extends Model
     use RecordLog;
     
     protected $hidden = ['user_id', 'created_at', 'updated_at'];
-    protected $fillable = ['course', 'description', 'level_id','prereq_course_id','image', 'status_id','user_id'];
+    protected $fillable = ['course', 'description', 'level_id','prereq_course_id','image', 'status_id','user_id', 'start_maxile_score', 'end_maxile_score'];
 
     public function houses(){
     	return $this->hasMany(House::class);
@@ -36,7 +36,7 @@ class Course extends Model
     }
 
     public function tracks(){
-    	return $this->belongsToMany(Track::class)->withPivot(['track_order','number_of', 'unit_id'])->withTimestamps()->orderBy('pivot_track_order');
+    	return $this->belongsToMany(Track::class)->withPivot(['track_order','number_of', 'unit_id'])->withTimestamps()->orderBy('track_order');
     }
 
     public function unit(){
@@ -44,7 +44,7 @@ class Course extends Model
     }
 
     public function maxTrack($course){
-        return $this->belongsToMany(Track::class)->withPivot('track_order','number_of', 'unit_id')->orderBy('pivot_track_order','desc')->select('track_order')->whereCourseId($course)->first();
+        return $this->belongsToMany(Track::class)->withPivot('track_order','number_of', 'unit_id')->orderBy('track_order','desc')->select('track_order')->whereCourseId($course)->first();
     }
 
 }

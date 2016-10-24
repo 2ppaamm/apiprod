@@ -19,7 +19,8 @@ class TrackUser extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->decimal('field_maxile')->default(0);
             $table->dateTime('field_test_date')->nullable();
-            $table->primary(['field_id','user_id']);
+            $table->integer('month_achieved')->nullable();
+            $table->primary(['field_id','user_id','month_achieved']);
             $table->timestamps();
         });
         Schema::create('track_user', function (Blueprint $table) {
