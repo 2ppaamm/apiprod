@@ -9,8 +9,6 @@ use DateTime;
 
 class Question extends Model
 {
-    use RecordLog;
-
 //    protected static $recordEvents = ['created'];    overriding what is to be logged
     
     protected $hidden = ['user_id', 'created_at', 'updated_at','pivot'];

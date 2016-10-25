@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class ErrorLog extends Model
 {
-    use RecordLog;
-
     /**
      * The database table used by the model.
      *

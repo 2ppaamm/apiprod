@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 class Difficulty extends Model
 {
-    use RecordLog;
-
     protected $hidden = ['user_id', 'created_at', 'updated_at'];
     protected $fillable = ['difficulty', 'description', 'short_description',
         'image', 'status'];

@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Field extends Model
 {
-
-    use RecordLog;
-    
     protected $hidden = ['user_id', 'created_at', 'updated_at','pivot'];
     protected $fillable = ['field', 'description', 'image', 'status_id'];
 

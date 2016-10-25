@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    use RecordLog;
-    
     protected $hidden = ['user_id', 'created_at', 'updated_at'];
     protected $fillable = ['course', 'description', 'level_id','prereq_course_id','image', 'status_id','user_id', 'start_maxile_score', 'end_maxile_score'];
 

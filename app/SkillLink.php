@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class SkillLink extends Model
 {
-    use RecordLog;
-
     /**
      * The database table used by the model.
      *

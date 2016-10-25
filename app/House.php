@@ -8,8 +8,6 @@ use Auth;
 
 class House extends Model
 {
-    use RecordLog;
-
     protected $fillable = ['house', 'description', 'user_id','course_id','image', 'status_id', 'start_date', 'end_date'];
 
     /**

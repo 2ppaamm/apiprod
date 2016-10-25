@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class FieldUser extends Model
 {
+    use RecordLog;
+    
     protected $table = 'field_user';
     /**
      * The attributes that are mass assignable.
