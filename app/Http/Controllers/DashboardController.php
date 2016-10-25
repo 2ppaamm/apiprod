@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
         $dashboard = User::profile($user->id);
         
-        return response()->json(['message' => 'Request executed successfully', 'user'=>$dashboard, 'game_leaders'=>User::gameleader(), 'maxile_leaders'=>User::maxileleader(),'houses'=>$houses, 'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'logs'=>$logs, 'correctness'=>$user->accuracy(), 'my_results'=>$user->getfieldmaxile(), 'code'=>201]);
+        return response()->json(['message' => 'Request executed successfully', 'user'=>$dashboard, 'game_leaders'=>User::gameleader(), 'maxile_leaders'=>User::maxileleader(),'houses'=>$houses, 'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'logs'=>$logs, 'correctness'=>$user->accuracy(), 'my_results'=>$user->getfieldmaxile()->get(), 'code'=>201]);
 
 	}
 }
