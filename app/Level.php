@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 class Level extends Model
 {
+    use RecordLog;
+    
     protected $hidden = ['user_id', 'created_at', 'updated_at'];
     protected $fillable = ['level', 'description', 'age', 'start_maxile_level','end_maxile_level',
         'image', 'status_id'];

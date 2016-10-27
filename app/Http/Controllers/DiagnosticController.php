@@ -17,6 +17,7 @@ use App\Course;
 use App\Enrolment;
 use App\Role;
 use App\Http\Requests\StoreMasterCodeRequest;
+use Carbon\Carbon;
 
 class DiagnosticController extends Controller
 {
@@ -69,6 +70,7 @@ class DiagnosticController extends Controller
             $check_mastercode->fill(['mastercode'=>$mastercode])->save();
             $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
             $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
+            $user->date_of_birth = Carbon::createFromFormat('m/d/Y',$request->date_of_birth);        
             $user->update($request->all());
         } else return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
         return $this->index();
@@ -112,7 +114,7 @@ class DiagnosticController extends Controller
             $answered = $question->answered($user, $correctness, $test);
             $track = $question->skill->tracks->intersect($user->testedTracks()->orderBy('updated_at','desc')->get())->first();
             // calculate and saves maxile at 3 levels: skill, track and user
-            $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
+return            $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
             $user->storefieldmaxile($track_maxile, $track->field_id);
         }

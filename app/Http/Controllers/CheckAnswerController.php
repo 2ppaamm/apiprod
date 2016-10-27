@@ -28,11 +28,11 @@ class CheckAnswerController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-    	$user = Auth::user();
+       	$user = User::find(1);
       	$questions = null;
     	$test = count($user->currenttest)<1 ?  $user->tests()->create(['test'=>$user->name."'s QA test",'description'=> $user->name."'s QA test", 'diagnostic'=>FALSE]) : $user->currenttest[0];
 
-        $questions = count($test->questions) < 1 ? Question::where('id','>',927)->take(500)->get():0;
+        $questions = count($test->questions) < 1 ? Question::where('id','>',1)->take(1000)->get():0;
 	    if ($questions) {
             foreach($questions as $question) {
                 $question->assigned($user, $test);
@@ -47,7 +47,7 @@ class CheckAnswerController extends Controller
     }
 
     public function answer(CreateQuizAnswersRequest $request){
-    	$user = Auth::user();
+    	$user = User::find(1);
         $old_maxile = $user->maxile_level;
     	$test = \App\Test::find($request->test);
     	if (!$test){

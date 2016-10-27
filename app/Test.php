@@ -88,7 +88,7 @@ class Test extends Model
                 }
 
             } elseif (!count($this->questions)) {           // not diagnostic, new test
-                $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get level
+                $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks; // test failed tracks, add 
                 if (count($tracks_to_test) < 2) {  // test 3 tracks a day
                     $next_level = Level::where('level','>',$level->level)->first();
@@ -98,13 +98,18 @@ class Test extends Model
                 // non diagnostic, log track_user
                 foreach ($tracks_to_test as $track){
                     $track->users()->sync([$user->id], false);          //log tracks for user
-                    foreach ($track->skills->diff($user->skill_user()->whereSkillPassed(true)->get()) as $skill) {               // only test unpassed skills
-                        $difficulty_passed = $skill->users()->whereUserId($user->id)->first() ? $skill->users()->whereUserId($user->id)->select('difficulty_passed')->first()->difficulty_passed : 0;
+                    $skills_to_test = $track->skills->diff($user->skill_user()->whereSkillPassed(true));
+                    $new_questions = collect();
+return Question::whereSkillId($skills_to_test[1]->id)->where('difficulty_id','>', 0)->whereNotIn('id', $user->myQuestions()->lists('question_id'))->take(5)->union($new_questions);
+                    $n = 0;
+                    while (count($new_questions) < 5 && $n < count($skills_to_test)){
+                        $difficulty_passed = $skills_to_test[$n]->users()->whereUserId($user->id)->first() ? $skills_to_test[$n]->users()->whereUserId($user->id)->select('difficulty_passed')->first()->difficulty_passed : 0;
                         //find 5 questions in the track that are not already fielded and higher difficulty if some difficulty already passed
-                        $new_questions = Question::whereIn('skill_id', $track->skills->lists('id'))->where('difficulty_id','>', $difficulty_passed)->whereNotIn('id', $user->myQuestions()->lists('question_id'))->take(5)->get();  
-                        foreach ($new_questions as $new_question){
-                            $new_question ? $new_question->assigned($user, $this) : null;
-                        }           
+                        $new_questions->union(Question::whereSkillId($skills_to_test[$n]->id)->where('difficulty_id','>', $difficulty_passed)->whereNotIn('id', $user->myQuestions()->lists('question_id'))->take(5)->lists('id'));  
+                        $n++;           
+                    }
+                    foreach ($new_questions as $new_question){
+                        $new_question ? $new_question->assigned($user, $this) : null;
                     }
                 }
             }
@@ -133,6 +138,6 @@ class Test extends Model
         $user->game_level = $user->game_level + $this->questions()->sum('correct');  // add kudos
         $user->save();
         $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
-        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),'code'=>206], 206);
+        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),''=>$user->game_level, 'code'=>206], 206);
     }
 }
