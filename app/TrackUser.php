@@ -9,6 +9,7 @@ class TrackUser extends Model
     use RecordLog;
 
     protected $table = 'track_user';
+    protected $primary_key = 'track_id';
     /**
      * The attributes that are mass assignable.
      *

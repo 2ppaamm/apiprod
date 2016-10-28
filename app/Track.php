@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use DateTime;
+use App\SkillUser;
 
 class Track extends Model
 {
@@ -89,22 +90,14 @@ class Track extends Model
         return $allpassed;
     }
 
-    public function storeMaxile($user, $max_track_maxile){
-        $track_maxile = 0;
-        $allpassed = TRUE;
-        foreach ($this->skills as $skill) {
-            $skill_info = $skill->users()->whereUserId($user->id)->select('skill_maxile', 'skill_passed')->first();
-            if ($skill_info){
-                $track_maxile += $skill_info->skill_maxile;
-                if ($skill_info->skill_passed) $allpassed = FALSE;                
-            } else $allpassed = FALSE;
-        }
-        $record = [
+    public function storeMaxile($user){
+        $track_passed = (count($user->skill_user()->whereSkillPassed(TRUE)->get()) >= count($this->skills)) ? TRUE:FALSE;
+        $track_maxile = !$track_passed ? SkillUser::whereUserId($user->id)->whereIn('skill_id', $this->skills()->lists('id'))->sum('skill_maxile')/count($this->skills) : $this->level->end_maxile_level;
+        $this->users()->sync([$user->id =>['track_id'=>$this->id,
             'track_test_date' => new DateTime('now'),
-            'track_passed' => $allpassed,
-            'track_maxile' => max($max_track_maxile, $track_maxile)];
-        $this->users()->updateExistingPivot($user, $record);
-        return $allpassed;        
+            'track_passed' => $track_passed,
+            'track_maxile' => min($this->level->start_maxile_level, $track_maxile)]], false);
+        return $track_maxile;        
     }
 
     public function calculateMaxile($user, $diagnostic){

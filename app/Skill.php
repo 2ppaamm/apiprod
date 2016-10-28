@@ -51,9 +51,9 @@ class Skill extends Model
         return $this->users()->whereUserId($userid)->select('difficulty_passed')->first()->difficulty_passed;
     }
 
-    public function skill_maxile($userid){
-        return $this->users()->whereUserId($userid)->select('skill_maxile')->first()->skill_maxile;
-    }
+//    public function skill_maxile($userid){
+  //      return $this->users()->whereUserId($userid)->select('skill_maxile')->first()->skill_maxile;
+   // }
 
     public function skill_passed(){
         return $this->users()->whereUserId(Auth::user()->id)->select('skill_passed', 'skill_test_date', 'difficulty_passed');
@@ -88,22 +88,39 @@ class Skill extends Model
         $difficulty_passed = $diagnostic ? $correct ? $difficulty : 0 : $noOfPasses >= Config::get('app.number_to_pass') ? $difficulty_passed < $difficulty ? $difficulty : $difficulty_passed : $difficulty_passed;
         $skill_passed = $difficulty_passed < Config::get('app.difficulty_levels') ? FALSE : TRUE;
         // calculate skill_maxile
-        $skill_maxile = max($difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0, $track->level->start_maxile_level);
-        return $this->pass($user->id, $skill_passed, $difficulty_passed, $skill_maxile, $noOfPasses, $noOfFails); 
-    }
-
-    public function pass($userid, $skill_passed, $difficulty_passed, $maxile, $noOfPasses, $noOfFails){
-        $skillofuser = new Skill::class;
-        $skillofuser= [
+        $skill_maxile = $difficulty_passed ? $skill_passed ? $track->level->end_maxile_level:$track->level->start_maxile_level+(100/Config::get('app.difficulty_levels')*$difficulty_passed) : 0; 
+        $record = [
             'skill_test_date' => new DateTime('now'),
             'skill_passed' => $skill_passed,
             'difficulty_passed' => $difficulty_passed,
-            'skill_maxile' => $maxile,
+            'skill_maxile' => max($skill_maxile, $track->level->start_maxile_level),
             'noOfTries'=> $noOfTries,
             'noOfPasses'=>max(0,$noOfPasses),
-            'noOfFails'=> max(0,$noOfFails),
-            'user_id'=$userid,
-            'skill_id'=>$this->id]->save();
-        return $this->users()->select('skill_maxile')->first();
+            'noOfFails'=> max(0,$noOfFails)];
+        $this->users()->updateExistingPivot($userid, $record);              //update record
+        return $skill_maxile;
+    }
+
+    public function forcePass($userid, $track) {
+        $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
+
+        if ($userSkill) {
+            $noOfTries = $userSkill->noOfTries + 1;
+            $noOfPasses = $userSkill->noOfPasses;
+            $noOfFails = $userSkill->noOfFails;
+            $skill_passed = $userSkill->skill_passed;
+        } else {
+            $noOfFails = $noOfPasses = $noOfTries = $difficulty_passed =$skill_passed =0;
+        }
+
+        $record =[
+            'skill_test_date' => new DateTime('now'),
+            'skill_passed' => TRUE,
+            'difficulty_passed' => Config::get('app.difficulty_levels'),
+            'skill_maxile' => max($track->level->end_maxile_level),
+            'noOfTries'=> $noOfTries,
+            'noOfPasses'=>max(0,$noOfPasses),
+            'noOfFails'=> max(0,$noOfFails)];
+        return $this->users()->updateExistingPivot($userid, $record);
     }
 }
