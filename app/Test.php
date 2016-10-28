@@ -89,27 +89,31 @@ class Test extends Model
 
             } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
-                $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks; // test failed tracks, add 
+                $new_questions = collect([]);
+                $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
                 if (count($tracks_to_test) < 2) {  // test 3 tracks a day
                     $next_level = Level::where('level','>',$level->level)->first();
                     $tracks_to_test->merge($next_level->tracks()->take(2-count($tracks_to_test))->get());
                 } else $tracks_to_test = $tracks_to_test->take(2);
-
                 // non diagnostic, log track_user
                 foreach ($tracks_to_test as $track){
                     $track->users()->sync([$user->id], false);          //log tracks for user
-                    $skills_to_test = $track->skills->diff($user->skill_user()->whereSkillPassed(true));
-                    $new_questions = collect();
-return Question::whereSkillId($skills_to_test[1]->id)->where('difficulty_id','>', 0)->whereNotIn('id', $user->myQuestions()->lists('question_id'))->take(5)->union($new_questions);
+                    $skills_to_test = $track->skills->intersect($user->skill_user()->whereSkillPassed(FALSE)->get());
                     $n = 0;
-                    while (count($new_questions) < 5 && $n < count($skills_to_test)){
+                    while (count($new_questions) < 10 && $n < count($skills_to_test)){
                         $difficulty_passed = $skills_to_test[$n]->users()->whereUserId($user->id)->first() ? $skills_to_test[$n]->users()->whereUserId($user->id)->select('difficulty_passed')->first()->difficulty_passed : 0;
                         //find 5 questions in the track that are not already fielded and higher difficulty if some difficulty already passed
-                        $new_questions->union(Question::whereSkillId($skills_to_test[$n]->id)->where('difficulty_id','>', $difficulty_passed)->whereNotIn('id', $user->myQuestions()->lists('question_id'))->take(5)->lists('id'));  
+                        $skill_questions = Question::whereSkillId($skills_to_test[$n]->id)->where('difficulty_id','>', $difficulty_passed)->whereNotIn('id', $user->myQuestions()->lists('question_id'))->take(5)->get();
+                        $new_questions = $skill_questions ? $skill_questions->merge($new_questions) : $skill_to_test[$n]->pass();
                         $n++;           
                     }
-                    foreach ($new_questions as $new_question){
-                        $new_question ? $new_question->assigned($user, $this) : null;
+                    if (!$new_questions) {
+                        return $this->completeTest($message, $user);
+
+                    } else {
+                        foreach ($new_questions as $new_question){
+                            $new_question ? $new_question->assigned($user, $this) : null;
+                        }                        
                     }
                 }
             }

@@ -114,7 +114,7 @@ class DiagnosticController extends Controller
             $answered = $question->answered($user, $correctness, $test);
             $track = $question->skill->tracks->intersect($user->testedTracks()->orderBy('updated_at','desc')->get())->first();
             // calculate and saves maxile at 3 levels: skill, track and user
-return            $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
+            $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
             $user->storefieldmaxile($track_maxile, $track->field_id);
         }
