@@ -20,6 +20,7 @@ class LoadController extends Controller
     {
         $currentuser =  \App\User::whereId(3)->first();
         Auth::login($currentuser);
+        $this->loadusers();
         $this->loadlevels();
         $this->loadcourses();
         $this->loadtracks();
@@ -29,7 +30,16 @@ class LoadController extends Controller
         $this->loadquestions();
 //        $this->loadmastercodes();
 //        $this->loadtests();
-        return "all uploaded is done and ok";
+        return "all uploaded";
+    }
+
+    public function loadusers(){
+        Excel::selectSheets('users')->load('public/questions.xlsx', function ($reader) {
+            $users = $reader->all();
+            foreach ($users as $user) {
+                \App\User::create($user->toArray());
+            }
+        });    
     }
 
     public function loadquestions ()
