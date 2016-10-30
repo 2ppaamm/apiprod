@@ -10,7 +10,7 @@ return array(
     |
     */
 
-     'domain'        => 'allgiftedllc.au.auth0.com',
+     'domain'        => 'pamelalim.auth0.com',
     /*
     |--------------------------------------------------------------------------
     |   Your APP id
@@ -19,7 +19,7 @@ return array(
     |
     */
 
-     'client_id'     => 'bs3jSKz2Ewrye8dD2qRVrD0Tra2tOqHC',
+     'client_id'     => 'eVJv6UFM9GVdukBWiURczRCxmb6iaUYG',
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return array(
     |   As set in the auth0 administration page
     |
     */
-     'client_secret' => 'qb0mNnZVLMt1Q8mxVhxdTQDpx1FAYkeg3AsaztRI89IcqUgZoyOsNxQ3-jhnpNbb',
+     'client_secret' => '5KuhcAgVdBEaaa6SjwEapxoDg13DGYRoDYyLE9xX59A6YUUdqn9a6Hz0zwQCNdfa',
 
 
    /*
@@ -63,7 +63,7 @@ return array(
     |   This is used to verify the decoded tokens when using RS256
     |
     */
-     'authorized_issuers'  => [ 'https://allgiftedllc.au.auth0.com/' ]
+     'authorized_issuers'  => [ 'https://pamelalim.auth0.com/' ]
     /*
     |--------------------------------------------------------------------------
     |   The authorized token issuers
