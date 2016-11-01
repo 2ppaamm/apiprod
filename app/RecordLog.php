@@ -27,7 +27,7 @@ trait RecordLog{
 
     protected function getLogName($model, $action) {
     	$name = strtolower((new ReflectionClass($model))->getShortName());
-    	return "{$name} was {$action} {$model->description} {$model->maxile_level} {$model->game_level}";
+    	return "{$name}:{$model->description} was {$action}  scores:{$model->maxile_level} {$model->game_level}";
     }
 
     protected static function getModelEvents(){
