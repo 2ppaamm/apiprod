@@ -147,6 +147,6 @@ class Test extends Model
         $user->game_level = $user->game_level + $this->questions()->sum('correct');  // add kudos
         $user->save();
         $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
-        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),''=>$user->game_level, 'code'=>206], 206);
+        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),'kudos'=>$user->game_level, 'code'=>206], 206);
     }
 }

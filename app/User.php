@@ -268,6 +268,7 @@ class User extends Model implements AuthenticatableContract,
 
 //        $user_maxile = $test->diagnostic ? $this->testedTracks()->whereIn('track_id',$highest_diagnostic_level_tested->tracks()->lists('id'))->avg('track_maxile'): $this->testedTracks()->avg('track_maxile');
         $this->maxile_level = $user_maxile;
+//        $this->game_level = $this->game_level + $test->questions()->sum('correct');
         $this->save();
         return $user_maxile;
     }
