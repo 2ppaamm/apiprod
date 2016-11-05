@@ -101,7 +101,7 @@ class Skill extends Model
         return $skill_maxile;
     }
 
-    public function forcePass($userid, $track) {
+    public function forcePass($userid, $difficulty_passed, Track $track) {
         $userSkill= $this->users()->whereUserId($userid)->select('noOfPasses', 'noOfTries', 'difficulty_passed','noOfFails','skill_maxile','skill_passed')->first();
 
         if ($userSkill) {
@@ -117,7 +117,7 @@ class Skill extends Model
             'skill_test_date' => new DateTime('now'),
             'skill_passed' => TRUE,
             'difficulty_passed' => Config::get('app.difficulty_levels'),
-            'skill_maxile' => max($track->level->end_maxile_level),
+            'skill_maxile' => max($userSkill->skill_maxile, $track->level->end_maxile_level),
             'noOfTries'=> $noOfTries,
             'noOfPasses'=>max(0,$noOfPasses),
             'noOfFails'=> max(0,$noOfFails)];

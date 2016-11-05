@@ -96,7 +96,9 @@ class Test extends Model
                 }
                 $i = 0;
                 while (count($new_questions) < 21 && $i < count($tracks_to_test)) {
-    //                    $track->users()->sync([$user->id], false);          //log tracks for user
+                    $tracks_to_test[$i]->users()->sync([$user->id], false);          //log tracks for user
+                    $skills_to_test = $tracks_to_test[$i]->skills()->lists('id')->toArray();               
+                    $user->skill_user()->sync($skills_to_test, false);
                     $skills_to_test = $tracks_to_test[$i]->skills->intersect($user->skill_user()->whereSkillPassed(FALSE)->get());
                     $n = 0;
                     while (count($new_questions) < 20 && $n < count($skills_to_test)){
@@ -108,7 +110,7 @@ class Test extends Model
                         if (count($skill_questions)){
                             $new_questions = $skill_questions->merge($new_questions);
                         } else {
-                            $skill_user = $skills_to_test[$n]->forcePass($user->id, $difficulty_passed+1, $track);
+                            $skill_user = $skills_to_test[$n]->forcePass($user->id, $difficulty_passed+1, $tracks_to_test[$i]);
                         }
                         $n++;           
                     }

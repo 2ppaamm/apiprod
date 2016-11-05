@@ -36,7 +36,7 @@ class HouseTable extends Migration
             $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('house_maxile')->default(0);
-            $table->string('payment_email')->nullable();
+            $table->string('payment_email')->nullable()->default('info.all-gifted@gmail.com');
             $table->integer('purchaser_id')->unsigned()->nullable();
             $table->foreign('purchaser_id')->references('id')->on('users')->onDelete('cascade');
             $table->date('start_date')->default(date('Y-m-d'));
