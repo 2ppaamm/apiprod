@@ -9,6 +9,7 @@ use DateTime;
 
 class Question extends Model
 {
+    use RecordLog;    
 //    protected static $recordEvents = ['created'];    overriding what is to be logged
     
     protected $hidden = ['user_id', 'created_at', 'updated_at','pivot'];
@@ -55,7 +56,7 @@ class Question extends Model
      */
     public function assigned($user, $test){
         $this->skill->users()->sync([$user->id], false);
-        $this->users()->sync([$user->id =>['test_id'=>$test->id]], false);
+        $this->tests()->sync([$test->id =>['user_id'=>$user->id]], false);
         return $test;
     }
 

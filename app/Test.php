@@ -60,7 +60,7 @@ class Test extends Model
     public function fieldQuestions($user){
         $level = null;
         $questions = null;
-        $message = '';        
+        $message = '';     
         if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
@@ -90,7 +90,7 @@ class Test extends Model
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
                 $new_questions = collect([]);
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
-                if (!count($tracks_to_test)) {  
+                if (count($tracks_to_test) < 3) {  
                     $next_level = Level::where('level','>',$level->level)->first();
                     $tracks_to_test = $tracks_to_test->merge($next_level->tracks()->get());
                 }
