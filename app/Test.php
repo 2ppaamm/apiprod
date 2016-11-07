@@ -88,7 +88,9 @@ class Test extends Model
                 }
             } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
+                if (!$level) return response()->json(['message'=>'Exceeded level', 'code'=>206], 206);
                 $new_questions = collect([]);
+                $user->testedTracks()->sync($level->tracks()->lists('id')->toArray(), false);
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
                 if (count($tracks_to_test) < 3) {  
                     $next_level = Level::where('level','>',$level->level)->first();
