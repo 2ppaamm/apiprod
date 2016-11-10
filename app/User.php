@@ -134,6 +134,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->enrolment()->where('role_id','<',6)->groupBy('house_id');
     }
 
+    public function houseProgress(){
+        return $this->testedTracks()->select(DB::raw('sum(track_passed) as progress'),DB::raw('count(track_id) as total_tracks'));
+    }
+
     //user's roles in selected class
     public function hasClassRole($role, $house){
         $houseRole = $this->houseRoles()->with(['userHouses'=>function($q) use ($house){
@@ -220,7 +224,9 @@ class User extends Model implements AuthenticatableContract,
 
    public function scopeProfile($query, $id)
     {        
-        return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','teachingHouses.enrolledUsers','enrolledClasses.tracks.track_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents','enrolledClasses.activities.classwork', 'enrolledClasses.tracks.skills', 'enrolledClasses.tracks.skills.skill_passed'
+        return $query->whereId($id)->with(['teachingHouses.tracks.skills','teachingHouses.enrolledUsers.houseProgress','getfieldmaxile','fields.user_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents',
+//            'enrolledClasses.activities.classwork',
+            'enrolledClasses.tracks.skills', 'enrolledClasses.tracks.skills.skill_passed'
             //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
             ])->first();
     }

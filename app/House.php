@@ -94,4 +94,7 @@ class House extends Model
         return $this->belongsToMany(User::class, 'house_role_user')->withPivot('role_id')->withTimestamps();
     }
 
+    public function progress(){
+        return $this->tracks;
+    }
 }
