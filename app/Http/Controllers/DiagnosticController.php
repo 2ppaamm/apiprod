@@ -116,7 +116,12 @@ class DiagnosticController extends Controller
             // calculate and saves maxile at 3 levels: skill, track and user
             $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
-            $user->storefieldmaxile($track_maxile, $track->field_id);
+            $field_maxile = $user->storefieldmaxile($track_maxile, $track->field_id);
+            // find the class
+            $house = $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
+            $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
+//            $enrolment['progress'] = $user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count();
+            $enrolment->save();
         }
         return $test->fieldQuestions($user, $test);
     }

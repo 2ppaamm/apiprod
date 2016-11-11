@@ -86,8 +86,9 @@ class User extends Model implements AuthenticatableContract,
         $field_user = $this->fields()->whereFieldId($field_id)->whereMonthAchieved(date('Ym', time()))->select('field_maxile')->first();
         $old_maxile = $field_user ? $field_user->field_maxile : 0;
 
-        return ($old_maxile < $maxile) ? 
-            $this->fields()->sync([$field_id => ['field_maxile'=>$maxile, 'field_test_date'=> new DateTime('now'), 'month_achieved'=>date('Ym', time())]], false) : "maxile achieved lower than before";
+        ($old_maxile < $maxile) ? 
+            $this->fields()->sync([$field_id => ['field_maxile'=>$maxile, 'field_test_date'=> new DateTime('now'), 'month_achieved'=>date('Ym', time())]], false) : null;
+        return $maxile;
     }
 
     public function getmyresults(){
@@ -224,7 +225,7 @@ class User extends Model implements AuthenticatableContract,
 
    public function scopeProfile($query, $id)
     {        
-        return $query->whereId($id)->with(['teachingHouses.tracks.skills','teachingHouses.enrolledUsers.houseProgress','getfieldmaxile','fields.user_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents',
+        return $query->whereId($id)->with(['teachingHouses.enrolledStudents','teachingHouses.tracks.skills','teachingHouses.enrolledStudents.houseProgress','getfieldmaxile','fields.user_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents',
 //            'enrolledClasses.activities.classwork',
             'enrolledClasses.tracks.skills', 'enrolledClasses.tracks.skills.skill_passed'
             //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
