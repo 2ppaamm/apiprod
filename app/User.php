@@ -118,7 +118,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function enrolment(){
-        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'house_maxile', 'payment_email','purchaser_id')->withTimestamps();
+        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'progress', 'payment_email','purchaser_id')->withTimestamps();
     }
 
     public function enrolclass($user_maxile){

@@ -44,7 +44,6 @@ class DiagnosticController extends Controller
         $user->tests()->create(['test'=>$user->name."'s First Diagnostic test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
         $user->tests()->create(['test'=>$user->name."'s Daily test",'description'=> $user->name."'s Daily Test".count($user->completedtests)+1, 'diagnostic'=>FALSE]):
         $user->currenttest[0];
-
         return $test->fieldQuestions($user);                // output test questions
     }
 
@@ -118,10 +117,12 @@ class DiagnosticController extends Controller
             $track_maxile = $track->calculateMaxile($user, $test->diagnostic);
             $field_maxile = $user->storefieldmaxile($track_maxile, $track->field_id);
             // find the class
-            $house = $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
-            $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
-//            $enrolment['progress'] = $user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count();
-            $enrolment->save();
+            if (!$test->diagnostic) {
+                $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
+                $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
+                $enrolment['progress'] = $user->tracksPassed->intersect($house->tracks)->count()/$house->  tracks->count();
+                $enrolment->save();
+            }
         }
         return $test->fieldQuestions($user, $test);
     }

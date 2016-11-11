@@ -85,7 +85,7 @@ class Test extends Model
                         $new_question->assigned($user, $this);
                         $track->users()->sync([$user->id], false);        //log tracks for user
                     }
-                }
+                }                
             } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
                 if (!$level) return response()->json(['message'=>'Exceeded level', 'code'=>206], 206);
@@ -128,6 +128,7 @@ class Test extends Model
             }
         }        
         // when there are questions linked to test
+
         $questions = $this->uncompletedQuestions()->get();
         if (!count($questions)){                //no more questions unanswered
             if (!count($this->questions)){      // new test
@@ -147,10 +148,10 @@ class Test extends Model
         $attempts = $this->attempts($user->id);
         $attempts = $attempts ? $attempts->attempts : 1;
         $maxile = $user->calculateUserMaxile($this);
-        $user->enrolclass($maxile);
+        $user->enrolclass($maxile);                             //enrol in class of maxile reached
         $user->game_level = $user->game_level + $this->questions()->sum('correct');  // add kudos
-        $user->save();
-        $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]);
+        $user->save();                                          //save maxile and game results
+        $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]); 
         return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$user->calculateUserMaxile($this), 'maxile'=> $user->calculateUserMaxile($this),'kudos'=>$user->game_level, 'code'=>206], 206);
     }
 }
