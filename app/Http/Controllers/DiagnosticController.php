@@ -120,7 +120,7 @@ class DiagnosticController extends Controller
             if (!$test->diagnostic) {
                 $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
                 $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
-                $enrolment['progress'] = $user->tracksPassed->intersect($house->tracks)->count()/$house->  tracks->count();
+                $enrolment['progress'] = round($user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count()*100);
                 $enrolment->save();
             }
         }

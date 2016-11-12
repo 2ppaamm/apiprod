@@ -49,12 +49,12 @@ class House extends Model
     	}])->groupBy('user_id')->withTimestamps();
     }
 
-    public function houseStats(){
-        return $this->enrolledStudents()->select(DB::raw('count(progress) AS progress'));
-    }
-
     public function enrolment(){
         return $this->hasMany(Enrolment::class);
+    }
+
+    public function studentEnrolment(){
+        return $this->enrolment()->whereRoleId(6);
     }
 
     public function enrolUser($role){

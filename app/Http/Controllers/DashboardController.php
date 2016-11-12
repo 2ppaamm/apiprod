@@ -39,16 +39,20 @@ class DashboardController extends Controller
         $courses = \App\Course::with('created_by','houses', 'tracks.skills')->get();
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
 
-        $dashboard = User::profile($user->id);
-$classInfo = $user->teachingHouses()->with('enrolledStudents')->get();
-return $classInfo->count();
-//return $classInfo = $user->with('teachingHouses.enrolledStudents')->get();        
-//return        $classInfo = \App\Enrolment::with('users.teachingHouses.enrolledStudents')->get();//->whereIn('house_id',$user->teachingHouses()->groupBy('house_id')->lists('house_id'))->whereRoleId(6)->select(DB::raw())->get() ;
+        $dashboard = User::profile($user->id);  // user dashboard info
+        // user teaching info
+        $classInfo = $user->teachingHouses()->with('studentEnrolment.users.getfieldmaxile','studentEnrolment.users.fields.user_maxile')->with('tracks.skills')->get();
+        foreach ($classInfo as $class) {
+            $class['total_students'] = $class->enrolledStudents->count();
+            $class['underperform'] = $class->studentEnrolment()->where('progress','<', 40)->count();
+            $class['on_target'] = $class->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count();
+            $class['excel'] = $class->studentEnrolment()->where('progress','>=', 80)->count();
+        }
 
-        
         return response()->json(['message' => 'Request executed successfully', 
+            'teach_info' => $classInfo,
             'user'=>$dashboard, 'game_leaders'=>User::gameleader(), 
-            'maxile_leaders'=>User::maxileleader(),'houses'=>$houses, 
+            'maxile_leaders'=>User::maxileleader(),'houses'=>$houses,
             'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 
             'logs'=>$logs, 'correctness'=>$user->accuracy(), 
             'tracks_passed'=>count($user->tracksPassed).'/'.count(Track::all()), 

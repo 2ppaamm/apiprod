@@ -135,10 +135,6 @@ class User extends Model implements AuthenticatableContract,
         return $this->enrolment()->where('role_id','<',6)->groupBy('house_id');
     }
 
-    public function houseStats(){
-        return $this->teachingHouses()->addSelect('house', DB::raw('count(*) as student_count'));//,'course_id',DB::raw('count(role_id) AS total_students'),DB::raw('AVG(progress) AS average_progress'));
-    }
-
     //user's roles in selected class
     public function hasClassRole($role, $house){
         $houseRole = $this->houseRoles()->with(['userHouses'=>function($q) use ($house){
@@ -223,9 +219,8 @@ class User extends Model implements AuthenticatableContract,
             return date_diff(date_create(Auth::user()->date_of_birth), date_create('today'))->y;
     }
 
-   public function scopeProfile($query, $id)
-    {        
-        return $query->whereId($id)->with(['teachingHouses.enrolledStudents','teachingHouses.tracks.skills','getfieldmaxile','fields.user_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents',
+   public function scopeProfile($query, $id) { 
+        return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents',
 //            'enrolledClasses.activities.classwork',
             'enrolledClasses.tracks.skills', 'enrolledClasses.tracks.skills.skill_passed'
             //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
