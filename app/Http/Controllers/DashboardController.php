@@ -10,6 +10,7 @@ use App\User;
 use App\House;
 use DateTime;
 use App\Track;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -39,7 +40,7 @@ class DashboardController extends Controller
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
 
         $dashboard = User::profile($user->id);
-return        $classInfo = \App\Enrolment::whereIn('house_id',$user->teachingHouses()->lists('house_id'))->whereRoleId(6)->select(DB::raw('AVG(progress) AS average_progress'))->get() ;
+return        $classInfo = \App\Enrolment::whereIn('house_id',$user->teachingHouses()->groupBy('house_id')->lists('house_id'))->get();//->whereRoleId(6)->select('house_id',DB::raw('AVG(progress) AS average_progress'))->get() ;
 
         
         return response()->json(['message' => 'Request executed successfully', 
