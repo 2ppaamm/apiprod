@@ -44,7 +44,7 @@ class LoadController extends Controller
 
     public function loadquestions ()
     {
-        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('imp3')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
