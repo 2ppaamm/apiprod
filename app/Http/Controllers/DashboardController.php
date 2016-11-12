@@ -40,7 +40,8 @@ class DashboardController extends Controller
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
 
         $dashboard = User::profile($user->id);
-return        $classInfo = \App\Enrolment::whereIn('house_id',$user->teachingHouses()->groupBy('house_id')->lists('house_id'))->get();//->whereRoleId(6)->select('house_id',DB::raw('AVG(progress) AS average_progress'))->get() ;
+return $classInfo = \App\Enrolment::whereUserId($user->id)->with('teachingHouses.enrolledStudents')->get();        
+//return        $classInfo = \App\Enrolment::with('users.teachingHouses.enrolledStudents')->get();//->whereIn('house_id',$user->teachingHouses()->groupBy('house_id')->lists('house_id'))->whereRoleId(6)->select(DB::raw())->get() ;
 
         
         return response()->json(['message' => 'Request executed successfully', 

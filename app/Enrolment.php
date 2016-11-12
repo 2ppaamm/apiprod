@@ -19,7 +19,7 @@ class Enrolment extends Model
     protected $hidden = ['mastercode', 'payment_email', 'places_alloted'];
 
     public function users(){
-    	return $this->belongsTo(User::class);
+    	return $this->belongsTo(User::class, 'user_id');
     }
 
     public function roles(){
