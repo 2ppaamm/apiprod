@@ -49,8 +49,8 @@ class House extends Model
     	}])->groupBy('user_id')->withTimestamps();
     }
 
-    public function studentStats(){
-        return $this->enrolledStudents()->select(DB::raw('COUNT(user_id) AS numberStudents'));
+    public function houseStats(){
+        return $this->enrolledStudents()->select(DB::raw('count(progress) AS progress'));
     }
 
     public function enrolment(){
@@ -76,7 +76,6 @@ class House extends Model
     public function enrolledStudents(){
     	return $this->enrolledUsers()->where('house_role_user.role_id','=',6)->select('name', 'contact', 'email', 'maxile_level', 'game_level','date_of_birth', 'image', 'firstname','lastname');
     }
-
 
     public function asStudent(){
         return $this->enrolledStudents()->whereUserId(Auth::user()->id)->take(1);
