@@ -39,7 +39,7 @@ class DashboardController extends Controller
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
 
         $dashboard = User::profile($user->id);
-return        $classInfo = \App\Enrolment::whereIn('house_id',$user->teachingHouses()->whereRoleId(6)->lists('house_id'))->count();
+return        $classInfo = \App\Enrolment::whereIn('house_id',$user->teachingHouses()->lists('house_id'))->whereRoleId(6)->count();
 
         
         return response()->json(['message' => 'Request executed successfully', 
