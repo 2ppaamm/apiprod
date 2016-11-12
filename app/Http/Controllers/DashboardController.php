@@ -40,7 +40,9 @@ class DashboardController extends Controller
         $houses = House::with('created_by','tracks.skills','course','privacy')->get();
 
         $dashboard = User::profile($user->id);
-return $classInfo = \App\Enrolment::whereUserId($user->id)->with('teachingHouses.enrolledStudents')->get();        
+$classInfo = $user->teachingHouses()->with('enrolledStudents')->first();
+return $classInfo->enrolledStudents()->get();
+//return $classInfo = $user->with('teachingHouses.enrolledStudents')->get();        
 //return        $classInfo = \App\Enrolment::with('users.teachingHouses.enrolledStudents')->get();//->whereIn('house_id',$user->teachingHouses()->groupBy('house_id')->lists('house_id'))->whereRoleId(6)->select(DB::raw())->get() ;
 
         
