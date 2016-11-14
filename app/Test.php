@@ -77,10 +77,9 @@ class Test extends Model
                         }
                     }
                 } else $level = Level::find(2); // start of diagnostic test
-
                 // get questions, then log track, assign question to user               
-                foreach ($level->tracks as $track){
-                    $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->first();
+                foreach ($level->tracks as $track) {
+return Question::whereIn('skill_id',$track->skills->lists('id'))->get();                    $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->first();
                     if ($new_question){
                         $new_question->assigned($user, $this);
                         $track->users()->sync([$user->id], false);        //log tracks for user
