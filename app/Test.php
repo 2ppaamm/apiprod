@@ -75,13 +75,12 @@ class Test extends Model
 
                 // get questions, then log track, assign question to user               
                 foreach ($level->tracks as $track) {  //diagnostic => 1 track 1 question
-return Question::whereSkillId($track->skills->orderBy('difficulty_id','desc')->first()->id)->inRandomOrder()->first();                    
-                    $questions=Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->merge($questions);
+                    $questions = $questions->merge(Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->inRandomOrder()->take(1)->get()); 
+                    $track->users()->sync([$user->id], false);        //log tracks for user
                 }
-return $questions;
             } elseif (!count($this->questions)) {           // not diagnostic, new test
-                $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
-                if (!$level) return response()->json(['message'=>'Exceeded level', 'code'=>206], 206);
+                $level = max(Level::whereLevel(round($user->maxile_level/100)*100)->first(), Level::find(2));  // get userlevel
+//                if (!$level) return response()->json(['message'=>'Exceeded level', 'code'=>206], 206);
                 $user->testedTracks()->sync($level->tracks()->lists('id')->toArray(), false);
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
                 if (count($tracks_to_test) < 3) {  
@@ -111,28 +110,23 @@ return $questions;
                     $i++;
                 }
                 if (!$questions) {
-                    $questions = Questions::take(20)->get();
-                    return $this->completeTest($message, $user);
+                    $questions = Questions::inRandomOrder()->take(20)->get();
                 }
             }
-return $questions;
             foreach ($questions as $question){
                 $question ? $question->assigned($user, $this) : null;
-                $track->users()->sync([$user->id], false);        //log tracks for user
             }
-
         }        
-
-        $questions = $this->uncompletedQuestions()->get();
-        if (!count($questions)){                //no more questions unanswered
-            if (!count($this->questions)){      // new test
-                $message = 'Please refresh and try again. If you see this error persistently, contact administrator at info.all-gifted@gmail.com';
-            }
-            if (count($this->questions) < $this->questions()->sum('question_answered')){
-                $message = 'Test ended successfully';
-            }
-            return $this->completeTest($message, $user);
+return $questions;        $questions = $this->uncompletedQuestions()->get();
+//        if (!count($questions)){                //no more questions unanswered
+//            if (!count($this->questions)){      // new test
+//                $message = 'Please refresh and try again. If you see this error persistently, contact administrator at info.all-gifted@gmail.com';
+ //           }
+        if (count($this->questions) < $this->questions()->sum('question_answered')){
+            $message = 'Test ended successfully';
         }
+        return $this->completeTest($message, $user);
+//        }
         // field unanswered questions
         $test_questions = count($questions)< 6 ? $questions : $questions->take(5);
         return response()->json(['message' => 'Request executed successfully', 'test'=>$this->id, 'questions'=>$test_questions, 'code'=>201]);
@@ -140,7 +134,7 @@ return $questions;
 
     public function completeTest($message, $user){
         $attempts = $this->attempts($user->id);
-        $attempts = $attempts ? $attempts->attempts : 1;
+        $attempts = $attempts ? $attempts->attempts : 0;
         $maxile = $user->calculateUserMaxile($this);
         $user->enrolclass($maxile);                             //enrol in class of maxile reached
         $user->game_level = $user->game_level + $this->questions()->sum('correct');  // add kudos
