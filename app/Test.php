@@ -59,36 +59,29 @@ class Test extends Model
 
     public function fieldQuestions($user){
         $level = null;
-        $questions = null;
+        $questions = collect([]);
         $message = '';     
         if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
-                    if (!$user->maxile_level) {
-                        $message = 'Completed test at beginning level. Please check if child is too young for course.';
-                        return $this->completeTest($message, $user);
-                    } else {  // end of diagnostic test
-                        $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
-                        if ($user->maxile_level > $level->start_maxile_level){
-                            if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
-                                $message = "Diagnostic test completed";
-                                return $this->completeTest($message, $user);
-                            }
+                    $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
+                    if ($user->maxile_level > $level->start_maxile_level){
+                        if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
+                            $message = "Diagnostic test completed";
+                            return $this->completeTest($message, $user);
                         }
                     }
                 } else $level = Level::find(2); // start of diagnostic test
+
                 // get questions, then log track, assign question to user               
-                foreach ($level->tracks as $track) {
-return Question::whereIn('skill_id',$track->skills->lists('id'))->get();                    $new_question = Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->first();
-                    if ($new_question){
-                        $new_question->assigned($user, $this);
-                        $track->users()->sync([$user->id], false);        //log tracks for user
-                    }
-                }                
+                foreach ($level->tracks as $track) {  //diagnostic => 1 track 1 question
+return Question::whereSkillId($track->skills->orderBy('difficulty_id','desc')->first()->id)->inRandomOrder()->first();                    
+                    $questions=Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->merge($questions);
+                }
+return $questions;
             } elseif (!count($this->questions)) {           // not diagnostic, new test
                 $level = Level::whereLevel(round($user->maxile_level/100)*100)->first();  // get userlevel
                 if (!$level) return response()->json(['message'=>'Exceeded level', 'code'=>206], 206);
-                $new_questions = collect([]);
                 $user->testedTracks()->sync($level->tracks()->lists('id')->toArray(), false);
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
                 if (count($tracks_to_test) < 3) {  
@@ -96,20 +89,20 @@ return Question::whereIn('skill_id',$track->skills->lists('id'))->get();        
                     $tracks_to_test = $tracks_to_test->merge($next_level->tracks()->get());
                 }
                 $i = 0;
-                while (count($new_questions) < 21 && $i < count($tracks_to_test)) {
+                while (count($questions) < 21 && $i < count($tracks_to_test)) {
                     $tracks_to_test[$i]->users()->sync([$user->id], false);          //log tracks for user
                     $skills_to_test = $tracks_to_test[$i]->skills()->lists('id')->toArray();               
                     $user->skill_user()->sync($skills_to_test, false);
                     $skills_to_test = $tracks_to_test[$i]->skills->intersect($user->skill_user()->whereSkillPassed(FALSE)->get());
                     $n = 0;
-                    while (count($new_questions) < 20 && $n < count($skills_to_test)){
+                    while (count($questions) < 20 && $n < count($skills_to_test)){
                         $difficulty_passed = $skills_to_test[$n]->users()->whereUserId($user->id)->first() ? $skills_to_test[$n]->users()->whereUserId($user->id)->select('difficulty_passed')->first()->difficulty_passed : 0;
                         //find 5 questions in the track that are not already fielded and higher difficulty if some difficulty already passed
                         $skill_questions = Question::inRandomOrder()->whereSkillId($skills_to_test[$n]->id)->where('difficulty_id','>', $difficulty_passed)
                         //->whereNotIn('id', $user->myQuestions()->lists('question_id'))
                         ->take(5)->get();
                         if (count($skill_questions)){
-                            $new_questions = $skill_questions->merge($new_questions);
+                            $questions = $skill_questions->merge($questions);
                         } else {
                             $skill_user = $skills_to_test[$n]->forcePass($user->id, $difficulty_passed+1, $tracks_to_test[$i]);
                         }
@@ -117,16 +110,18 @@ return Question::whereIn('skill_id',$track->skills->lists('id'))->get();        
                     }
                     $i++;
                 }
-                if (!$new_questions) {
+                if (!$questions) {
+                    $questions = Questions::take(20)->get();
                     return $this->completeTest($message, $user);
-                } else {
-                    foreach ($new_questions as $new_question){
-                        $new_question ? $new_question->assigned($user, $this) : null;
-                    }
                 }
             }
+return $questions;
+            foreach ($questions as $question){
+                $question ? $question->assigned($user, $this) : null;
+                $track->users()->sync([$user->id], false);        //log tracks for user
+            }
+
         }        
-        // when there are questions linked to test
 
         $questions = $this->uncompletedQuestions()->get();
         if (!count($questions)){                //no more questions unanswered
