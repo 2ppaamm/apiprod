@@ -41,7 +41,7 @@ class HouseController extends Controller
         $house = $user->houses()->create($values);
         
         //enrol user to the house in house_role_user
-        $house->enrolledusers()->attach($user, ['role_id'=>5]);
+        $house->enrolledusers()->attach($user, ['role_id'=>4]);
 
         //create tracks
         $tracks = Course::find($request->course_id)->tracks;

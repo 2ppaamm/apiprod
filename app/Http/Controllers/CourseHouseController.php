@@ -22,7 +22,7 @@ class CourseHouseController extends Controller
         if (!$course) {
             return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
         }
-        return $course->houses;
+        return $course->houses()->with('created_by')->get();
 //        return response() -> json ([$course->houses], 200);
     }
 

@@ -10,7 +10,7 @@ class Enrolment extends Model
     use RecordLog;
 
     protected $table = 'house_role_user';
-    protected $fillable = ['mastercode','purchaser_id','payment_email','user_id','role_id', 'house_id','expiry_date', 'start_date', 'places_alloted'];
+    protected $fillable = ['mastercode','purchaser_id','payment_email','user_id','role_id', 'house_id','expiry_date', 'start_date', 'places_alloted', 'progress', 'transaction_idp'];
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -23,16 +23,16 @@ class Enrolment extends Model
     }
 
     public function roles(){
-    	return $this->belongsTo(User::class);
+    	return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function houses(){
-    	return $this->belongsTo(User::class);
+    	return $this->belongsTo(House::class, 'house_id');
     }
 
-    public function mastercodes(){
-        return $this->hasOne(Mastercode::class);
-    }
+//    public function mastercodes(){
+//        return $this->hasOne(Mastercode::class);
+ //   }
 
     public function inforce($user, $course){
         return $this->users()->whereUserId($user->id)->whereIn('house_id', $course->houses()->lists('id'))->where('expiry_date','>', new DateTime(now))->get();

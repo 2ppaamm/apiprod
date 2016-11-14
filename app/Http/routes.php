@@ -29,6 +29,7 @@ Route::resource('tracks', 'TrackController', ['except' =>['create', 'edit']]);
 Route::resource('tests', 'TestController', ['except' =>['create', 'edit']]);
 Route::resource('skills', 'SkillController', ['except' =>['create', 'edit']]);
 Route::resource('questions', 'QuestionController', ['except' =>['create', 'edit']]);
+Route::resource('enrolments', 'EnrolmentController', ['except' => ['edit', 'create']]);
 Route::resource('skills.questions', 'SkillQuestionsController', ['except' => ['edit', 'create']]);
 Route::resource('tracks.skills', 'TrackSkillController', ['except' => ['edit', 'create']]);
 //Route:: post('oauth/access_token', function(){

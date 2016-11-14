@@ -25,7 +25,6 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $user->is_admin;
         return $user->is_admin ? $users = User::with('enrolledClasses.roles','logs')->get() : response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
 
 //        return response()->json(['data'=>$users], 200);
@@ -37,13 +36,13 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-/*    public function store(CreateUserRequest $request)
+    public function store(CreateUserRequest $request)
     {
         $user = $request->all();
         return User::create($user);
         return response()->json(['message' => 'User correctly added', 'data'=>$user, 'code'=>201]);
     }
-*/
+
     /**
      * Display the specified resource.
      *
@@ -76,7 +75,11 @@ class UserController extends Controller
         }
         if ($request->email) {
             return response()->json(['message' => 'You cannot change the email address of an account', 'data'=>$users, 'code'=>500], 500);
-        } 
+        }
+
+        if (($request->maxile_level || $request->game_level) && !$logon_user->is_admin) {
+            return response()->json(['message' => 'You have no access rights to change scores', 'code'=>401], 401);                 
+        }
         $users->fill($request->all())->save();
         return $users;
 

@@ -33,7 +33,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','firstname', 'lastname', 'email','image', 'maxile_level', 'game_level','mastercode'];
+    protected $fillable = ['name','firstname', 'lastname', 'email','image', 'maxile_level', 'game_level','mastercode','contact'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -118,7 +118,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function enrolment(){
-        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'progress', 'payment_email','purchaser_id')->withTimestamps();
+        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'progress', 'payment_email','purchaser_id', 'transaction_id')->withTimestamps();
     }
 
     public function enrolclass($user_maxile){

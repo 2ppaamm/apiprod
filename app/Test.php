@@ -9,8 +9,8 @@ class Test extends Model
 {
     use RecordLog;
     
-    protected $hidden = ['user_id', 'created_at','updated_at','pivot'];
-    protected $fillable = ['test', 'description', 'diagnostic', 'number_of_tries_allowed','start_available_time', 'end_available_time','due_time','which_result','image', 'status_id'];
+    protected $hidden = ['user_id', 'created_at','updated_at'];
+    protected $fillable = ['test', 'description', 'diagnostic', 'number_of_tries_allowed','start_available_time', 'end_available_time','due_time','result','image', 'status_id'];
 
     //relationship
     public function questions(){

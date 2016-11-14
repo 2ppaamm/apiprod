@@ -70,7 +70,7 @@ class DiagnosticController extends Controller
             $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
             $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
             $user->date_of_birth = Carbon::createFromFormat('m/d/Y',$request->date_of_birth);        
-            $user->update($request->all());
+            $user->update(['firstname'=>$request->firstname, 'lastname'=>$request->lastname, 'date_of_birth'=>$user->date_of_birth]);
         } else return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
         return $this->index();
     }
@@ -118,7 +118,7 @@ class DiagnosticController extends Controller
             $field_maxile = $user->storefieldmaxile($track_maxile, $track->field_id);
             // find the class
             if (!$test->diagnostic) {
-                $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
+                $house = $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
                 $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
                 $enrolment['progress'] = round($user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count()*100);
                 $enrolment->save();

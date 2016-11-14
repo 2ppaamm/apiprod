@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Course;
 use App\Http\Controllers\CourseTrackController;
 use App\Http\Requests\CreateCourseRequest;
+use Auth;
 
 class CourseController extends Controller
 {
@@ -92,15 +93,14 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Course $courses)
     {
-        $course = Course::findOrFail($id);
-        if (!$course) {
-            return response()->json(['message'=>'Course not found, cannot update.','code'=>404], 404);
+        $logon_user = Auth::user();
+        if ($logon_user->id != $courses->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
         }
-        $course[Request::get('name')] = Request::get('value');
-        $course->update();
-        return response()->json(['question' => $question, 200], 200);        
+        $courses->fill($request->all())->save();
+        return response()->json(['course' => $courses, 200], 200);        
     }
 
     /**
