@@ -56,8 +56,8 @@ class LoadController extends Controller
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
             }
- */       });
-    }
+        });
+ */   }
     /**
      * Show the form for creating a new resource.
      *
