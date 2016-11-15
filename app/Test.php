@@ -54,13 +54,13 @@ class Test extends Model
     }
 
     public function markTest($userid){
-        return count($this->questions) ? number_format($this->questions()->sum('correct')/count($this->questions) * 100, 2, '.', '') : 0;
+        return count($this->questions()->get()) ? number_format($this->questions()->sum('correct')/count($this->questions()->get()) * 100, 2, '.', '') : 0;
     }
 
     public function fieldQuestions($user){
         $level = null;
         $questions = collect([]);
-        $message = '';       
+        $message = '';
         if (!count($this->uncompletedQuestions)) {    // no more questions
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
@@ -115,15 +115,16 @@ class Test extends Model
             }
             foreach ($questions as $question){
                 $question ? $question->assigned($user, $this) : null;
-            }
+            }            
         }
 
         $new_questions = $this->uncompletedQuestions()->get();
-        if (count($this->questions)<1) {
-            return response()->json(['message'=> "No question", 'code'=>404],404);
+        if (count($this->questions)<1) {                
+            return response()->json(['message'=> "No question in this test.", 'code'=>404],404);
         } 
-        if (count($this->questions()->get()) <= $this->questions()->sum('question_answered')){
-return            $message = 'Test ended successfully';
+
+       if (count($this->questions()->get()) <= $this->questions()->sum('question_answered')){
+            $message = 'Test ended successfully';
             return $this->completeTest($message, $user);
         }
 //        }
