@@ -119,9 +119,6 @@ class Test extends Model
         }
 
         $new_questions = $this->uncompletedQuestions()->get();
-        if (count($this->questions)<1) {                
-            return response()->json(['message'=> "No question in this test.", 'code'=>404],404);
-        } 
 
        if (count($this->questions()->get()) <= $this->questions()->sum('question_answered')){
             $message = 'Test ended successfully';
