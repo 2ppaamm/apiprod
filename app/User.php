@@ -198,6 +198,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->myQuestions()->whereQuestionAnswered(0);
     }
 
+    public function answeredQuestion(){
+        return $this->myQuestions()->whereQuestionAnswered(1);
+    }
+
     public function incorrectQuestions(){
         return $this->myQuestions()->whereCorrect(0);
     }
