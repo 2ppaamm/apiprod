@@ -28,12 +28,12 @@ class LoadQuestions extends Controller
 
     public function loadquestions ()
     {
-//        Excel::selectSheets('imp3')->load('public/questions.xlsx', function ($reader) {
-  //          $questions = $reader->all();
-    //        foreach ($questions as $question) {
-      //          \App\Question::create($question->toArray());
-        //    }
-        //});
+        Excel::selectSheets('imp3')->load('public/questions.xlsx', function ($reader) {
+            $questions = $reader->all();
+            foreach ($questions as $question) {
+                \App\Question::create($question->toArray());
+            }
+        });
         Excel::selectSheets('imp4')->load('public/questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
