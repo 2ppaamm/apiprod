@@ -16,7 +16,7 @@ Route::post('/qa/answer', 'CheckAnswerController@answer');
 Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
 Route::resource('courses', 'CourseController', ['except' =>['create', 'edit']]);
-Route::resource('mastercodes', 'MasterCodeController', ['except' =>['create', 'edit', 'update']]);
+//Route::resource('mastercodes', 'MasterCodeController', ['except' =>['create', 'edit', 'update']]);
 Route::resource('houses', 'HouseController', ['except' =>['create', 'edit']]);
 Route::resource('levels', 'LevelController', ['except' =>['create', 'edit']]);
 Route::resource('courses.houses', 'CourseHouseController', ['except' => ['edit', 'create']]);
