@@ -119,9 +119,11 @@ class DiagnosticController extends Controller
             // find the class
             if (!$test->diagnostic) {
                 $house = $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->lists('house_id'))->get())->first();
-                $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
-                $enrolment['progress'] = round($user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count()*100);
-                $enrolment->save();
+                if ($house) {
+                    $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
+                    $enrolment['progress'] = round($user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count()*100);
+                    $enrolment->save();
+                }
             }
         }
         return $test->fieldQuestions($user, $test);
