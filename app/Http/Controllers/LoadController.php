@@ -93,12 +93,12 @@ class LoadController extends Controller
         //    }
      //   });
 
-        Excel::selectSheets('field_user')->load('public/questions.xlsx', function ($reader) {
-            $field_users = $reader->all();
-            foreach ($field_users as $field_user) {
-                \App\FieldUser::create($field_user->toArray());
-            }
-        });
+//        Excel::selectSheets('field_user')->load('public/questions.xlsx', function ($reader) {
+  //          $field_users = $reader->all();
+    //        foreach ($field_users as $field_user) {
+      //          \App\FieldUser::create($field_user->toArray());
+        //    }
+    //    });
     }
 
    /**

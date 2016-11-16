@@ -39,7 +39,7 @@ class DiagnosticController extends Controller
         $user = Auth::user();
         $enrolled = $user->validEnrolment($courses);
 
-        if (!$user->date_of_birth || !count($enrolled)) return response()->json(['message'=>'Not properly enrolled or first time user', 'code'=>203]);
+        if (!count($enrolled)) return response()->json(['message'=>'Not properly enrolled or first time user', 'code'=>203]);
         $test = count($user->currenttest)<1 ? !count($user->completedtests) ? 
         $user->tests()->create(['test'=>$user->name."'s First Diagnostic test",'description'=> $user->name."'s diagnostic test", 'diagnostic'=>TRUE]):
         $user->tests()->create(['test'=>$user->name."'s Daily test",'description'=> $user->name."'s Daily Test".count($user->completedtests)+1, 'diagnostic'=>FALSE]):
