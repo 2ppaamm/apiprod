@@ -13,7 +13,7 @@ class Question extends Model
 //    protected static $recordEvents = ['created'];    overriding what is to be logged
     
     protected $hidden = ['user_id', 'created_at', 'updated_at','pivot'];
-    protected $fillable = ['user_id','skill_id','difficulty_id','question', 'type_id','status_id', 'answer0', 'answer1', 'answer2', 'answer3', 'answer4', 'correct_answer', 'source', 'question_image','answer0_image','answer1_image','answer2_image','answer3_image','answer4_image'];
+    protected $fillable = ['user_id','skill_id','difficulty_id','question', 'type_id','status_id', 'answer0', 'answer1', 'answer2', 'answer3', 'answer4', 'correct_answer', 'source', 'question_image','answer0_image','answer1_image','answer2_image','answer3_image','answer4_image','calculator'];
 
     //relationship
     public function author() {                        //who created this question
