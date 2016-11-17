@@ -32,7 +32,7 @@ class CheckAnswerController extends Controller
       	$questions = null;
     	$test = count($user->currenttest)<1 ?  $user->tests()->create(['test'=>$user->name."'s QA test",'description'=> $user->name."'s QA test", 'diagnostic'=>FALSE]) : $user->currenttest[0];
 
-        $questions = count($test->questions) < 1 ? Question::where('id','>',10)->get():0;
+        $questions = count($test->questions) < 1 ? Question::where('id','>',50)->get():0;
 	    if ($questions) {
             foreach($questions as $question) {
                 $question->assigned($user, $test);
