@@ -53,7 +53,7 @@ class UsersSeeder extends Seeder
             'image' => 'https://placeimg.com/50/50/people'
         ]);
 
-        User::create ([
+/*        User::create ([
             'name' =>'Elvin',
             'firstName' =>'Elvin',
             'lastName' => 'Ong',
@@ -83,5 +83,5 @@ class UsersSeeder extends Seeder
                 'image' => 'https://placeimg.com/50/50/people'
             ]);
         }
-    }
+*/    }
 }
