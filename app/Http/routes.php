@@ -10,8 +10,8 @@ Route::resource('/', 'DashboardController');
 Route::get('/loadall', 'LoadController@loadall');
 Route::get('/loadquestions', 'LoadQuestions@loadall');
 
-Route::post('/qa', 'CheckAnswerController@index');
-Route::post('/qa/answer', 'CheckAnswerController@answer');
+//Route::post('/qa', 'CheckAnswerController@index');
+//Route::post('/qa/answer', 'CheckAnswerController@answer');
 
 Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
@@ -52,13 +52,9 @@ Route::post('/test/answers', 'DiagnosticController@answer');
 /* Post answers and game scores
 */
 
-Route:: post('answers', 'AnswerController@checkQuiz');
-Route:: post('game_score', 'UserController@game_score');
-Route:: get('game_level', 'UserController@game_level');
-//Route::get('/auth0/callback', 'DashboardController@index');
-//Route::get('/auth0/callback', '\Auth0\Login\Auth0Controller@callback');
-//Route::get('/redirect', 'SocialAuthController@redirect');
-//Route::get('/callback', 'SocialAuthController@callback');
+//Route:: post('answers', 'AnswerController@checkQuiz');
+//Route:: post('game_score', 'UserController@game_score');
+//Route:: get('game_level', 'UserController@game_level');
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +71,3 @@ Route::group(['middleware' => ['web']], function () {
     //
 });
 
-//Route::auth();
-
-Route::get('/home', 'HomeController@index');
