@@ -79,9 +79,9 @@ class TrackController extends Controller
             return response()->json(['message'=>'Update of track failed!','code'=> $exception->getCode()]);
         }
 
-        Auth::user()->tracks()->save($track);
+        Auth::user()->tracks()->save($tracks);
 
-        return response()->json(['message'=>'Track updated','track' => $track, 'code'=>200], 200);
+        return response()->json(['message'=>'Track updated','track' => $tracks, 'code'=>200], 200);
     }
 
     /**

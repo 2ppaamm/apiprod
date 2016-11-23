@@ -48,10 +48,10 @@ class SkillController extends Controller
     {
         $field = $request->get('field');
         $value = $request->get('value');
-        $skill->$field = $value;
-        $skill->save();
+        $skills->$field = $value;
+        $skills->save();
 
-        return response()->json(['message'=>'Skill update.','skill' => $skill, 'code'=>200], 200);
+        return response()->json(['message'=>'Skill update.','skill' => $skills, 'code'=>200], 200);
     }
 
     /**
