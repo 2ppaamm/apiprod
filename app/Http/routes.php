@@ -1,22 +1,16 @@
 <?php
 
-
-//Route::get('/', function () {
-//	$user = Auth::loginUsingId(2);
-//    return view('welcome');
-//});
 Route::resource('/', 'DashboardController');
 
-//Route::get('/loadall', 'LoadController@loadall');
-//Route::get('/loadquestions', 'LoadQuestions@loadall');
+Route::get('/loadall', 'LoadController@loadall');
+Route::get('/loadquestions', 'LoadQuestions@loadall');
 
-//Route::post('/qa', 'CheckAnswerController@index');
-//Route::post('/qa/answer', 'CheckAnswerController@answer');
+Route::post('/qa', 'CheckAnswerController@index');
+Route::post('/qa/answer', 'CheckAnswerController@answer');
 
 Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
 Route::resource('courses', 'CourseController', ['except' =>['create', 'edit']]);
-//Route::resource('mastercodes', 'MasterCodeController', ['except' =>['create', 'edit', 'update']]);
 Route::resource('houses', 'HouseController', ['except' =>['create', 'edit']]);
 Route::resource('levels', 'LevelController', ['except' =>['create', 'edit']]);
 Route::resource('courses.houses', 'CourseHouseController', ['except' => ['edit', 'create']]);
@@ -32,17 +26,9 @@ Route::resource('questions', 'QuestionController', ['except' =>['create', 'edit'
 Route::resource('enrolments', 'EnrolmentController', ['except' => ['edit', 'create']]);
 Route::resource('skills.questions', 'SkillQuestionsController', ['except' => ['edit', 'create']]);
 Route::resource('tracks.skills', 'TrackSkillController', ['except' => ['edit', 'create']]);
-//Route:: post('oauth/access_token', function(){
-//	return response()->json(Authorizer::issueAccessToken());
-//});
 
 Route::get('users/{username}/logs','LogController@show');
 Route::get('logs', 'LogController@index');
-
-//Route::get('/auth0/callback', array('middleware' => 'auth0.jwt', function() {
-//    echo "Hello ". Auth0::jwtuser()->name. ", your email is ". Auth0::jwtuser()->sub;
-//    dd(Auth0::jwtuser());
-//}));
 
 Route::get('/api/protected', 'DashboardController@index');
 Route::post('/test/protected', 'DiagnosticController@index');
@@ -70,4 +56,3 @@ Route::post('/test/answers', 'DiagnosticController@answer');
 Route::group(['middleware' => ['web']], function () {
     //
 });
-

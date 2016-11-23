@@ -42,9 +42,12 @@ class DashboardController extends Controller
 
         $dashboard = User::profile($user->id);  // user dashboard info
         // user teaching info
+
         $classInfo = $user->teachingHouses()->with('studentEnrolment.users.completedtests','studentEnrolment.users.getfieldmaxile')->with('tracks.skills')->get();
         foreach ($classInfo as $class) {
             $class['average_progress']=$class->studentEnrolment()->avg('progress');
+            $class['lowest_progress'] = $class->studentEnrolment()->min('progress');
+            $class['highest_progress'] = $class->studentEnrolment()->max('progress');
             $class['students_completed_course'] = $class->studentEnrolment()->where('expiry_date','<', new DateTime('today'))->count();         
             $class['total_students'] = $class->studentEnrolment()->count();
             $class['underperform'] = $class->studentEnrolment()->where('progress','<', 40)->count();
