@@ -26,7 +26,7 @@ class AddToEnrol extends Migration
      */
     public function down()
     {
-        Schema::table('users', function($table) {
+        Schema::table('house_role_user', function($table) {
             $table->dropColumn('amount_paid');
             $table->dropColumn('currency_code');
             $table->dropColumn('payment_status');
