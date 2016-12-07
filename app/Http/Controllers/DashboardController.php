@@ -16,9 +16,8 @@ class DashboardController extends Controller
 {
     public function __construct(){
  //       $this->middleware('cors');
-        $this->middleware('auth0.jwt');
-//        $currentuser =  User::whereId(4)->first();
- //               \Auth::login($currentuser);
+ //       $this->middleware('auth0.jwt');
+        \Auth::login(User::find(2));
     }
     /**
      * Display a listing of the resource.

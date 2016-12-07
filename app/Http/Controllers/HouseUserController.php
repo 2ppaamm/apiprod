@@ -101,14 +101,13 @@ class HouseUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, $users)
+    public function show($id, $user_id)
     {
-        $house = \App\House::find($id);
-        if (!$house) {
-            return response()->json(['message' => 'This class does not exist', 'code'=>404], 404);
-        }
-        return $house->enrolledUsers()->get();
-                
+        $enrolment = Enrolment::whereHouseId($id)->whereUserId($user_id)->lists('user_id');
+        if (!$enrolment) {
+            return response()->json(['message' => 'This user is not enrolled', 'code'=>404], 404);
+        }        
+        return response()->json(['message' => 'User as displayed', 'user'=>User::wherein('id',$enrolment)->get(),'code'=>201], 201);
     }
 
     /**
@@ -146,14 +145,14 @@ class HouseUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(House $houses, User $users)
+    public function destroy(House $houses, User $users, Request $request)
     {
         $most_powerful = $users->enrolledClasses()->whereHouseId($houses->id)->with('roles')->min('role_id');
         $role_to_enrol = Role::where('role','LIKE',$request->role)->first();
         if (!$role_to_enrol) {
             return response()->json(['message'=>'Role does not exist.', 'code'=>404], 404);
         }
-        if ($most_powerful > $role_to_enrol->id && !$user->is_admin) {        // administrator 
+        if ($most_powerful > $role_to_enrol->id && !$users->is_admin) {        // administrator 
             return response()->json(['message'=>'No authorization to enrol', 'code'=>203], 203);
         }
         try {
