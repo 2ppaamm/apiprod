@@ -22,8 +22,8 @@ use Carbon\Carbon;
 class DiagnosticController extends Controller
 {
     public function __construct(){
- //       $this->middleware('auth0.jwt');
-        Auth::login(User::find(2));
+       $this->middleware('auth0.jwt');
+//        Auth::login(User::find(2));
     }
 
     /**
