@@ -66,13 +66,12 @@ class Test extends Model
                 if (count($this->questions)) {
                     $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
                     if ($user->maxile_level > $level->start_maxile_level){
-                        if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
+                       if (count($this->questions) == count($this->questions()->where('question_answered','>=','1')->get())) {
                             $message = "Diagnostic test completed";
                             return $this->completeTest($message, $user);
-                        }
+                        }                        
                     }
                 } else $level = Level::find(2); // start of diagnostic test
-                
                 // get questions, then log track, assign question to user               
                 foreach ($level->tracks as $track) {  //diagnostic => 1 track 1 question
                     $questions = $questions->merge(Question::whereIn('skill_id', $track->skills->lists('id'))->orderBy('difficulty_id','desc')->inRandomOrder()->take(1)->get()); 
@@ -110,6 +109,7 @@ class Test extends Model
                     $i++;
                 }
                 if (!$questions) {
+return 'here';                    
                     $questions = Questions::inRandomOrder()->take(20)->get();
                 }
             }

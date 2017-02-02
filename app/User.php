@@ -40,7 +40,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token', 'created_at','updated_at'];
+    protected $hidden = ['password', 'remember_token', 'created_at'];
 
     // make dates carbon so that carbon google that out
     protected $dates = ['date_of_birth', 'last_test_date', 'next_test_date'];
@@ -101,9 +101,7 @@ class User extends Model implements AuthenticatableContract,
 
     // enrolment
     public function enrolledClasses(){
-        return $this->enrolment()->where('expiry_date','>=',date("Y-m-d"))->groupBy('house_id')
-        ->where('end_date', '>=', date("Y-m-d"))
-        ->orderBy('end_date','asc');
+        return $this->enrolment();
     }
 
     public function expiredClasses(){
@@ -118,12 +116,12 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function enrolment(){
-        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'progress', 'payment_email','purchaser_id', 'transaction_id')->withTimestamps();
+        return $this->hasMany(Enrolment::class);
     }
 
     public function enrolclass($user_maxile){
         $houses = House::whereIn('course_id',Course::where('start_maxile_score','<=' ,round($user_maxile/100)*100)->lists('id'))->lists('id')->all();
-        $this->enrolment()->sync($houses,false);
+        $this->houseRoles()->sync($houses,false);
         return 'enrolment created';
     }
 
@@ -224,10 +222,10 @@ class User extends Model implements AuthenticatableContract,
     }
 
    public function scopeProfile($query, $id) { 
-        return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','enrolledClasses.tracks.track_maxile','enrolledClasses.created_by','enrolledClasses.roles','enrolledClasses.enrolledStudents',
-//            'enrolledClasses.activities.classwork',
-            'enrolledClasses.tracks.skills', 'enrolledClasses.tracks.skills.skill_passed'
-            //'expiredClasses.tracks.skills','expiredClasses.activities.classwork','unansweredQuestions'
+        return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','enrolledClasses.roles',
+            'enrolledClasses.houses.created_by',//'enrolledClasses.enrolledStudents',
+            'enrolledClasses.houses.tracks.track_maxile',
+            'enrolledClasses.houses.tracks.skills', 'enrolledClasses.houses.tracks.skills.skill_passed'
             ])->first();
     }
 

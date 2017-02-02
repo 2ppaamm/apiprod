@@ -42,16 +42,16 @@ class DashboardController extends Controller
         $dashboard = User::profile($user->id);  // user dashboard info
         // user teaching info
 
-        $classInfo = $user->teachingHouses()->with('studentEnrolment.users.completedtests','studentEnrolment.users.getfieldmaxile')->with('tracks.skills')->get();
+        $classInfo = $user->teachingHouses()->with('houses.studentEnrolment.users.completedtests','houses.studentEnrolment.users.getfieldmaxile')->with('houses.tracks.skills')->get();
         foreach ($classInfo as $class) {
-            $class['average_progress']=$class->studentEnrolment()->avg('progress');
-            $class['lowest_progress'] = $class->studentEnrolment()->min('progress');
-            $class['highest_progress'] = $class->studentEnrolment()->max('progress');
-            $class['students_completed_course'] = $class->studentEnrolment()->where('expiry_date','<', new DateTime('today'))->count();         
-            $class['total_students'] = $class->studentEnrolment()->count();
-            $class['underperform'] = $class->studentEnrolment()->where('progress','<', 40)->count();
-            $class['on_target'] = $class->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count();
-            $class['excel'] = $class->studentEnrolment()->where('progress','>=', 80)->count();
+            $class['average_progress']=$class->houses->studentEnrolment()->avg('progress');
+            $class['lowest_progress'] = $class->houses->studentEnrolment()->min('progress');
+            $class['highest_progress'] = $class->houses->studentEnrolment()->max('progress');
+            $class['students_completed_course'] = $class->houses->studentEnrolment()->where('expiry_date','<', new DateTime('today'))->count();         
+            $class['total_students'] = $class->houses->studentEnrolment()->count();
+            $class['underperform'] = $class->houses->studentEnrolment()->where('progress','<', 40)->count();
+            $class['on_target'] = $class->houses->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count();
+            $class['excel'] = $class->houses->studentEnrolment()->where('progress','>=', 80)->count();
         }
 
 //return $user->completedtests;

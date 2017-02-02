@@ -30,6 +30,6 @@ class Role extends Model
     }
 
     public function enrolment(){
-        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id', 'mastercode', 'profile', 'payment_email','purchaser_id', 'transaction_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'house_role_user')->withPivot('house_id', 'mastercode', 'profile', 'payment_email','purchaser_id', 'transaction_id')->withTimestamps();
     }
 }

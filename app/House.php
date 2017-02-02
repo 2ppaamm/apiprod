@@ -17,7 +17,7 @@ class House extends Model
      *
      * @var array
      */
-    protected $hidden = ['pivot','created_at','updated_at'];
+    protected $hidden = ['created_at','updated_at'];
 
     public function privacy(){
         return $this->belongsTo(Status::class, 'status_id');

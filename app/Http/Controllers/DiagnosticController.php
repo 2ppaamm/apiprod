@@ -63,12 +63,12 @@ class DiagnosticController extends Controller
         $check_mastercode = Enrolment::whereMastercode($request->mastercode)->first();
         if (!$check_mastercode) return response()->json(['message'=>'Your mastercode is wrong.', 'code'=>404], 404);
         if ($check_mastercode->places_alloted) {
-            $date = new DateTime('now');
+//            $date = new DateTime('now');
             $check_mastercode->places_alloted -= 1;
             $mastercode = $check_mastercode->places_alloted < 1 ? null : $request->mastercode;
             $check_mastercode->fill(['mastercode'=>$mastercode])->save();
             $enrolment = Enrolment::firstOrNew(['user_id'=>$user->id, 'house_id'=>$check_mastercode->house_id, 'role_id'=>Role::where('role', 'LIKE', '%Student%')->first()->id]);
-            $enrolment->fill(['start_date'=>$date,'expiry_date'=>$date->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
+            $enrolment->fill(['start_date'=>new DateTime('now'),'expiry_date'=>(new DateTime('now'))->modify('+1 year'), 'payment_email'=>$check_mastercode->payment_email, 'purchaser_id'=>$check_mastercode->user_id])->save();
             $user->date_of_birth = Carbon::createFromFormat('m/d/Y',$request->date_of_birth);        
             $user->update(['firstname'=>$request->firstname, 'lastname'=>$request->lastname, 'date_of_birth'=>$user->date_of_birth]);
         } else return response()->json(['message'=>'There is no more places left for the mastercode you keyed in.',  'code'=>404], 404);
@@ -97,7 +97,7 @@ class DiagnosticController extends Controller
                 $user->errorlogs()->create(['error'=>'Question '.$question_id.' not found']);
                 return response()->json(['message'=>'Error in question. No such question', 'code'=>403]);                
             }
-            $assigned = $question->users()->whereUserId($user->id)->first();
+           $assigned = $question->tests()->whereTestId($test->id)->first();
             if (!$assigned) {
                 $user->errorlogs()->create(['error'=>'Question '.$question_id.' not assigned to '. $user->name]);
                 return response()->json(['message'=>'Question not assigned to '. $user->name, 'code'=>403]);                                
@@ -110,7 +110,7 @@ class DiagnosticController extends Controller
                 $correct = sizeof($answers) > 0 ? $answers[0] == $question->answer0 ? TRUE : FALSE : TRUE;
                 $correctness = $correct + $correct1 + $correct2 + $correct3 > 3? TRUE: FALSE;
             } else $correctness = $question->correct_answer != $request->answer[$key] ? FALSE:TRUE;
-            $answered = $question->answered($user, $correctness, $test);
+            $answered = $question->answered($user, $correctness, $test); // update question_user
             $track = $question->skill->tracks->intersect($user->testedTracks()->orderBy('updated_at','desc')->get())->first();
             // calculate and saves maxile at 3 levels: skill, track and user
             $skill_maxile = $question->skill->handleAnswer($user->id, $question->difficulty_id, $correctness, $track, $test->diagnostic);
