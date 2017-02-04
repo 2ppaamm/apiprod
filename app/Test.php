@@ -109,10 +109,10 @@ class Test extends Model
                     $i++;
                 }
                 if (!$questions) {
-return 'here';                    
-                    $questions = Questions::inRandomOrder()->take(20)->get();
+                    $questions = Question::inRandomOrder()->take(20)->get();
                 }
             }
+
             foreach ($questions as $question){
                 $question ? $question->assigned($user, $this) : null;
             }            
