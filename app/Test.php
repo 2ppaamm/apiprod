@@ -108,7 +108,7 @@ class Test extends Model
                     }
                     $i++;
                 }
-                if (!$questions) {
+if ($user->id==19) return '111';                if (!$questions) {
                     $questions = Question::inRandomOrder()->take(20)->get();
                 }
             }
@@ -118,7 +118,7 @@ class Test extends Model
             }            
         }
 
-if ($user->id==19) return        $new_questions = $this->uncompletedQuestions()->get();
+        $new_questions = $this->uncompletedQuestions()->get();
 
 if (!count($new_questions) && count($this->questions)) {
 //        if (count($this->questions()->get()) <= $this->questions()->sum('question_answered')){
