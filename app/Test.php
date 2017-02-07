@@ -108,7 +108,7 @@ class Test extends Model
                     }
                     $i++;
                 }
-if ($user->id==19) return '111';                if (!$questions) {
+if ($user->id==19) return count($questions);                if (!count($questions)) {
                     $questions = Question::inRandomOrder()->take(20)->get();
                 }
             }
