@@ -80,7 +80,7 @@ class Test extends Model
 
             } elseif (!count($this->questions)) {           // not diagnostic, new test
 if ($user->id == 19) {
-    $level = max(Level::find(7), Level::whereLevel(round($user->maxile_level/100)*100)->first(), Level::find(2));
+    return $level = max(Level::find(7), Level::whereLevel(round($user->maxile_level/100)*100)->first(), Level::find(2));
 } 
                 $level = max(Level::whereLevel(round($user->maxile_level/100)*100)->first(), Level::find(2));  // get userlevel
                 $user->testedTracks()->sync($level->tracks()->lists('id')->toArray(), false);
