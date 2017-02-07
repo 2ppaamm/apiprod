@@ -62,9 +62,6 @@ class Test extends Model
         $questions = collect([]);
         $message = '';
         if (!count($this->uncompletedQuestions)) {    // no more questions
-if ($user->id == 19) { 
-    return 'here'; 
-}
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
                     $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
@@ -82,6 +79,9 @@ if ($user->id == 19) {
                 }              
 
             } elseif (!count($this->questions)) {           // not diagnostic, new test
+if ($user->id == 19) { 
+    return 'in 82'; 
+}
                 $level = max(Level::whereLevel(round($user->maxile_level/100)*100)->first(), Level::find(2));  // get userlevel
                 $user->testedTracks()->sync($level->tracks()->lists('id')->toArray(), false);
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
