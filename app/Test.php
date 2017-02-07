@@ -79,10 +79,8 @@ class Test extends Model
                 }              
 
             } elseif (!count($this->questions)) {           // not diagnostic, new test
-if ($user->id == 19) {
-    return $level = max(min(Level::find(7), Level::whereLevel(round($user->maxile_level/100)*100)->first()), Level::find(2));
-} 
-                $level = max(Level::whereLevel(round($user->maxile_level/100)*100)->first(), Level::find(2));  // get userlevel
+
+                $level = max(min(Level::find(7), Level::whereLevel(round($user->maxile_level/100)*100)->first()), Level::find(2));userlevel
                 $user->testedTracks()->sync($level->tracks()->lists('id')->toArray(), false);
                 $tracks_to_test = count($user->tracksFailed) ? !$level->tracks->intersect($user->tracksFailed) ? $level->tracks->intersect($user->tracksFailed) : $user->tracksFailed : $level->tracks;                         // test failed tracks
                 if (count($tracks_to_test) < 3) {  
