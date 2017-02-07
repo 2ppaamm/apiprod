@@ -118,16 +118,12 @@ class Test extends Model
             }            
         }
 
-        $new_questions = $this->uncompletedQuestions()->get();
+if ($user->id==19) return        $new_questions = $this->uncompletedQuestions()->get();
 
 if (!count($new_questions) && count($this->questions)) {
 //        if (count($this->questions()->get()) <= $this->questions()->sum('question_answered')){
             $message = 'Test ended successfully';
-if ($user->id == 19) { 
-    return 'here'; 
-}
             return $this->completeTest($message, $user);
-
         }
 //        }
         // field unanswered questions
