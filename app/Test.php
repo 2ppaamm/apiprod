@@ -58,13 +58,13 @@ class Test extends Model
     }
 
     public function fieldQuestions($user){
-if ($user->id == 19) { 
-    return 'here'; 
-}
         $level = null;
         $questions = collect([]);
         $message = '';
         if (!count($this->uncompletedQuestions)) {    // no more questions
+if ($user->id == 19) { 
+    return 'here'; 
+}
             if ($this->diagnostic) {                  // if diagnostic check new level, get qns
                 if (count($this->questions)) {
                     $level = Level::where('level', '=', round($user->calculateUserMaxile($this)/100)*100)->first();
