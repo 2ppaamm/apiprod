@@ -10,7 +10,7 @@ class Enrolment extends Model
     use RecordLog;
 
     protected $table = 'house_role_user';
-    protected $fillable = ['mastercode','purchaser_id','payment_email','user_id','role_id', 'house_id','expiry_date', 'start_date', 'places_alloted', 'progress', 'transaction_idp'];
+    protected $fillable = ['mastercode','purchaser_id','payment_email','user_id','role_id', 'house_id','expiry_date', 'start_date', 'places_alloted', 'progress', 'transaction_id', 'currency_code', 'amount_paid', 'payment_status'];
     /**
      * The attributes excluded from the model's JSON form.
      *
