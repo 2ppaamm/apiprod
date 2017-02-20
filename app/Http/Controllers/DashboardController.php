@@ -37,7 +37,7 @@ class DashboardController extends Controller
         $roles = \App\Role::select('id','role')->get();
         $difficulties = \App\Difficulty::select('id', 'difficulty', 'description')->get();
         $courses = \App\Course::with('created_by','houses', 'tracks.skills')->get();
-        $houses = House::with('created_by','tracks.skills','course','privacy')->get();
+        $houses = House::with('created_by','tracks.skills','course','privacy','teachers')->get();
 
         $dashboard = User::profile($user->id);  // user dashboard info
         // user teaching info

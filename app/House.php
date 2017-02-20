@@ -77,6 +77,11 @@ class House extends Model
     	return $this->enrolledUsers()->where('house_role_user.role_id','=',6)->select('name', 'contact', 'email', 'maxile_level', 'game_level','date_of_birth', 'image', 'firstname','lastname');
     }
 
+
+    public function teachers(){
+        return $this->enrolledUsers()->where('house_role_user.role_id','=',4)->select('name', 'contact', 'email', 'image', 'firstname','lastname');
+    }
+
     public function asStudent(){
         return $this->enrolledStudents()->whereUserId(Auth::user()->id)->take(1);
     }
