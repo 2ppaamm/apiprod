@@ -4,6 +4,7 @@ Route::resource('/', 'DashboardController');
 
 Route::get('/loadall', 'LoadController@loadall');
 Route::get('/loadquestions', 'LoadQuestions@loadall');
+Route::get('/loadsecondary', 'LoadSecondary@loadall');
 
 Route::post('/qa', 'CheckAnswerController@index');
 Route::post('/qa/answer', 'CheckAnswerController@answer');

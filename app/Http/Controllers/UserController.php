@@ -95,8 +95,9 @@ class UserController extends Controller
     {
         $logon_user = Auth::user();
         if (!$logon_user->is_admin){
-            return response()->json(['message' => 'You have no access rights to delete user', 'data'=>$user, 'code'=>500], 500);
+            return response()->json(['message' => 'You have no access rights to delete user', 'data'=>$user, 'code'=>401], 500);
         }
+        if (count($users->enrolledClasses)>0) return response()->json(['message'=>'User has existing classes and cannot be deleted.'], 400);
         $users->delete();
         return response()->json(['message'=>'User has been deleted.'], 200);     
     }

@@ -101,13 +101,15 @@ class User extends Model implements AuthenticatableContract,
 
     // enrolment
     public function enrolledClasses(){
-        return $this->enrolment();
+        return $this->enrolment()->where('expiry_date', '>', date("Y-m-d"))
+        ->orderBy('expiry_date','desc');
+
     }
 
     public function expiredClasses(){
         return $this->enrolment()->withPivot('role_id')->groupBy('house_id')
-        ->where('end_date', '<', date("Y-m-d"))
-        ->orderBy('end_date','desc');
+        ->where('expiry_date', '<', date("Y-m-d"))
+        ->orderBy('expiry_date','desc');
     }
 
     // Role management
@@ -225,7 +227,7 @@ class User extends Model implements AuthenticatableContract,
         return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','enrolledClasses.roles',
             'enrolledClasses.houses.created_by',//'enrolledClasses.enrolledStudents',
             'enrolledClasses.houses.tracks.track_maxile',
-            'enrolledClasses.houses.tracks.skills', 'enrolledClasses.houses.tracks.skills.skill_passed'
+            'enrolledClasses.houses.tracks.skills', 'enrolledClasses.houses.tracks.skills'
             ])->first();
     }
 
