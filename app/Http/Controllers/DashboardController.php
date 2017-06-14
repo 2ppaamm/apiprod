@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Auth;
-use App\User;
+use App\User
 use App\House;
 use DateTime;
 use App\Track;

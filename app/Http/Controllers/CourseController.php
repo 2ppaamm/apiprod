@@ -14,7 +14,7 @@ use Auth;
 class CourseController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth0.jwt');
+//        $this->middleware('auth0.jwt');
     }
     /**
      * Display a listing of the resource.
@@ -23,7 +23,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return $courses = Course::select('id','description')->get();
+        return $courses = Course::all();
     }
 
     /**
