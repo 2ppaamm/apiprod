@@ -59,8 +59,9 @@ class CourseController extends Controller
     {
         $values = $request->all();
 //        Auth::user()->courses()->save($values);
-        Course::create($values);
-        return response()->json(['message'=>'Course is now added','code'=>201], 201);
+
+        $course = Course::create($values);
+        return response()->json(['message'=>'Course is now added','code'=>201, 'course' => $course], 201);
     }
 
     /**
@@ -82,6 +83,7 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
         }
+        return response()->json($course, 200);
         return $course;
     }
 
@@ -93,14 +95,15 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Course $courses)
+    public function update(Request $request, $id)
     {
-        $logon_user = Auth::user();
-        if ($logon_user->id != $courses->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
-        }
-        $courses->fill($request->all())->save();
-        return response()->json(['course' => $courses, 200], 200);        
+        $course = Course::find($id);
+//        $logon_user = Auth::user();
+  //      if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
+    //        return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
+      //  }
+        $course->fill($request->all())->save();
+        return response()->json(['message'=>'Course updated','course' => $course, 201], 201);        
     }
 
     /**

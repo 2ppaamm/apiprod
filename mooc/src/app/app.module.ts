@@ -14,6 +14,11 @@ import { CourseDetailComponent } from './gallery/course-detail/course-detail.com
 import { ContactComponent } from './contact/contact.component';
 import { AboutComponent } from './about/about.component';
 import { AdminComponent } from './admin/admin.component';
+import { AdminCourseListComponent } from './admin/admin-course-list/admin-course-list.component';
+import { DashboardComponent } from './admin/dashboard.component';
+import { AdminCourseCreateComponent } from './admin/admin-course-create/admin-course-create.component';
+import { AdminCourseEditComponent } from './admin/admin-course-edit/admin-course-edit.component';
+import { AdminCourseDeleteComponent } from './admin/admin-course-delete/admin-course-delete.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +30,12 @@ import { AdminComponent } from './admin/admin.component';
     CourseDetailComponent,
     ContactComponent,
     AboutComponent,
-    AdminComponent
+    AdminComponent,
+    AdminCourseListComponent,
+    DashboardComponent,
+    AdminCourseCreateComponent,
+    AdminCourseEditComponent,
+    AdminCourseDeleteComponent
   ],
   imports: [
     routes,
