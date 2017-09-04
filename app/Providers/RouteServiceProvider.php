@@ -23,15 +23,15 @@ class RouteServiceProvider extends ServiceProvider
      * @param  \Illuminate\Routing\Router  $router
      * @return void
      */
-    public function boot(Router $router)
+    public function boot()
     {
         //
 
-        parent::boot($router);
+        parent::boot();
 
-        $router->bind('username', function($username){
-            return User::whereName($username)->firstOrFail();
-        });
+//        $router->bind('username', function($username){
+  //          return User::whereName($username)->firstOrFail();
+    //    });
     }
 
     /**

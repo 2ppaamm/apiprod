@@ -33,6 +33,7 @@ class AddGamification extends Migration
     public function down()
     {
         Schema::table('questions', function($table) {
+            $table->dropForeign('questions_gamecodes_id_foreign');
             $table->dropColumn('gamecodes_id');
         });
 
