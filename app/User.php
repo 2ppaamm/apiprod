@@ -33,7 +33,7 @@ class User extends Model implements AuthenticatableContract,
      *
      * @var array
      */
-    protected $fillable = ['name','firstname', 'lastname', 'email','image', 'maxile_level', 'game_level','mastercode','contact'];
+    protected $fillable = ['name','firstname', 'lastname', 'email','image', 'maxile_level', 'game_level','mastercode','contact', 'password'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -96,7 +96,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function getfieldmaxile(){
-        return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date', 'month_achieved')->withTimestamps()->select('field_maxile', 'field_test_date','month_achieved','field');
+        return $this->belongsToMany(Field::class)->withPivot('field_maxile', 'field_test_date', 'month_achieved')->withTimestamps()->select('field_maxile', 'field_test_date','month_achieved','field', 'id');
     }
 
     // enrolment
@@ -117,18 +117,22 @@ class User extends Model implements AuthenticatableContract,
         return $this->belongsToMany(Role::class, 'house_role_user')->withPivot('house_id')->withTimestamps();
     }
 
+    public function roleHouse(){
+        return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id')->withTimestamps();
+    }
+
     public function enrolment(){
         return $this->hasMany(Enrolment::class);
     }
 
     public function enrolclass($user_maxile){
-        $houses = House::whereIn('course_id',Course::where('start_maxile_score','<=' ,round($user_maxile/100)*100)->lists('id'))->lists('id')->all();
+        $houses = House::whereIn('course_id',Course::where('start_maxile_score','<=' ,round($user_maxile/100)*100)->pluck('id'))->pluck('id')->all();
         $this->houseRoles()->sync($houses,false);
         return 'enrolment created';
     }
 
     public function validEnrolment($courseid){
-        return $this->enrolment()->whereRoleId(Role::where('role', 'LIKE', '%Student')->lists('id'))->whereIn('house_id', House::whereIn('course_id', $courseid)->lists('id'))->where('expiry_date','>=', new DateTime('today'))->get();
+        return $this->enrolment()->whereRoleId(Role::where('role', 'LIKE', '%Student')->pluck('id'))->whereIn('house_id', House::whereIn('course_id', $courseid)->pluck('id'))->where('expiry_date','>=', new DateTime('today'))->get();
     }
 
     public function teachingHouses(){
@@ -224,11 +228,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
    public function scopeProfile($query, $id) { 
-        return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','enrolledClasses.roles',
-            'enrolledClasses.houses.created_by',//'enrolledClasses.enrolledStudents',
-            'enrolledClasses.houses.tracks.track_maxile',
-            'enrolledClasses.houses.tracks.skills', 'enrolledClasses.houses.tracks.skills'
-            ])->first();
+        return $query->whereId($id)->first();
     }
 
     public function scopeGameleader($query){
@@ -268,8 +268,8 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function calculateUserMaxile($test){
-        $highest_level_passed = Level::whereIn('id', $this->tracksPassed()->lists('level_id'))->orderBy('level', 'desc')->first();
-        $user_maxile = $highest_level_passed ? number_format(max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->lists('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level), 2,'.','') : 0;
+        $highest_level_passed = Level::whereIn('id', $this->tracksPassed()->pluck('level_id'))->orderBy('level', 'desc')->first();
+        $user_maxile = $highest_level_passed ? number_format(max($this->testedTracks()->whereIn('track_id',$highest_level_passed->tracks()->pluck('id'))->avg('track_maxile'), $highest_level_passed->start_maxile_level), 2,'.','') : 0;
         $this->maxile_level = $user_maxile;
         $this->save();
         return $user_maxile;

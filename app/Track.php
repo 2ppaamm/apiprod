@@ -92,7 +92,7 @@ class Track extends Model
 
     public function storeMaxile($user){
         $track_passed = (count($user->skill_user()->whereSkillPassed(TRUE)->get()) >= count($this->skills)) ? TRUE:FALSE;
-        $track_maxile = !$track_passed ? SkillUser::whereUserId($user->id)->whereIn('skill_id', $this->skills()->lists('id'))->sum('skill_maxile')/count($this->skills) : $this->level->end_maxile_level;
+        $track_maxile = !$track_passed ? SkillUser::whereUserId($user->id)->whereIn('skill_id', $this->skills()->pluck('id'))->sum('skill_maxile')/count($this->skills) : $this->level->end_maxile_level;
         $this->users()->sync([$user->id =>['track_id'=>$this->id,
             'track_test_date' => new DateTime('now'),
             'track_passed' => $track_passed,
@@ -101,7 +101,7 @@ class Track extends Model
     }
 
     public function calculateMaxile($user, $diagnostic){
-        $track_maxile = $user->skill_user()->whereIn('skill_id', $this->skills()->lists('id'))->avg('skill_maxile');
+        $track_maxile = $user->skill_user()->whereIn('skill_id', $this->skills()->pluck('id'))->avg('skill_maxile');
         $record = [
             'track_test_date' => new DateTime('now'),
             'track_passed' => $track_maxile < $this->level->end_maxile_level ? FALSE : TRUE,

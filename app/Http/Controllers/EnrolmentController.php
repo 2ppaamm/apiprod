@@ -12,6 +12,7 @@ use App\User;
 use App\Role;
 use App\Enrolment;
 use Mail;
+use App\House;
 
 class EnrolmentController extends Controller
 {
@@ -26,7 +27,7 @@ class EnrolmentController extends Controller
      */
     public function index() {
         $user = Auth::user();
-        return $user->is_admin ? $users = \App\Enrolment::with('houses','roles', 'users')->get() : response()->json(['message' =>'not authorized to view enrolment details', 'code'=>401], 401);
+        return $user->is_admin ? House::with('enrolment.roles')->with('enrolment.users.enrolment.roles')->get() : response()->json(['message' =>'not authorized to view enrolment details', 'code'=>401], 401);
 
 //        return response()->json(['data'=>$users], 200);
     }
@@ -68,6 +69,27 @@ class EnrolmentController extends Controller
         return response()->json(['message' => 'Registration successful. Within an hour, you should receive an email at '.$user->email.' with details of how to enrol and start the program.', 
             'mastercode' => $mastercode,
             'places_alloted'=>$request->places_alloted, 'code'=>201]);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function user_houses() {
+        $user = User::find(1);//Auth::user();
+        $houses = $user->roleHouse()->with('tracks.skills')->get();
+        return response()->json(['message' =>'Successful retrieval of enrolment.', 'houses'=>$houses, 'code'=>201], 201);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id) {
+        $house=House::findorfail($id);
+        $users = User::with('enrolment.roles')->wherHouseId($id)->get();
+        return response()->json(['message' =>'Successful retrieval of enrolment.', 'users'=>$users, 'code'=>201], 201);
     }
 
 }

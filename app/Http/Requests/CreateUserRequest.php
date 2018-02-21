@@ -25,7 +25,7 @@ class CreateUserRequest extends Request
     {
         return [
             'email' => 'required|unique:users|email',
-            'password'=>'required|confirmed|regex:/^(?=.*\d)(?=.*[a-zA-Z])(?!.*[\W_\x7B-\xFF]).{6,15}$/',
+            'password'=>'required|regex:/^(?=.*\d)(?=.*[a-zA-Z])(?!.*[\W_\x7B-\xFF]).{6,15}$/',
         ];
     }
 

@@ -40,7 +40,7 @@ class House extends Model
     }
 
     public function created_by(){
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id')->select('name','firstname','lastname', 'email', 'image', 'id');
     }
 
     public function enrolledUsers(){    	
@@ -54,7 +54,7 @@ class House extends Model
     }
 
     public function studentEnrolment(){
-        return $this->enrolment()->whereRoleId(6);
+        return $this->enrolment()->whereRoleId(7);
     }
 
     public function enrolUser($role){

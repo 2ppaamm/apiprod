@@ -25,7 +25,7 @@ class Auth0JWTMiddleware {
             $jwtUser = $auth0->decodeJWT($encUser);
         }
         catch(CoreException $e) {
-            return \Response::make("Unauthorized user", 401);
+return $e;            return \Response::make("Unauthorized user", 401);
         }
         catch(Exception $e) {
             echo $e;exit;
@@ -36,7 +36,7 @@ class Auth0JWTMiddleware {
             return \Response::make("Unauthorized user", 401);
         }
 
-        $currentuser = User::updateOrCreate(['email'=>$user->email],[
+        $currentuser = User::firstOrCreate(['email'=>$user->email],[
                 'email' => $user->email,
                 'name' => $user->name,
                 'image' => $user->picture

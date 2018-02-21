@@ -15,9 +15,9 @@ use DB;
 class DashboardController extends Controller
 {
     public function __construct(){
- //       $this->middleware('cors');
-        $this->middleware('auth0.jwt');
-//        \Auth::login(User::find(2));
+        $this->middleware('cors');
+ //       $this->middleware('auth0.jwt');
+        \Auth::login(User::find(1));
     }
     /**
      * Display a listing of the resource.
@@ -58,13 +58,15 @@ class DashboardController extends Controller
 //return $user->teachingHouses()->with('studentEnrolment.users.tests')->get();
 
         return response()->json(['message' => 'Request executed successfully', 
+            'results'=>['correctness'=>$user->accuracy(),'tracks_passed'=>count($user->tracksPassed).'/'.count(Track::all()), 
+                    'skills_passed'=>count($user->skill_user()->where('difficulty_passed','>',2)->get()).'/'.count(\App\Skill::all())],
+            'user'=>$dashboard,
             'teach_info' => $classInfo,
-            'user'=>$dashboard, 'game_leaders'=>User::gameleader(), 
+            'game_leaders'=>User::gameleader(), 
             'maxile_leaders'=>User::maxileleader(),'houses'=>$houses,
             'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'difficulties'=>$difficulties,
-            'logs'=>$logs, 'correctness'=>$user->accuracy(), 
-            'tracks_passed'=>count($user->tracksPassed).'/'.count(Track::all()), 
-            'skill_passed'=>count($user->skill_user()->where('difficulty_passed','>',2)->get()).'/'.count(\App\Skill::all()), 
-            'my_results'=>$user->getfieldmaxile()->get(), 'code'=>201]);
+            'logs'=>$logs,
+            'my_questions'=> $user->myquestions()->with('skill')->select('correct','skill_id', 'attempts', 'question', 'question_image', 'answer0', 'answer0_image', 'answer1', 'answer1_image', 'answer2', 'answer2_image', 'answer3', 'answer3_image', 'type_id')->get(),
+             'code'=>201]);
 	}
-}
+}                                                                    

@@ -35,6 +35,6 @@ class Enrolment extends Model
  //   }
 
     public function inforce($user, $course){
-        return $this->users()->whereUserId($user->id)->whereIn('house_id', $course->houses()->lists('id'))->where('expiry_date','>', new DateTime(now))->get();
+        return $this->users()->whereUserId($user->id)->whereIn('house_id', $course->houses()->pluck('id'))->where('expiry_date','>', new DateTime(now))->get();
     }
 }

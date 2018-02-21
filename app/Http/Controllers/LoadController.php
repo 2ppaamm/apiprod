@@ -34,7 +34,7 @@ class LoadController extends Controller
     }
 
     public function loadusers(){
-        Excel::selectSheets('users')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('users')->load('public/capstone_questions.xlsx', function ($reader) {
             $users = $reader->all();
             foreach ($users as $user) {
                 \App\User::create($user->toArray());
@@ -44,14 +44,14 @@ class LoadController extends Controller
 
     public function loadquestions ()
     {
-        Excel::selectSheets('imp1')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('imp1')->load('public/capstone_questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
             }
         });
 
-        Excel::selectSheets('imp2')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('imp2')->load('public/capstone_questions.xlsx', function ($reader) {
             $questions = $reader->all();
             foreach ($questions as $question) {
                 \App\Question::create($question->toArray());
@@ -65,35 +65,35 @@ class LoadController extends Controller
      */
     public function loadtracks()
     {
-        Excel::selectSheets('tracks')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('tracks')->load('public/capstone_questions.xlsx', function ($reader) {
             $tracks = $reader->all();
             foreach ($tracks as $track) {
                 \App\Track::create($track->toArray());
             }
         });
 
-        Excel::selectSheets('course_track')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('course_track')->load('public/capstone_questions.xlsx', function ($reader) {
             $course_tracks = $reader->all();
             foreach ($course_tracks as $track) {
                 \App\Course_Track::create($track->toArray());
             }
         });
 
-        Excel::selectSheets('track_track')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('track_track')->load('public/capstone_questions.xlsx', function ($reader) {
             $track_tracks = $reader->all();
             foreach ($track_tracks as $track) {
                 \App\Track_Track::create($track->toArray());
             }
         });
 
-//        Excel::selectSheets('track_user')->load('public/questions.xlsx', function ($reader) {
+//        Excel::selectSheets('track_user')->load('public/capstone_questions.xlsx', function ($reader) {
   //          $track_users = $reader->all();
     //        foreach ($track_users as $track_user) {
       //          \App\TrackUser::create($track_user->toArray());
         //    }
      //   });
 
-//        Excel::selectSheets('field_user')->load('public/questions.xlsx', function ($reader) {
+//        Excel::selectSheets('field_user')->load('public/capstone_questions.xlsx', function ($reader) {
   //          $field_users = $reader->all();
     //        foreach ($field_users as $field_user) {
       //          \App\FieldUser::create($field_user->toArray());
@@ -109,7 +109,7 @@ class LoadController extends Controller
      */
     public function loadlevels()
     {
-        Excel::selectSheets('levels')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('levels')->load('public/capstone_questions.xlsx', function ($reader) {
             $levels = $reader->all();
             foreach ($levels as $level) {
                 \App\Level::create($level->toArray());
@@ -125,7 +125,7 @@ class LoadController extends Controller
      */
     public function loadcourses()
     {
-        Excel::selectSheets('courses')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('courses')->load('public/capstone_questions.xlsx', function ($reader) {
             $courses = $reader->all();
             foreach ($courses as $course) {
                 \App\Course::create($course->toArray());
@@ -142,14 +142,14 @@ class LoadController extends Controller
 
     public function loadskills()
     {
-        Excel::selectSheets('skills')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('skills')->load('public/capstone_questions.xlsx', function ($reader) {
             $skills = $reader->all();
             foreach ($skills as $skill) {
                 \App\Skill::create($skill->toArray());
             }
         });
 
-        Excel::selectSheets('skill_track')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('skill_track')->load('public/capstone_questions.xlsx', function ($reader) {
             $skill_tracks = $reader->all();
             foreach ($skill_tracks as $skill_track) {
                 \App\Skill_Track::create($skill_track->toArray());
@@ -166,14 +166,14 @@ class LoadController extends Controller
 
     public function loadroles ()
     {
-        Excel::selectSheets('role_user')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('role_user')->load('public/capstone_questions.xlsx', function ($reader) {
             $house_role_users = $reader->all();
             foreach ($house_role_users as $house_role_user) {
                 \App\Enrolment::create($house_role_user->toArray());
             }
         });
 
-        Excel::selectSheets('permission_role')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('permission_role')->load('public/capstone_questions.xlsx', function ($reader) {
             $permission_roles = $reader->all();
             foreach ($permission_roles as $permission_role) {
                 \App\Permission_Role::create($permission_role->toArray());
@@ -183,14 +183,14 @@ class LoadController extends Controller
 
    public function loadhouses ()
     {
-        Excel::selectSheets('houses')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('houses')->load('public/capstone_questions.xlsx', function ($reader) {
             $houses = $reader->setDateFormat('Y-m-d')->all();
             foreach ($houses as $house) {
                 \App\House::create($house->toArray());
             }
         });
 
-        Excel::selectSheets('house_track')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('house_track')->load('public/capstone_questions.xlsx', function ($reader) {
             $house_tracks = $reader->setDateFormat('Y-m-d')->all();
             foreach ($house_tracks as $house_track) {
                 \App\House_Track::create($house_track->toArray());
@@ -207,7 +207,7 @@ class LoadController extends Controller
 
     public function loadmastercodes ()
     {
-        Excel::selectSheets('mastercodes')->load('public/questions.xlsx', function ($reader) {
+        Excel::selectSheets('mastercodes')->load('public/capstone_questions.xlsx', function ($reader) {
             $mastercodes = $reader->all();
             foreach ($mastercodes as $mastercode) {
                 \App\Mastercode::create($mastercode->toArray());

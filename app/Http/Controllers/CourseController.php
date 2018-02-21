@@ -14,6 +14,7 @@ use Auth;
 class CourseController extends Controller
 {
     public function __construct(){
+        $this->middleware('cors');
         $this->middleware('auth0.jwt');
     }
     /**
@@ -23,7 +24,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return $courses = Course::select('id','description')->get();
+        return $courses = Course::with('tracks.skills','houses.created_by')->get();
+        return response()-> json(['message' => 'Request executed successfully', 'courses'=>Course::all()],200);
     }
 
     /**
@@ -82,7 +84,7 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
         }
-        return $course;
+        return response()->json(['course'=>$course, 'code'=>200], 200);
     }
 
 
@@ -100,7 +102,7 @@ class CourseController extends Controller
             return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
         }
         $courses->fill($request->all())->save();
-        return response()->json(['course' => $courses, 200], 200);        
+        return response()->json(['message'=>'Course updated successfully', 'data' => $courses, 201], 201);        
     }
 
     /**
@@ -116,7 +118,7 @@ class CourseController extends Controller
             return response()->json(['message'=>'Course not found, cannot delete.','code'=>404], 404);
         }
         if (sizeof($course->houses)>0){
-            return response()->json(['message'=>'There are classes based this course. Delete those classes first.','code'=>409],409);
+            return response()->json(['message'=>'There are classes based on this course. Delete those classes first.','code'=>409],409);
         }
         $course->delete();
         return response()->json(['message'=>'Course '.$course->name.' deleted','code'=>201], 201);

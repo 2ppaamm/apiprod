@@ -110,7 +110,7 @@ class HouseUserController extends Controller
      */
     public function show($id, $user_id)
     {
-        $enrolment = Enrolment::whereHouseId($id)->whereUserId($user_id)->lists('user_id');
+        $enrolment = Enrolment::whereHouseId($id)->whereUserId($user_id)->pluck('user_id');
         if (!$enrolment) {
             return response()->json(['message' => 'This user is not enrolled', 'code'=>404], 404);
         }        

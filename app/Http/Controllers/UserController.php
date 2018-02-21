@@ -14,7 +14,9 @@ use App\Http\Requests\GameScoreRequest;
 class UserController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth0.jwt');
+//        $this->middleware('auth0.jwt');
+        \Auth::login(User::find(2));
+
     }
 
     /**
@@ -25,9 +27,7 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return $user->is_admin ? $users = User::with('enrolledClasses.roles','logs')->get() : response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
-
-//        return response()->json(['data'=>$users], 200);
+        return $user->is_admin ? response()->json(User::with('enrolledClasses.roles','logs')->get()): response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
     }
 
     /**
@@ -39,7 +39,8 @@ class UserController extends Controller
     public function store(CreateUserRequest $request)
     {
         $user = $request->all();
-        return User::create($user);
+        $user['password'] = bcrypt($request->password);
+        User::create($user);
         return response()->json(['message' => 'User correctly added', 'data'=>$user, 'code'=>201]);
     }
 

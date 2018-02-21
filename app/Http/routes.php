@@ -32,6 +32,7 @@ Route::get('users/{username}/logs','LogController@show');
 Route::get('logs', 'LogController@index');
 
 Route::get('/api/protected', 'DashboardController@index');
+Route::get('/enrols/users', 'EnrolmentController@user_houses');
 Route::post('/test/protected', 'DiagnosticController@index');
 Route::post('test/mastercode', 'DiagnosticController@store');
 Route::post('/test/answers', 'DiagnosticController@answer');
