@@ -17,6 +17,7 @@ use App\House;
 class EnrolmentController extends Controller
 {
     public function __construct(){
+        $this->middleware('cors');
         $this->middleware('auth0.jwt');
     }
 
@@ -70,6 +71,7 @@ class EnrolmentController extends Controller
             'mastercode' => $mastercode,
             'places_alloted'=>$request->places_alloted, 'code'=>201]);
     }
+    
     /**
      * Display a listing of the resource.
      *
@@ -79,6 +81,17 @@ class EnrolmentController extends Controller
         $user = User::find(1);//Auth::user();
         $houses = $user->roleHouse()->with('tracks.skills')->get();
         return response()->json(['message' =>'Successful retrieval of enrolment.', 'houses'=>$houses, 'code'=>201], 201);
+    }
+    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function teacher_houses() {
+        $user = User::find(1);//Auth::user();
+        $houses = $user->teachHouse()->with('tracks.skills')->with('tracks.field')->with('tracks.status')->with('tracks.level')->with('enrolledStudents.fieldMaxile')->with('enrolledStudents.tracksPassed')->get();
+        return response()->json(['message' =>'Successful retrieval of teacher enrolment.', 'houses'=>$houses, 'code'=>201], 201);
     }
 
     /**

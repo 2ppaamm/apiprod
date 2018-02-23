@@ -15,7 +15,7 @@ class CourseController extends Controller
 {
     public function __construct(){
         $this->middleware('cors');
-        $this->middleware('auth0.jwt');
+//        $this->middleware('auth0.jwt'); don't need to authenticate for courses
     }
     /**
      * Display a listing of the resource.

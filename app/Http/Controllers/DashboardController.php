@@ -16,7 +16,7 @@ class DashboardController extends Controller
 {
     public function __construct(){
         $this->middleware('cors');
- //       $this->middleware('auth0.jwt');
+        $this->middleware('auth0.jwt');
         \Auth::login(User::find(1));
     }
     /**
@@ -42,7 +42,7 @@ class DashboardController extends Controller
         $dashboard = User::profile($user->id);  // user dashboard info
         // user teaching info
 
-        $classInfo = $user->teachingHouses()->with('houses.studentEnrolment.users.completedtests','houses.studentEnrolment.users.getfieldmaxile')->with('houses.tracks.skills')->get();
+        return $classInfo = $user->teachingHouses()->with('houses.studentEnrolment.users.completedtests','houses.studentEnrolment.users.getfieldmaxile')->with('houses.tracks.skills')->get();
         foreach ($classInfo as $class) {
             $class['average_progress']=$class->houses->studentEnrolment()->avg('progress');
             $class['lowest_progress'] = $class->houses->studentEnrolment()->min('progress');

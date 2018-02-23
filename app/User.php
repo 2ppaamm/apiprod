@@ -121,6 +121,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id')->withTimestamps();
     }
 
+    public function teachHouse(){
+        return $this->roleHouse()->whereRoleId(Role::where('role', 'LIKE', '%Teacher')->pluck('id'));
+    }
+
     public function enrolment(){
         return $this->hasMany(Enrolment::class);
     }
@@ -136,7 +140,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function teachingHouses(){
-        return $this->enrolment()->where('role_id','<',6)->groupBy('house_id');
+        return $this->enrolment()->where('role_id','<',Role::where('role', 'LIKE', '%Teacher')->pluck('id'))->groupBy('house_id');
     }
 
     //user's roles in selected class

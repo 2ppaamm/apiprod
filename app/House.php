@@ -54,7 +54,7 @@ class House extends Model
     }
 
     public function studentEnrolment(){
-        return $this->enrolment()->whereRoleId(7);
+        return $this->enrolment()->whereRoleId(Role::where('role', 'LIKE', '%Student')->pluck('id'));
     }
 
     public function enrolUser($role){
@@ -74,12 +74,12 @@ class House extends Model
     }
 
     public function enrolledStudents(){
-    	return $this->enrolledUsers()->where('house_role_user.role_id','=',6)->select('name', 'contact', 'email', 'maxile_level', 'game_level','date_of_birth', 'image', 'firstname','lastname');
+    	return $this->enrolledUsers()->whereIn('role_id',Role::where('role', 'LIKE', '%Student')->pluck('id'))->select('name', 'contact', 'email', 'maxile_level', 'game_level','date_of_birth', 'image', 'firstname','lastname');
     }
 
 
     public function teachers(){
-        return $this->enrolledUsers()->where('house_role_user.role_id','=',4)->select('name', 'contact', 'email', 'image', 'firstname','lastname');
+        return $this->enrolledUsers()->where('house_role_user.role_id','=',Role::where('role', 'LIKE', '%Teacher')->pluck('id'))->select('name', 'contact', 'email', 'image', 'firstname','lastname');
     }
 
     public function asStudent(){
