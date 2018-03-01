@@ -6,7 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=5.5.9",
+<<<<<<< HEAD
         "laravel/framework": "5.5.*",
+=======
+        "laravel/framework": "5.4.*",
+>>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
         "maatwebsite/excel": "~2.0",
         "barryvdh/laravel-cors": "^0.9.3",
         "auth0/login": "~4.0"
@@ -15,7 +19,11 @@
         "filp/whoops": "~2.0",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
+<<<<<<< HEAD
         "phpunit/phpunit": "~6.0",
+=======
+        "phpunit/phpunit": "~5.7",
+>>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
         "symfony/css-selector": "~3.0",
         "symfony/dom-crawler": "~3.0"
     },
