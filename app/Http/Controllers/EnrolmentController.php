@@ -13,6 +13,7 @@ use App\Role;
 use App\Enrolment;
 use Mail;
 use App\House;
+use App\Track;
 
 class EnrolmentController extends Controller
 {
@@ -79,7 +80,21 @@ class EnrolmentController extends Controller
      */
     public function user_houses() {
         $user = User::find(1);//Auth::user();
-        $houses = $user->roleHouse()->with('tracks.skills')->get();
+
+        $houses = $user->roleHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
+
+        foreach ($houses as $house) {
+          $house['course_maxile'] = Enrolment::whereUserId($user->id)->whereHouseId($house->id)->pluck('progress')->first();
+          $house['accuracy'] = $user->accuracy();
+          $house['tracks_passed'] = count($house->tracks->intersect($user->tracksPassed));
+          $house['total_tracks'] = count($house->tracks);
+          $house['skill_passed'] = count(\App\Skill::whereIn('id', \App\Skill_Track::whereIn('track_id',$house->tracks()->pluck('id'))->pluck('skill_id'))->get()->intersect($user->skill_user()->whereSkillPassed(TRUE)->get()));
+          $house['total_skills'] = count(\App\Skill_track::whereIn('track_id', $house->tracks()->pluck('id'))->get());
+          $house['radarChartLabels'] = $user->testedTracks->intersect($house->tracks)->pluck('track');
+          $house['radarChartData'] = [['data'=>\App\TrackUser::whereUserId($user->id)->whereIn('track_id', $house->tracks->pluck('id'))->orderBy('track_id')->pluck('track_maxile') ? \App\TrackUser::whereUserId($user->id)->whereIn('track_id', $house->tracks->pluck('id'))->orderBy('track_id')->pluck('track_maxile'): 0, 'label'=>'Track Maxile']];
+          $house['target_score'] = $house->course()->pluck('end_maxile_score')->first(); 
+        }
+
         return response()->json(['message' =>'Successful retrieval of enrolment.', 'houses'=>$houses, 'code'=>201], 201);
     }
     
@@ -90,7 +105,17 @@ class EnrolmentController extends Controller
      */
     public function teacher_houses() {
         $user = User::find(1);//Auth::user();
-        $houses = $user->teachHouse()->with('tracks.skills')->with('tracks.field')->with('tracks.status')->with('tracks.level')->with('enrolledStudents.fieldMaxile')->with('enrolledStudents.tracksPassed')->get();
+        $houses = $user->teachHouse()->with('tracks.skills')->with('tracks.field')->with('tracks.status')->with('tracks.level')->with('enrolledStudents.fieldMaxile')->with('enrolledStudents.tracksPassed')->with('enrolledStudents.completedtests')->get();
+        foreach ($houses as $class) {
+            $class['average_progress']=$class->studentEnrolment->avg('progress');
+            $class['lowest_progress'] = $class->studentEnrolment->min('progress');
+            $class['highest_progress'] = $class->studentEnrolment->max('progress');
+            $class['students_completed_course'] = $class->studentEnrolment->where('expiry_date','<', new DateTime('today'))->count();         
+            $class['chartdata']=[$class->studentEnrolment()->where('progress','<', 40)->count(),$class->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count(),$class->studentEnrolment()->where('progress','>=', 80)->count()];
+            $class['tracksdata'] = $class->tracks()->pluck('track');
+            $class['barchartdata'] = [['data'=> \App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile') ? \App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile'):0 , 'label'=>'Average Maxile']];
+        }
+
         return response()->json(['message' =>'Successful retrieval of teacher enrolment.', 'houses'=>$houses, 'code'=>201], 201);
     }
 
@@ -101,7 +126,7 @@ class EnrolmentController extends Controller
      */
     public function show($id) {
         $house=House::findorfail($id);
-        $users = User::with('enrolment.roles')->wherHouseId($id)->get();
+        $users = User::with('enrolment.roles')->whereHouseId($id)->get();
         return response()->json(['message' =>'Successful retrieval of enrolment.', 'users'=>$users, 'code'=>201], 201);
     }
 

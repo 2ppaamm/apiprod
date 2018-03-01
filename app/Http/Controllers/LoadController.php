@@ -86,12 +86,12 @@ class LoadController extends Controller
             }
         });
 
-//        Excel::selectSheets('track_user')->load('public/capstone_questions.xlsx', function ($reader) {
-  //          $track_users = $reader->all();
-    //        foreach ($track_users as $track_user) {
-      //          \App\TrackUser::create($track_user->toArray());
-        //    }
-     //   });
+        Excel::selectSheets('track_user')->load('public/capstone_questions.xlsx', function ($reader) {
+            $track_users = $reader->all();
+            foreach ($track_users as $track) {
+                \App\TrackUser::create($track->toArray());
+            }
+        });
 
 //        Excel::selectSheets('field_user')->load('public/capstone_questions.xlsx', function ($reader) {
   //          $field_users = $reader->all();
@@ -153,6 +153,13 @@ class LoadController extends Controller
             $skill_tracks = $reader->all();
             foreach ($skill_tracks as $skill_track) {
                 \App\Skill_Track::create($skill_track->toArray());
+            }
+        });
+
+        Excel::selectSheets('skill_user')->load('public/capstone_questions.xlsx', function ($reader) {
+            $skill_users = $reader->all();
+            foreach ($skill_users as $skill_user) {
+                \App\SkillUser::create($skill_user->toArray());
             }
         });
     }

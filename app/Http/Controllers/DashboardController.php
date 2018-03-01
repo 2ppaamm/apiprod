@@ -27,7 +27,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        $user = User::find(2);//Auth::user();
         $age = date_diff(date_create($user->date_of_birth), date_create('today'))->y;
         $user['highest_scores'] = $user->highest_scores();
 //        $test = new \App\Test;
@@ -42,12 +42,13 @@ class DashboardController extends Controller
         $dashboard = User::profile($user->id);  // user dashboard info
         // user teaching info
 
-        return $classInfo = $user->teachingHouses()->with('houses.studentEnrolment.users.completedtests','houses.studentEnrolment.users.getfieldmaxile')->with('houses.tracks.skills')->get();
+        $classInfo = $user->teachingHouses()->with('houses.studentEnrolment.users.completedtests','houses.studentEnrolment.users.getfieldmaxile')->with('houses.tracks.skills')->get();
         foreach ($classInfo as $class) {
             $class['average_progress']=$class->houses->studentEnrolment()->avg('progress');
             $class['lowest_progress'] = $class->houses->studentEnrolment()->min('progress');
             $class['highest_progress'] = $class->houses->studentEnrolment()->max('progress');
-            $class['students_completed_course'] = $class->houses->studentEnrolment()->where('expiry_date','<', new DateTime('today'))->count();         
+            $class['students_completed_course'] = $class->houses->studentEnrolment()->where('expiry_date','<', new DateTime('today'))->count();
+            $class['chartdata']=['total_students'=>$class->houses->studentEnrolment()->count(),'underperform'=>$class->houses->studentEnrolment()->where('progress','<', 40)->count(),'on_target'=>$class->houses->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count(), 'excel'=>$class->houses->studentEnrolment()->where('progress','>=', 80)->count()];         
             $class['total_students'] = $class->houses->studentEnrolment()->count();
             $class['underperform'] = $class->houses->studentEnrolment()->where('progress','<', 40)->count();
             $class['on_target'] = $class->houses->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count();
@@ -58,14 +59,14 @@ class DashboardController extends Controller
 //return $user->teachingHouses()->with('studentEnrolment.users.tests')->get();
 
         return response()->json(['message' => 'Request executed successfully', 
-            'results'=>['correctness'=>$user->accuracy(),'tracks_passed'=>count($user->tracksPassed).'/'.count(Track::all()), 
-                    'skills_passed'=>count($user->skill_user()->where('difficulty_passed','>',2)->get()).'/'.count(\App\Skill::all())],
-            'user'=>$dashboard,
-            'teach_info' => $classInfo,
+//            'results'=>['correctness'=>$user->accuracy(),'tracks_passed'=>count($user->tracksPassed).'/'.count(Track::all()), 
+//                    'skills_passed'=>count($user->skill_user()->where('difficulty_passed','>',2)->get()).'/'.count(\App\Skill::all())],
+            'user'=>$user,
+//            'teach_info' => $classInfo,
             'game_leaders'=>User::gameleader(), 
             'maxile_leaders'=>User::maxileleader(),'houses'=>$houses,
-            'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'difficulties'=>$difficulties,
-            'logs'=>$logs,
+//            'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'difficulties'=>$difficulties,
+//            'logs'=>$logs,
             'my_questions'=> $user->myquestions()->with('skill')->select('correct','skill_id', 'attempts', 'question', 'question_image', 'answer0', 'answer0_image', 'answer1', 'answer1_image', 'answer2', 'answer2_image', 'answer3', 'answer3_image', 'type_id')->get(),
              'code'=>201]);
 	}

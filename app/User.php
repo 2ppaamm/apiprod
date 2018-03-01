@@ -122,7 +122,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function teachHouse(){
-        return $this->roleHouse()->whereRoleId(Role::where('role', 'LIKE', '%Teacher')->pluck('id'));
+        return $this->roleHouse()->whereRoleId(Role::where('role', 'LIKE', '%Teacher')->pluck('id'))->groupBy('house_id');
     }
 
     public function enrolment(){
@@ -165,7 +165,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function skillMaxile(){
-        return $this->belongsToMany(Skill::class)->withPivot('skill_maxile', 'skill_test_date','noOfTries','noOfPasses','skill_passed','difficulty_passed')->select('skill', 'skill_maxile', 'skill_test_date','noOfTries','noOfPasses','skill_passed','difficulty_passed')->groupBy('skill');
+        return $this->belongsToMany(Skill::class)->withPivot('skill_maxile', 'skill_test_date','noOfTries','noOfPasses','skill_passed','difficulty_passed')->select('skill_id','skill', 'skill_maxile', 'skill_test_date','noOfTries','noOfPasses','skill_passed','difficulty_passed')->groupBy('skill');
     }
 
     public function completedSkills(){
@@ -256,7 +256,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function trackResults(){
-        return $this->testedTracks()->select('track','track_maxile','track_passed','track_test_date');
+        return $this->testedTracks()->pluck('track_maxile');
     }
     // User's current average maxile
     public function scopeUserMaxile($query){
@@ -280,6 +280,6 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function accuracy(){
-        return $this->myQuestions()->sum('correct')."/".$this->myQuestions()->sum('question_answered');
+        return $this->myQuestions()->sum('question_answered')? $this->myQuestions()->sum('correct')."/".$this->myQuestions()->sum('question_answered'):0;
     }
 }

@@ -23,16 +23,21 @@ class House extends Model
         return $this->belongsTo(Status::class, 'status_id');
     }
 
-    public function skills() {
-    	return $this->belongsToMany(Skill::class)->withPivot('start_date','end_date');
-    }
-
     public function course(){
     	return $this->belongsTo(Course::class);
     }
 
     public function tracks(){
     	return $this->belongsToMany(Track::class)->withPivot('track_order','start_date', 'end_date')->orderBy('track_order');
+    }
+
+    public function skills() {
+        return $this->tracks()->with('skills');
+//      $skills = Skill::whereIn('id', \App\Skill_Track::whereIn('track_id',$this->tracks()->pluck('id'))->pluck('skill_id'));
+    }
+
+    public function skills_passed() {
+//        return $this->skills()->where()
     }
 
     public function maxTrack($house){
@@ -103,7 +108,7 @@ class House extends Model
         return $this->belongsToMany(User::class, 'house_role_user')->withPivot('role_id')->withTimestamps();
     }
 
-    public function progress(){
-        return $this->tracks;
-    }
+//    public function progress(){
+//        return $this->tracks;
+//    }
 }

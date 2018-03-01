@@ -131,4 +131,8 @@ class Track extends Model
         return $this->skills->intersect($user->skill_user()->whereSkillPassed(FALSE)->get());
     }
 
+    public function track_passed(){
+        return $this->users()->whereUserId(Auth::user()->id)->whereTrackPassed(TRUE)->select('track_test_date', 'track_maxile');
+    }
+
 }

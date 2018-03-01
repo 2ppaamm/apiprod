@@ -51,9 +51,9 @@ class Skill extends Model
         return $this->users()->whereUserId($userid)->select('difficulty_passed')->first()->difficulty_passed;
     }
 
-//    public function skill_maxile($userid){
-  //      return $this->users()->whereUserId($userid)->select('skill_maxile')->first()->skill_maxile;
-   // }
+    public function skill_maxile(){
+        return $this->hasOne(SkillUser::class);
+    }
 
     public function skill_passed(){
         return $this->users()->whereUserId(Auth::user()->id)->select('skill_passed', 'skill_test_date', 'difficulty_passed');
