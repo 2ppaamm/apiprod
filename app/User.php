@@ -232,15 +232,11 @@ class User extends Model implements AuthenticatableContract,
     }
 
    public function scopeProfile($query, $id) { 
-<<<<<<< HEAD
-        return $query->whereId($id)->first();
-=======
         return $query->whereId($id)->with(['getfieldmaxile','fields.user_maxile','enrolledClasses.roles',
             'enrolledClasses.houses.created_by',//'enrolledClasses.enrolledStudents',
             'enrolledClasses.houses.tracks.track_maxile',
             'enrolledClasses.houses.tracks.skills', 'enrolledClasses.houses.tracks.skills'
             ])->first();
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
     }
 
     public function scopeGameleader($query){

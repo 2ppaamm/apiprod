@@ -4,13 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "hash": "2bc1cd9ee5b72b8d3e01b19556fbdde4",
     "content-hash": "2ed855f377fca69a5999b160c549e603",
-=======
-    "hash": "a8af52b241eba38bab4bb29e8c1a0b5d",
-    "content-hash": "93142c6874177fdce02b986c539f4d44",
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
     "packages": [
         {
             "name": "adoy/oauth2",
@@ -137,7 +132,6 @@
         },
         {
             "name": "barryvdh/laravel-cors",
-<<<<<<< HEAD
             "version": "v0.9.3",
             "source": {
                 "type": "git",
@@ -152,22 +146,6 @@
             },
             "require": {
                 "illuminate/support": "5.3.x|5.4.x|5.5.x",
-=======
-            "version": "v0.8.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/barryvdh/laravel-cors.git",
-                "reference": "9bf14c1d5ebe46738e8c535e56e621f98779197d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-cors/zipball/9bf14c1d5ebe46738e8c535e56e621f98779197d",
-                "reference": "9bf14c1d5ebe46738e8c535e56e621f98779197d",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "5.1.x|5.2.x|5.3.x|5.4.x",
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
                 "php": ">=5.5.9",
                 "symfony/http-foundation": "~3.1",
                 "symfony/http-kernel": "~3.1"
@@ -213,11 +191,7 @@
                 "crossdomain",
                 "laravel"
             ],
-<<<<<<< HEAD
             "time": "2017-08-28 11:42:05"
-=======
-            "time": "2017-02-15 21:21:33"
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
         },
         {
             "name": "doctrine/inflector",

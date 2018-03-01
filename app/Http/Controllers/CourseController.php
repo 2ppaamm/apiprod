@@ -14,12 +14,8 @@ use Auth;
 class CourseController extends Controller
 {
     public function __construct(){
-<<<<<<< HEAD
         $this->middleware('cors');
 //        $this->middleware('auth0.jwt'); don't need to authenticate for courses
-=======
-//        $this->middleware('auth0.jwt');
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
     }
     /**
      * Display a listing of the resource.
@@ -28,12 +24,8 @@ class CourseController extends Controller
      */
     public function index()
     {
-<<<<<<< HEAD
         return $courses = Course::with('tracks.skills','houses.created_by')->get();
         return response()-> json(['message' => 'Request executed successfully', 'courses'=>Course::all()],200);
-=======
-        return $courses = Course::all();
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
     }
 
     /**
@@ -93,12 +85,7 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
         }
-<<<<<<< HEAD
         return response()->json(['course'=>$course, 'code'=>200], 200);
-=======
-        return response()->json($course, 200);
-        return $course;
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
     }
 
 
@@ -111,22 +98,13 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-<<<<<<< HEAD
-        $logon_user = Auth::user();
-        if ($logon_user->id != $courses->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
-        }
-        $courses->fill($request->all())->save();
-        return response()->json(['message'=>'Course updated successfully', 'data' => $courses, 201], 201);        
-=======
         $course = Course::find($id);
 //        $logon_user = Auth::user();
   //      if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
     //        return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
       //  }
         $course->fill($request->all())->save();
-        return response()->json(['message'=>'Course updated','course' => $course, 201], 201);        
->>>>>>> fd586838e8073470b96c94f45c917d23b384ceb7
+        return response()->json(['message'=>'Course updated','course' => $course, 201], 201);
     }
 
     /**
