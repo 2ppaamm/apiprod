@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use Auth;
-use App\User
+use App\User;
 use App\House;
 use DateTime;
 use App\Track;
@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public function __construct(){
         $this->middleware('cors');
         $this->middleware('auth0.jwt');
-        \Auth::login(User::find(1));
+//        \Auth::login(User::find(1));
     }
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $user = User::find(2);//Auth::user();
+        $user = Auth::user();
         $age = date_diff(date_create($user->date_of_birth), date_create('today'))->y;
         $user['highest_scores'] = $user->highest_scores();
 //        $test = new \App\Test;

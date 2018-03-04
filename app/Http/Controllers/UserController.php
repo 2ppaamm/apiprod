@@ -14,8 +14,8 @@ use App\Http\Requests\GameScoreRequest;
 class UserController extends Controller
 {
     public function __construct(){
-//        $this->middleware('auth0.jwt');
-        \Auth::login(User::find(2));
+        $this->middleware('auth0.jwt');
+//        \Auth::login(User::find(2));
 
     }
 
@@ -56,8 +56,8 @@ class UserController extends Controller
         if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to view user','code'=>401], 401);     
         }
-        $users = User::profile($users->id);
-        $users['highest_scores'] = $users->highest_scores();
+        $users = User::profile($users->id)->get();
+        $users['highest_scores'] = $logon_user->highest_scores();
         return $users;
     }
 

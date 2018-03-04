@@ -36,7 +36,9 @@ return $e;            return \Response::make("Unauthorized user", 401);
             return \Response::make("Unauthorized user", 401);
         }
 
-        $currentuser = User::firstOrCreate(['email'=>$user->email],[
+        $currentuser = User::updateOrCreate(['email'=>$user->email],[
+                'firstname' => $user->given_name,
+                'lastname' => $user->family_name,     
                 'email' => $user->email,
                 'name' => $user->name,
                 'image' => $user->picture

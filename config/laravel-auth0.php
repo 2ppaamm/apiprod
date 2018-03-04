@@ -10,8 +10,8 @@ return array(
     |
     */
 
-//     'domain'        => 'pamelalim.auth0.com',
-     'domain'        => 'allgiftedllc.au.auth0.com',
+     'domain'        => 'pamelalim.auth0.com',
+//     'domain'        => 'allgiftedllc.au.auth0.com',
     /*
     |--------------------------------------------------------------------------
     |   Your APP id
@@ -19,8 +19,8 @@ return array(
     |   As set in the auth0 administration page
     |
     */
-//     'client_id'     => 'eVJv6UFM9GVdukBWiURczRCxmb6iaUYG',
-     'client_id'     => 'bs3jSKz2Ewrye8dD2qRVrD0Tra2tOqHC',
+     'client_id'     => 'eVJv6UFM9GVdukBWiURczRCxmb6iaUYG',
+//     'client_id'     => 'bs3jSKz2Ewrye8dD2qRVrD0Tra2tOqHC',
 
     /*
     |--------------------------------------------------------------------------
