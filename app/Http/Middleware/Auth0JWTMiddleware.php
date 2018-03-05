@@ -25,7 +25,7 @@ class Auth0JWTMiddleware {
             $jwtUser = $auth0->decodeJWT($encUser);
         }
         catch(CoreException $e) {
-return $e;            return \Response::make("Unauthorized user", 401);
+            return \Response::make("Unauthorized user", 401);
         }
         catch(Exception $e) {
             echo $e;exit;

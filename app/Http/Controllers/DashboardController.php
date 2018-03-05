@@ -15,7 +15,7 @@ use DB;
 class DashboardController extends Controller
 {
     public function __construct(){
-        $this->middleware('cors');
+//        $this->middleware('cors');
         $this->middleware('auth0.jwt');
 //        \Auth::login(User::find(1));
     }
@@ -28,7 +28,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $age = date_diff(date_create($user->date_of_birth), date_create('today'))->y;
+        $age = $user->date_of_birth ? date_diff(date_create($user->date_of_birth), date_create('today'))->y : 0;
         $user['highest_scores'] = $user->highest_scores();
 //        $test = new \App\Test;
         $logs = $user->logs;
