@@ -79,7 +79,7 @@ class EnrolmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function user_houses() {
-        $user = Auth::user();
+        $user = User::find(1);//Auth::user();
 
         $houses = $user->roleHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
 
@@ -104,7 +104,7 @@ class EnrolmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function teacher_houses() {
-        $user = Auth::user();
+        $user = User::find(1);//Auth::user();
         $houses = $user->teachHouse()->with('tracks.skills')->with('tracks.field')->with('tracks.status')->with('tracks.level')->with('enrolledStudents.fieldMaxile')->with('enrolledStudents.tracksPassed')->with('enrolledStudents.completedtests')->get();
         foreach ($houses as $class) {
             $class['average_progress']=$class->studentEnrolment->avg('progress');

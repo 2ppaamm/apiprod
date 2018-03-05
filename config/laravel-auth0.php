@@ -40,7 +40,7 @@ return array(
     |
     */
 
-     'redirect_uri'  => 'http://localhost:8000/api/protected',
+     'redirect_uri'  => 'http://localhost/api/protected',
 
     /*
     |--------------------------------------------------------------------------
