@@ -79,7 +79,7 @@ class EnrolmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function user_houses() {
-        $user = User::find(1);//Auth::user();
+        $user = Auth::user();
 
         $houses = $user->roleHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
 
