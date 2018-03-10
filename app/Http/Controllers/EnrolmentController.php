@@ -81,8 +81,10 @@ class EnrolmentController extends Controller
     public function user_houses() {
         $user = Auth::user();
 
-        $houses = $user->roleHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
+        $houses = $user->studentHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
 
+        return House::find(1)->tracks->intersect($user->tracksPassed)->pluck('track_maxile')->max('track_maxile');
+return House::find(1)->tracks->intersect($user->tracksPassed)->select('track_maxile')->get();
         foreach ($houses as $house) {
           $house['course_maxile'] = Enrolment::whereUserId($user->id)->whereHouseId($house->id)->pluck('progress')->first();
           $house['accuracy'] = $user->accuracy();

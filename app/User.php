@@ -121,6 +121,10 @@ class User extends Model implements AuthenticatableContract,
         return $this->belongsToMany(House::class, 'house_role_user')->withPivot('role_id')->withTimestamps();
     }
 
+    public function studentHouse(){
+        return $this->roleHouse()->whereRoleId(Role::where('role', 'LIKE', '%Student')->pluck('id'))->groupBy('house_id');
+    }
+
     public function teachHouse(){
         return $this->roleHouse()->whereRoleId(Role::where('role', 'LIKE', '%Teacher')->pluck('id'))->groupBy('house_id');
     }
