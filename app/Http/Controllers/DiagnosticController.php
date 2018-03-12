@@ -132,7 +132,7 @@ class DiagnosticController extends Controller
                 $house = $track->houses->intersect(\App\House::whereIn('id', Enrolment:: whereUserId($user->id)->whereRoleId(6)->pluck('house_id'))->get())->first();
                 if ($house) {
                     $enrolment = Enrolment::whereUserId($user->id)->whereRoleId(6)->whereHouseId($house->id)->first();
-                    $enrolment['progress'] = round($user->tracksPassed->intersect($house->tracks)->count()/$house->tracks->count()*100);
+                    $enrolment['progress'] = round($user->tracksPassed->intersect(\App\House::find(1)->tracks)->avg('level_id')*100);
                     $enrolment->save();
                 }
             }

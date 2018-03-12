@@ -28,7 +28,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $age = $user->date_of_birth ? date_diff(date_create($user->date_of_birth), date_create('today'))->y : 0;
+/*        $age = $user->date_of_birth ? date_diff(date_create($user->date_of_birth), date_create('today'))->y : 0;
         $user['highest_scores'] = $user->highest_scores();
 //        $test = new \App\Test;
         $logs = $user->logs;
@@ -54,7 +54,7 @@ class DashboardController extends Controller
             $class['on_target'] = $class->houses->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count();
             $class['excel'] = $class->houses->studentEnrolment()->where('progress','>=', 80)->count();
         }
-
+*/
 //return $user->completedtests;
 //return $user->teachingHouses()->with('studentEnrolment.users.tests')->get();
 
@@ -64,10 +64,10 @@ class DashboardController extends Controller
             'user'=>$user,
 //            'teach_info' => $classInfo,
             'game_leaders'=>User::gameleader(), 
-            'maxile_leaders'=>User::maxileleader(),'houses'=>$houses,
+            'maxile_leaders'=>User::maxileleader(),//'houses'=>$houses,
 //            'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'difficulties'=>$difficulties,
 //            'logs'=>$logs,
-            'my_questions'=> $user->myquestions()->with('skill')->select('correct','skill_id', 'attempts', 'question', 'question_image', 'answer0', 'answer0_image', 'answer1', 'answer1_image', 'answer2', 'answer2_image', 'answer3', 'answer3_image', 'type_id')->get(),
+//            'my_questions'=> $user->myquestions()->with('skill')->select('correct','skill_id', 'attempts', 'question', 'question_image', 'answer0', 'answer0_image', 'answer1', 'answer1_image', 'answer2', 'answer2_image', 'answer3', 'answer3_image', 'type_id')->get(),
              'code'=>201]);
 	}
 }                                                                    

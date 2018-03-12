@@ -80,18 +80,17 @@ class EnrolmentController extends Controller
      */
     public function user_houses() {
         $user = Auth::user();
-
         $houses = $user->studentHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
 
         foreach ($houses as $house) {
-          $house['course_maxile'] = Enrolment::whereUserId($user->id)->whereHouseId($house->id)->pluck('progress')->first();
+          $house['course_maxile'] = Enrolment::whereUserId($user->id)->whereHouseId($house->id)->whereRoleId(6)->pluck('progress')->first();
           $house['accuracy'] = $user->accuracy();
           $house['tracks_passed'] = count($house->tracks->intersect($user->tracksPassed));
           $house['total_tracks'] = count($house->tracks);
           $house['skill_passed'] = count(\App\Skill::whereIn('id', \App\Skill_Track::whereIn('track_id',$house->tracks()->pluck('id'))->pluck('skill_id'))->get()->intersect($user->skill_user()->whereSkillPassed(TRUE)->get()));
           $house['total_skills'] = count(\App\Skill_track::whereIn('track_id', $house->tracks()->pluck('id'))->get());
-          $house['radarChartLabels'] = $user->testedTracks->intersect($house->tracks)->pluck('track');
-          $house['radarChartData'] = [['data'=>\App\TrackUser::whereUserId($user->id)->whereIn('track_id', $house->tracks->pluck('id'))->orderBy('track_id')->pluck('track_maxile') ? \App\TrackUser::whereUserId($user->id)->whereIn('track_id', $house->tracks->pluck('id'))->orderBy('track_id')->pluck('track_maxile'): 0, 'label'=>'Track Maxile']];
+          $house['radarChartLabels'] = $user->fields->pluck('field');
+          $house['radarChartData'] = [['data'=> $house['radarChartLabels']? \App\FieldUser::whereUserId($user->id)->orderBy('field_id')->pluck('field_maxile'):0, 'label'=>'Field Maxile']];
           $house['target_score'] = $house->course()->pluck('end_maxile_score')->first(); 
         }
 
