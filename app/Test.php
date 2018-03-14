@@ -135,10 +135,11 @@ if (!count($new_questions) && count($this->questions)) {
         $attempts = $this->attempts($user->id);
         $attempts = $attempts ? $attempts->attempts : 0;
         $maxile = $user->calculateUserMaxile($this);
-        $user->enrolclass($maxile);                             //enrol in class of maxile reached
-        $user->game_level = $user->game_level + $this->questions()->sum('correct');  // add kudos
+        $user->enrolclass($maxile);                          //enrol in class of maxile reached
+        $kudos_earned = $this->questions()->sum('correct');
+        $user->game_level = $user->game_level + $kudos_earned;  // add kudos
         $user->save();                                          //save maxile and game results
         $this->testee()->updateExistingPivot($user->id, ['test_completed'=>TRUE, 'completed_date'=>new DateTime('now'), 'result'=>$result = $this->markTest($user->id), 'attempts'=> $attempts + 1]); 
-        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$maxile, 'maxile'=> $maxile,'kudos'=>$user->game_level, 'code'=>206], 206);
+        return response()->json(['message'=>$message, 'test'=>$this->id, 'percentage'=>$result, 'score'=>$maxile, 'maxile'=> $maxile,'kudos'=>$kudos_earned, 'code'=>206], 206);
     }
 }
