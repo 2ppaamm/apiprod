@@ -15,7 +15,7 @@ class TrackTable extends Migration
         Schema::create('tracks', function (Blueprint $table) {
             $table->increments('id');
             $table->string('track');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->integer('user_id')->unsigned()->default(1);
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('image')->nullable();

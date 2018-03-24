@@ -30,6 +30,17 @@ class TrackController extends Controller
         ->select('id','track','description','field_id', 'level_id')->get();        
     }
 
+    public function create(){
+        $user=Auth::user();
+        $public_tracks = $user->is_admin ? Track::with('skills')
+        ->with('level')->with('field')
+        ->select('id','track')->get():Track::whereStatusId(3)->with('skills')
+        ->with('level')->with('field')->select('id','track')->get();
+        $my_tracks = $user->tracks;
+
+        return response()->json(['levels'=> \App\Level::select('id','level','description')->get(), 'statuses'=>\App\Status::select('id','status','description')->get(),'fields'=>\App\Field::select('id','field','description')->get(), 'my_tracks'=>$my_tracks, 'public_tracks'=>$public_tracks]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -39,9 +50,14 @@ class TrackController extends Controller
     public function store(CreateTrackRequest $request)
     {
         $user = Auth::user();
-        $track = $request->all();
-        $user->tracks()->create($track);
-        return response()->json(['message' => 'Track correctly added', 'track'=>$track,'code'=>201]);
+        $house_id = $request->house_id;
+        $track = Track::firstOrCreate(['track'=>$request->track,'description'=>$request->description, 'level_id'=>$request->level_id, 'status_id'=>$request->status_id, 'field_id'=>$request->field_id, 'user_id'=>$user->id]);
+//        $new_track = $user->tracks()->create($track);
+        $houses = \App\House::findorfail($house_id);
+        if ($houses) {
+           $houses->tracks()->attach($track->id,['track_order'=>$houses->maxTrack($houses->id)? $houses->maxTrack($houses->id)->track_order + 1:1]);
+        }
+        return response()->json(['message' => 'Track correctly added and attached.', 'track'=>$track,'code'=>201]);
     }
 
     /**

@@ -99,10 +99,10 @@ class CourseController extends Controller
     public function update(Request $request, $id)
     {
         $course = Course::find($id);
-//        $logon_user = Auth::user();
-  //      if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
-    //        return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
-      //  }
+        $logon_user = Auth::user();
+        if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
+        }
         $course->fill($request->all())->save();
         return response()->json(['message'=>'Course updated','course' => $course, 201], 201);
     }

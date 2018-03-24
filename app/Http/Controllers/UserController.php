@@ -50,14 +50,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(User $users)
+    public function show($id)
     {
+        $users = User::findorfail($id);
         $logon_user = Auth::user();
         if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to view user','code'=>401], 401);     
         }
-        $users = User::profile($users->id)->get();
-        $users['highest_scores'] = $logon_user->highest_scores();
         return $users;
     }
 
@@ -68,22 +67,22 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $users)
+    public function update(Request $request, $id)
     {
         $logon_user = Auth::user();
+        $users = User::findorfail($id);
+        
         if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update user', 'code'=>401], 401);     
+            return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);     
         }
-        if ($request->email) {
-            return response()->json(['message' => 'You cannot change the email address of an account', 'data'=>$users, 'code'=>500], 500);
-        }
-
-        if (($request->maxile_level || $request->game_level) && !$logon_user->is_admin) {
-            return response()->json(['message' => 'You have no access rights to change scores', 'code'=>401], 401);                 
+        if ($request->email || $request->maxile_level || $request->game_level) {
+            if (!$logon_user->is_admin) {
+                array_except($request,['email','maxile_level','game_level']);
+            }
         }
         $users->fill($request->all())->save();
-        return $users;
-
+        $users->fill($request->all())->save();
+        return response()->json(['message'=>'User successfully updated.', 'user'=>$users,'code'=>201], 201);
     }
 
     /**
@@ -92,8 +91,9 @@ class UserController extends Controller
      * @param  int  $id
   .   * @return \Illuminate\Http\Response
      */
-    public function destroy(User $users)
+    public function destroy($id)
     {
+        $users = findorfail($id);
         $logon_user = Auth::user();
         if (!$logon_user->is_admin){
             return response()->json(['message' => 'You have no access rights to delete user', 'data'=>$user, 'code'=>401], 500);
