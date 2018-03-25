@@ -32,11 +32,8 @@ class TrackController extends Controller
 
     public function create(){
         $user=Auth::user();
-        $public_tracks = $user->is_admin ? Track::with('skills')
-        ->with('level')->with('field')
-        ->select('id','track')->get():Track::whereStatusId(3)->with('skills')
-        ->with('level')->with('field')->select('id','track')->get();
-        $my_tracks = $user->tracks;
+        $public_tracks = $user->is_admin ? Track::all()->select('id','track'):Track::whereStatusId(3)->select('id','track')->get();
+        $my_tracks = $user->tracks()->select('id','track')->get();
 
         return response()->json(['levels'=> \App\Level::select('id','level','description')->get(), 'statuses'=>\App\Status::select('id','status','description')->get(),'fields'=>\App\Field::select('id','field','description')->get(), 'my_tracks'=>$my_tracks, 'public_tracks'=>$public_tracks]);
     }
@@ -52,12 +49,12 @@ class TrackController extends Controller
         $user = Auth::user();
         $house_id = $request->house_id;
         $track = Track::firstOrCreate(['track'=>$request->track,'description'=>$request->description, 'level_id'=>$request->level_id, 'status_id'=>$request->status_id, 'field_id'=>$request->field_id, 'user_id'=>$user->id]);
-//        $new_track = $user->tracks()->create($track);
+        $new_track = Track::whereId($track->id)->with(['field','level','status','owner'])->first();
         $houses = \App\House::findorfail($house_id);
         if ($houses) {
-           $houses->tracks()->attach($track->id,['track_order'=>$houses->maxTrack($houses->id)? $houses->maxTrack($houses->id)->track_order + 1:1]);
+           $houses->tracks()->syncWithoutDetaching($track->id,['track_order'=>$houses->maxTrack($houses->id)? $houses->maxTrack($houses->id)->track_order + 1:1]);
         }
-        return response()->json(['message' => 'Track correctly added and attached.', 'track'=>$track,'code'=>201]);
+        return response()->json(['message' => 'Track correctly added and attached.', 'track'=>$new_track,'code'=>201]);
     }
 
     /**

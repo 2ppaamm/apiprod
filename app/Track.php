@@ -13,7 +13,7 @@ class Track extends Model
 {
     use RecordLog;
 
-    protected $hidden = ['user_id', 'created_at', 'updated_at','pivot'];
+    protected $hidden = ['created_at', 'updated_at','pivot'];
     protected $fillable = ['track', 'description', 'level_id', 'field_id',
         'image', 'status_id','user_id'];
 
@@ -133,6 +133,10 @@ class Track extends Model
 
     public function track_passed(){
         return $this->users()->whereUserId(Auth::user()->id)->whereTrackPassed(TRUE)->select('track_test_date', 'track_maxile');
+    }
+
+    public function owner(){
+        return $this->user()->select('id','name');
     }
 
 }
