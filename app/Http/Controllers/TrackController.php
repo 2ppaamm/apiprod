@@ -49,11 +49,19 @@ class TrackController extends Controller
         $user = Auth::user();
         $house_id = $request->house_id;
         $track = Track::firstOrCreate(['track'=>$request->track,'description'=>$request->description, 'level_id'=>$request->level_id, 'status_id'=>$request->status_id, 'field_id'=>$request->field_id, 'user_id'=>$user->id]);
-        $new_track = Track::whereId($track->id)->with(['field','level','status','owner'])->first();
+
+        //connect skills as well
+        $skills = Track::whereTrack($track->track)->first()->skills;
+        for ($i=0; $i<sizeof($skills); $i++) {
+            $track->skills()->attach($skills[$i],['skill_order'=>$skills[$i]->pivot->skill_order]);
+        }
+
         $houses = \App\House::findorfail($house_id);
         if ($houses) {
            $houses->tracks()->syncWithoutDetaching($track->id,['track_order'=>$houses->maxTrack($houses->id)? $houses->maxTrack($houses->id)->track_order + 1:1]);
         }
+
+        $new_track = Track::whereId($track->id)->with(['field','level','status','owner','skills'])->first();
         return response()->json(['message' => 'Track correctly added and attached.', 'track'=>$new_track,'code'=>201]);
     }
 
@@ -80,21 +88,16 @@ class TrackController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, Track $tracks)
+    public function update(Request $request, $id)
     {
-        $field = $request->get('field');
-        $value = $request->get('value');
-        
-        try {
-            $tracks->$field = $value;
+        $track = Track::find($id);
+        $logon_user = Auth::user();
+        if ($logon_user->id != $track->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
         }
-        catch(\Exception $exception){
-            return response()->json(['message'=>'Update of track failed!','code'=> $exception->getCode()]);
-        }
+        $track->fill($request->all())->save();
 
-        Auth::user()->tracks()->save($tracks);
-
-        return response()->json(['message'=>'Track updated','track' => $tracks, 'code'=>200], 200);
+        return response()->json(['message'=>'Track updated','track' => $track, 'code'=>201], 201);
     }
 
     /**
