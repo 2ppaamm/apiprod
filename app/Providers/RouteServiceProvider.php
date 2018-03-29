@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use App\User;
+use Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -40,10 +41,32 @@ class RouteServiceProvider extends ServiceProvider
      * @param  \Illuminate\Routing\Router  $router
      * @return void
      */
-    public function map(Router $router)
+    public function map()
     {
-        $router->group(['namespace' => $this->namespace], function ($router) {
-            require app_path('Http/routes.php');
+        $this->mapApiRoutes();
+
+        $this->mapWebRoutes();
+
+        //
+    }
+
+    protected function mapApiRoutes()
+    {
+        Route::group([
+            'middleware' => ['auth0.jwt', 'throttle:60,1','bindings'],
+            'namespace' => $this->namespace,
+   //         'prefix' => 'api',
+        ], function ($router) {
+            require base_path('routes/api.php');
+        });
+    }
+
+    protected function mapWebRoutes()
+    {
+        Route::group([
+            'namespace' => $this->namespace, //'middleware' => 'web',
+        ], function ($router) {
+            require base_path('routes/web.php');
         });
     }
 }

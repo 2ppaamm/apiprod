@@ -15,7 +15,6 @@ use App\Track;
 class HouseTrackController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth0.jwt');
     }
 
 	   /**
@@ -24,8 +23,9 @@ class HouseTrackController extends Controller
      * @return \Illuminate\Http\Response
      */
  
-	public function index(House $houses){
-        $house = $houses->tracks()-> with(['unit'=>function($query){$query->select('number_of','unit');} ])
+	public function index(House $house){
+        return $house;
+        $house = $house->tracks()-> with(['unit'=>function($query){$query->select('number_of','unit');} ])
                 ->select('description','id','track','level_id')->with('level')
                 ->with(['skills' => function ($query) {
                     $query->select('track_id','skill')->orderBy('skill_order');}])
@@ -81,13 +81,14 @@ class HouseTrackController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(House $houses, Track $tracks)
+    public function destroy(House $house, Track $track)
     {
         try {
-            $houses->tracks()->detach($tracks);
+            $house->tracks()->detach($track);
+            $tracks=$house->tracks()->with(['owner','skills','field','status','level'])->get();
         } catch(\Exception $exception){
             return response()->json(['message'=>'Unable to remove track from class', 'code'=>500], 500);
         }
-        return response()->json(['message'=>'Track removed successfully', 'code'=>201],201);
+        return response()->json(['message'=>'Track removed successfully','tracks'=>$tracks, 'code'=>201],201);
     }
 }

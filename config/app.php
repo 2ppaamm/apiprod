@@ -207,7 +207,9 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
-        'Auth0'     => Auth0\Login\Facade\Auth0::class
+        'Auth0'     => Auth0\Login\Facade\Auth0::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 
     ],
 

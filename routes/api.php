@@ -1,4 +1,15 @@
 <?php
+use Illuminate\Http\Request;
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
 
 Route::resource('/', 'DashboardController');
 
@@ -37,10 +48,3 @@ Route::get('/enrols/teachers', 'EnrolmentController@teacher_houses');
 Route::post('/test/protected', 'DiagnosticController@index');
 Route::post('test/mastercode', 'DiagnosticController@store');
 Route::post('/test/answers', 'DiagnosticController@answer');
-
-/* Post answers and game scores
-*/
-
-//Route:: post('answers', 'AnswerController@checkQuiz');
-//Route:: post('game_score', 'UserController@game_score');
-//Route:: get('game_level', 'UserController@game_level');
