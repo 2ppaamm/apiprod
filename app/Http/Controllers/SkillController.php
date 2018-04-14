@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Skill;
 use App\Http\Requests\UpdateRequest;
 use App\Http\Requests\CreateSkillRequest;
+use Auth;
 
 class SkillController extends Controller
 {
@@ -24,6 +25,14 @@ class SkillController extends Controller
         ->select('id','skill','description')->get();        
     }
 
+    public function create(){
+        $user=Auth::user();
+        $public_skills = $user->is_admin ? null: Skill::whereStatusId(3)->select('id','skill')->get();
+        $my_skills = $user->is_admin? Skill::select('id','skill')->get():$user->skills()->select('id','skill')->get();
+
+        return response()->json(['statuses'=>\App\Status::select('id','status','description')->get(), 'my_skills'=>$my_skills, 'public_skills'=>$public_skills]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -32,9 +41,17 @@ class SkillController extends Controller
      */
     public function store(CreateSkillRequest $request)
     {
-        $skill = $request->all();
-        $skill = Skill::create($skill);
-        return response()->json(['message' => 'Skill correctly added', 'code'=>201,'skill'=>$this->show($skill->id)]);
+        $user = Auth::user();
+        $track_id = $request->track_id;
+        $skill = Skill::firstOrCreate(['skill'=>$request->skill,'description'=>$request->description, 'status_id'=>$request->status_id, 'user_id'=>$user->id]);
+
+        $track = \App\Track::findorfail($track_id);
+        if ($track) {
+           $track->skills()->syncWithoutDetaching($skill->id,['skill_order'=>$track->maxSkill($track)? $houses->maxSkill($track)->skill_order + 1:1]);
+        }
+
+        $new_skill = Skill::whereId($skill->id)->with(['status','user'])->first();
+        return response()->json(['message' => 'Skill correctly added and attached.', 'skill'=>$new_skill,'code'=>201]);
     }
 
     /**

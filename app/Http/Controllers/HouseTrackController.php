@@ -89,6 +89,6 @@ class HouseTrackController extends Controller
         } catch(\Exception $exception){
             return response()->json(['message'=>'Unable to remove track from class', 'code'=>500], 500);
         }
-        return response()->json(['message'=>'Track removed successfully','tracks'=>$tracks, 'code'=>201],201);
+        return response()->json(['message'=>'Track removed successfully','tracks'=>$trackshg, 'code'=>201],201);
     }
 }
