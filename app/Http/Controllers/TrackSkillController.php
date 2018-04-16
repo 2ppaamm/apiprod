@@ -95,14 +95,14 @@ class TrackSkillController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Track $tracks, Skill $skills)
+    public function destroy(Track $track, Skill $skill)
     {
-        $skill = $tracks->skills->find($skills->id);
-        if (!$skill) {
+        $skills = $track->skills->find($skill->id);
+        if (!$skills) {
             return response()->json(['message' => 'This skill does not exist for this track', 'code'=>404], 404);
         }
-        $tracks->skills()->detach($skills->id);
-        return response()->json(['message'=>'Skill has been removed from this track.'], 200);
+        $track->skills()->detach($skill->id);
+        return response()->json(['message'=>'Skill has been removed from this track.', 'skills'=>$track->skills()->with('user')->get(), 'code'=>201], 201);
     }
 
 }

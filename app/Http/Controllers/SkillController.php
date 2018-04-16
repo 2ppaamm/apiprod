@@ -61,14 +61,15 @@ class SkillController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, Skill $skills)
+    public function update(Request $request, Skill $skill)
     {
-        $field = $request->get('field');
-        $value = $request->get('value');
-        $skills->$field = $value;
-        $skills->save();
+        $logon_user = Auth::user();
+        if ($logon_user->id != $skill->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
+        }
+        $skill->fill($request->all())->save();
 
-        return response()->json(['message'=>'Skill update.','skill' => $skills, 'code'=>200], 200);
+        return response()->json(['message'=>'Skill update.','skill' => $skill, 'code'=>200], 200);
     }
 
     /**
