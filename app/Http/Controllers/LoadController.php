@@ -18,7 +18,7 @@ class LoadController extends Controller
      */
     public function loadall()
     {
-        $currentuser =  \App\User::whereId(3)->first();
+        $currentuser =  \App\User::whereId(1)->first();
         Auth::login($currentuser);
         $this->loadusers();
         $this->loadlevels();

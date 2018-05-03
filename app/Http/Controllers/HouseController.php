@@ -15,7 +15,6 @@ use App\Http\Requests\UpdateRequest;
 class HouseController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth0.jwt');
     }
 
     /**
@@ -59,9 +58,9 @@ class HouseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(House $houses)
+    public function show(House $house)
     {
-        return response()->json(['message'=> 'Class is as displayed.', 'code'=>200, 'house'=>$houses],200);
+        return response()->json(['message'=> 'Class is as displayed.', 'code'=>200, 'house'=>$house],200);
     }
 
 
@@ -72,11 +71,11 @@ class HouseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, House $houses)
+    public function update(UpdateRequest $request, House $house)
     {
         $field = $request->get('field');
         $value = $request->get('value');
-        $houses->update([$field=>$value]);
+        $house->update([$field=>$value]);
         return response()->json(['message'=>'Update successful', 'class'=>$house, 'code'=>201], 201);
     }
 
@@ -86,11 +85,11 @@ class HouseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(House $houses)
+    public function destroy(House $house)
     {
-        if (count($houses->tracks) > 0 or count($houses->enrolledusers) > 0) return response()->json(['message'=>'There are tracks or users in the class, cannot delete', 'code'=>404], 404);
+        if (count($house->tracks) > 0 or count($house->enrolledusers) > 0) return response()->json(['message'=>'There are tracks or users in the class, cannot delete', 'code'=>404], 404);
         else {
-            try {$houses->delete();} 
+            try {$house->delete();} 
             catch (\Exception $exception) { return response()->json(['message'=>'Class cannot be deleted', 'code'=>404], 404);}
         }
         return response()->json(['message'=>'Class deleted successfully', 'code'=>204], 204);

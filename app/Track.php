@@ -138,5 +138,4 @@ class Track extends Model
     public function owner(){
         return $this->user()->select('id','name');
     }
-
 }

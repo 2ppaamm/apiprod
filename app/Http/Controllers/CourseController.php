@@ -14,8 +14,6 @@ use Auth;
 class CourseController extends Controller
 {
     public function __construct(){
-        $this->middleware('cors');
-//        $this->middleware('auth0.jwt'); don't need to authenticate for courses
     }
     /**
      * Display a listing of the resource.
@@ -26,6 +24,15 @@ class CourseController extends Controller
     {
         return $courses = Course::with('tracks.skills','houses.created_by')->get();
         return response()-> json(['message' => 'Request executed successfully', 'courses'=>Course::all()],200);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function open()
+    {
+        return $courses = Course::with('tracks.skills','houses.created_by')->get();
     }
 
     /**
@@ -59,6 +66,11 @@ class CourseController extends Controller
      */
     public function store(CreateCourseRequest $request)
     {
+
+return $request->hasfile('image') ? 'yes':'no';       $imageName = $request->file()->getClientOriginalName();
+        request()->file->move(public_path('upload'), $imageName);
+
+
         $values = $request->all();
 //        Auth::user()->courses()->save($values);
 
@@ -72,7 +84,7 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Course $course)
     {
          $course = Course::with(['tracks'=> function ($query){  
             $query -> with('unit')

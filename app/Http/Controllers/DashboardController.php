@@ -15,10 +15,21 @@ use DB;
 class DashboardController extends Controller
 {
     public function __construct(){
-//        $this->middleware('cors');
-        $this->middleware('auth0.jwt');
-//        \Auth::login(User::find(1));
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function leaders()
+    {
+        return response()->json(['message' => 'Leader request executed successfully', 
+            'game_leaders'=>User::gameleader(), 
+            'maxile_leaders'=>User::maxileleader()], 201);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -63,8 +74,7 @@ class DashboardController extends Controller
 //                    'skills_passed'=>count($user->skill_user()->where('difficulty_passed','>',2)->get()).'/'.count(\App\Skill::all())],
             'user'=>$user,
 //            'teach_info' => $classInfo,
-            'game_leaders'=>User::gameleader(), 
-            'maxile_leaders'=>User::maxileleader(),//'houses'=>$houses,
+            //'houses'=>$houses,
 //            'courses'=>$courses, 'statuses'=>$statuses,'roles'=>$roles, 'difficulties'=>$difficulties,
 //            'logs'=>$logs,
 //            'my_questions'=> $user->myquestions()->with('skill')->select('correct','skill_id', 'attempts', 'question', 'question_image', 'answer0', 'answer0_image', 'answer1', 'answer1_image', 'answer2', 'answer2_image', 'answer3', 'answer3_image', 'type_id')->get(),

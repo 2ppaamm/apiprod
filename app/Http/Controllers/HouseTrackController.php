@@ -85,10 +85,10 @@ class HouseTrackController extends Controller
     {
         try {
             $house->tracks()->detach($track);
-            $tracks=$house->tracks()->with(['owner','skills','field','status','level'])->get();
+            $tracks=$house->tracks()->with(['owner','skills.user','field','status','level'])->get();
         } catch(\Exception $exception){
             return response()->json(['message'=>'Unable to remove track from class', 'code'=>500], 500);
         }
-        return response()->json(['message'=>'Track removed successfully','tracks'=>$trackshg, 'code'=>201],201);
+        return response()->json(['message'=>'Track removed successfully','tracks'=>$tracks, 'code'=>201],201);
     }
 }

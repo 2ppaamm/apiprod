@@ -14,9 +14,7 @@ use App\Http\Requests\GameScoreRequest;
 class UserController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth0.jwt');
 //        \Auth::login(User::find(2));
-
     }
 
     /**
@@ -27,6 +25,7 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $user = User::find(1);
         return $user->is_admin ? response()->json(User::with('enrolledClasses.roles','logs')->get()): response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
     }
 
