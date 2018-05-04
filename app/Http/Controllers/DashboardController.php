@@ -14,8 +14,9 @@ use DB;
 
 class DashboardController extends Controller
 {
-    public function __construct(){
-    }
+   public function __construct(){
+       $this->middleware('cors');
+   }
 
     /**
      * Display a listing of the resource.
