@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'url' => 'quizapi.pamelalim.me',
+    'url' => 'devapi.pamelalim.me',
     'difficulty_levels' =>3,
     'number_to_pass' => 3,
     'number_to_fail' =>2,
