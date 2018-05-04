@@ -11,6 +11,9 @@ use Auth;
 
 class LoadSecondary extends Controller
 {
+   public function __construct(){
+       $this->middleware('cors');
+   }
     /**
      * Display a listing of the resource.
      *
