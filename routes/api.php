@@ -44,7 +44,3 @@ Route::get('/enrols/teachers', 'EnrolmentController@teacher_houses');
 Route::post('/test/protected', 'DiagnosticController@index');
 Route::post('test/mastercode', 'DiagnosticController@store');
 Route::post('/test/answers', 'DiagnosticController@answer');
-
-Route::get('/loadall', 'LoadController@loadall');
-Route::get('/loadquestions', 'LoadQuestions@loadall');
-Route::get('/loadsecondary', 'LoadSecondary@loadall');
