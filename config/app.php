@@ -38,7 +38,7 @@ return [
     | your application so that it is used when running Artisan tasks.
     |
     */
-
+    'frontendDir' => 'c:\Users\Pamela Lim\capstonefin\src\\',
     'url' => 'devapi.pamelalim.me',
     'difficulty_levels' =>3,
     'number_to_pass' => 3,

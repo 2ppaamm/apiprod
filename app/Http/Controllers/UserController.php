@@ -49,14 +49,14 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        $users = User::findorfail($id);
+    public function show(User $user)
+    {        
         $logon_user = Auth::user();
-        if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
+$logon_user = User::find(1);
+        if ($logon_user->id != $user->id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to view user','code'=>401], 401);     
         }
-        return $users;
+        return response()->json(['user'=>$user, 'code'=>201], 201);
     }
 
     /**
@@ -66,12 +66,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         $logon_user = Auth::user();
-        $users = User::findorfail($id);
-        
-        if ($logon_user->id != $users->id && !$logon_user->is_admin) {            
+$logon_user = User::find(1);        
+        if ($logon_user->id != $user->id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);     
         }
         if ($request->email || $request->maxile_level || $request->game_level) {
@@ -79,9 +78,9 @@ class UserController extends Controller
                 array_except($request,['email','maxile_level','game_level']);
             }
         }
-        $users->fill($request->all())->save();
-        $users->fill($request->all())->save();
-        return response()->json(['message'=>'User successfully updated.', 'user'=>$users,'code'=>201], 201);
+        $user->fill($request->all())->save();
+        $user->fill($request->all())->save();
+        return response()->json(['message'=>'User successfully updated.', 'user'=>$user,'code'=>201], 201);
     }
 
     /**

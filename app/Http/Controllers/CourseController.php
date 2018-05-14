@@ -10,6 +10,7 @@ use App\Course;
 use App\Http\Controllers\CourseTrackController;
 use App\Http\Requests\CreateCourseRequest;
 use Auth;
+use Config;
 
 class CourseController extends Controller
 {
@@ -64,17 +65,21 @@ class CourseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateCourseRequest $request)
+    public function store(Request $request)
     {
-
-return $request->hasfile('image') ? 'yes':'no';       $imageName = $request->file()->getClientOriginalName();
-        request()->file->move(public_path('upload'), $imageName);
-
-
+        $user = Auth::user();
         $values = $request->all();
-//        Auth::user()->courses()->save($values);
+        $values['user_id'] = $user->id;
 
         $course = Course::create($values);
+
+        if ($request->hasFile('image')) {
+            $file = $request->image->move(public_path('images/courses'), $course->id.'.png');            
+        } 
+
+        $course->image = 'images/courses/'.$course->id.'.png';
+        $course->save();
+
         return response()->json(['message'=>'Course is now added','code'=>201, 'course' => $course], 201);
     }
 
@@ -86,18 +91,18 @@ return $request->hasfile('image') ? 'yes':'no';       $imageName = $request->fil
      */
     public function show(Course $course)
     {
-         $course = Course::with(['tracks'=> function ($query){  
-            $query -> with('unit')
-                ->select('description','id','track','level_id')->with('level')
-                ->with(['skills' => function ($query) {
-                  $query->select('track_id','skill')->orderBy('skill_order');}])
-                ->orderBy('track_order'); 
-            }])->find($id);
+//         $course = Course::with(['tracks'=> function ($query){  
+  //          $query -> with('unit')
+    //            ->select('description','id','track','level_id')->with('level')
+      //          ->with(['skills' => function ($query) {
+        //          $query->select('track_id','skill')->orderBy('skill_order');}])
+          //      ->orderBy('track_order'); 
+            //}])->find($id);
 
-        if (!$course) {
-            return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
-        }
-        return response()->json(['course'=>$course, 'code'=>200], 200);
+//        if (!$course) {
+  //          return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
+    //    }
+        return response()->json(['course'=>$course, 'code'=>201], 201);
     }
 
 
@@ -105,32 +110,53 @@ return $request->hasfile('image') ? 'yes':'no';       $imageName = $request->fil
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Course $course)
     {
-        $course = Course::find($id);
         $logon_user = Auth::user();
         if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
         }
+        
         $course->fill($request->all())->save();
         return response()->json(['message'=>'Course updated','course' => $course, 201], 201);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Upload course image in storage.
      *
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Course  $course
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function updateImage(Request $request, Course $course)
     {
-        $course = Course::findOrFail($id);
-        if (!$course) {
-            return response()->json(['message'=>'Course not found, cannot delete.','code'=>404], 404);
+return $request->hasFile('image_file') ? "yes":"no";        $logon_user = Auth::user();
+        if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update course image','code'=>401], 401);     
         }
+        if ($request->hasFile('image_file')) {
+            unlink('images/courses/'.$course->id.'.png'); 
+            $file = $request->image->move(public_path('images/courses'), $course->id.'.png');
+        } 
+        
+        return response()->json(['message'=>'Course Image updated','course' => $course, 201], 201);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Course  $course
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Course $course)
+    {
+//        $course = Course::findOrFail($id);
+//        if (!$course) {
+//            return response()->json(['message'=>'Course not found, cannot delete.','code'=>404], 404);
+//        }
         if (sizeof($course->houses)>0){
             return response()->json(['message'=>'There are classes based on this course. Delete those classes first.','code'=>409],409);
         }

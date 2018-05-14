@@ -26,8 +26,8 @@ class TrackController extends Controller
     public function index()
     {
         return $tracks = Track::with('skills')
-        ->with('level')->with('field')
-        ->select('id','track','description','field_id', 'level_id')->get();        
+        ->with('level')->with('field')->with('status')->with('houses')
+        ->select('id','track','description','field_id', 'level_id','status_id')->get();        
     }
 
     public function create(){

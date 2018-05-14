@@ -79,7 +79,7 @@ class EnrolmentController extends Controller
         $houses = $user->studentHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
 
         foreach ($houses as $house) {
-          $house['course_maxile'] = Enrolment::whereUserId($user->id)->whereHouseId($house->id)->whereRoleId(6)->pluck('progress')->first();
+          $house['course_maxile'] = (int)min($user->maxile_level,$house->course->end_maxile_score);//Enrolment::whereUserId($user->id)->whereHouseId($house->id)->whereRoleId(6)->pluck('progress')->first();
           $house['accuracy'] = $user->accuracy();
           $house['tracks_passed'] = count($house->tracks->intersect($user->tracksPassed));
           $house['total_tracks'] = count($house->tracks);
