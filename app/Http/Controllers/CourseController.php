@@ -153,10 +153,10 @@ return $request->hasFile('image_file') ? "yes":"no";        $logon_user = Auth::
      */
     public function destroy(Course $course)
     {
-//        $course = Course::findOrFail($id);
-//        if (!$course) {
-//            return response()->json(['message'=>'Course not found, cannot delete.','code'=>404], 404);
-//        }
+        $logon_user = Auth::user();
+        if ($logon_user->id != $course->created_by()->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to delete course','code'=>401], 401);
+        } 
         if (sizeof($course->houses)>0){
             return response()->json(['message'=>'There are classes based on this course. Delete those classes first.','code'=>409],409);
         }

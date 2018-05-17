@@ -93,7 +93,7 @@ class TrackController extends Controller
         $track = Track::find($id);
         $logon_user = Auth::user();
         if ($logon_user->id != $track->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
+            return response()->json(['message' => 'You have no access rights to update track','code'=>401], 401);     
         }
         $track->fill($request->all())->save();
 
@@ -108,6 +108,10 @@ class TrackController extends Controller
      */
     public function destroy(Track $tracks)
     {
+        $logon_user = Auth::user();
+        if ($logon_user->id != $track->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to delete track','code'=>401], 401);   
+        }  
         if(sizeof($tracks->skills) > 0 || sizeof($tracks->courses)>0 || sizeof($tracks->houses)>0)
         {
             return response()->json(['message'=>'There are skills or this track belongs to a course or class. Delink them first.'], 409);

@@ -83,6 +83,10 @@ class HouseTrackController extends Controller
      */
     public function destroy(House $house, Track $track)
     {
+        $logon_user = Auth::user();
+        if ($logon_user->id != $house->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to delete track','code'=>401], 401);   
+        }  
         try {
             $house->tracks()->detach($track);
             $tracks=$house->tracks()->with(['owner','skills.user','field','status','level'])->get();
