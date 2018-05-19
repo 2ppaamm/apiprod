@@ -93,7 +93,7 @@ class Skill extends Model
             'skill_test_date' => new DateTime('now'),
             'skill_passed' => $skill_passed,
             'difficulty_passed' => $difficulty_passed,
-            'skill_maxile' => $skill_maxile,
+            'skill_maxile' => max($skill_maxile, 0),
             'noOfTries'=> $noOfTries,
             'noOfPasses'=>max(0,$noOfPasses),
             'noOfFails'=> max(0,$noOfFails)];
