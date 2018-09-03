@@ -17,11 +17,14 @@ class Question extends Model
 
     //relationship
     public function author() {                        //who created this question
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function difficulty(){
         return $this->belongsTo(Difficulty::class);
+    }
+    public function type(){
+        return $this->belongsTo(Type::class);
     }
     public function skill() {
         return $this->belongsTo(Skill::class);
