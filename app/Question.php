@@ -17,21 +17,33 @@ class Question extends Model
 
     //relationship
     public function author() {                        //who created this question
+<<<<<<< HEAD
         return $this->belongsTo(User::class,'user_id');
+=======
+        return $this->belongsTo(User::class, 'user_id');
+>>>>>>> ec4dafd8621c6cd571055ca14b4c9d8ccbf9df7a
     }
 
     public function difficulty(){
         return $this->belongsTo(Difficulty::class);
     }
+<<<<<<< HEAD
     public function type(){
         return $this->belongsTo(Type::class);
     }
+=======
+
+>>>>>>> ec4dafd8621c6cd571055ca14b4c9d8ccbf9df7a
     public function skill() {
         return $this->belongsTo(Skill::class);
     }
 
     public function status() {
         return $this->belongsTo(Status::class);
+    }
+
+    public function type() {
+        return $this->belongsTo(Type::class);
     }
 
     public function solutions(){
