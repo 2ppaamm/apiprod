@@ -120,7 +120,6 @@ class CourseController extends Controller
     {
         $logon_user = Auth::user();
 $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
-
         if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
         }
@@ -143,6 +142,7 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
      */
     public function updateImage(Request $request, Course $course)
     {
+return $course;
         $logon_user = Auth::user();
         if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update course image','code'=>401], 401);     

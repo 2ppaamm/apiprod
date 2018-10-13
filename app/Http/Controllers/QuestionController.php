@@ -27,10 +27,15 @@ class QuestionController extends Controller
     {
         $questions = Cache::remember('questions', 15/60, function(){
             return Question::with(['skill.tracks.level','skill.tracks.field','type','solutions','author','difficulty',
-                'status'])->simplePaginate(20);
+                'status'])->simplePaginate(100);
         });
 //        return $questions->items();
         return response()->json(['next'=>$questions->nextPageUrl(), 'previous'=>$questions->previousPageUrl(),'questions'=>$questions->items()], 200);
+    }
+
+
+    public function create(){
+        return response()->json(['statuses'=>\App\Status::select('id','status','description')->get(), 'difficulties'=>\App\Difficulty::select('id','difficulty','description')->get(),'type'=>\App\Type::select('id','type','description')->get(),'skills'=>\App\Skill::select('id','skill','description')->get()]);
     }
 
     /**

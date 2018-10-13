@@ -18,7 +18,7 @@ Route::post('/qa/answer', 'CheckAnswerController@answer');
 
 Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
-Route::put('courseimage/{courseimage}', 'CourseController@updateImage');
+Route::put('courseimage/{courses}', 'CourseController@updateImage');
 Route::resource('courses', 'CourseController', ['except' =>['create', 'edit']]);
 Route::resource('houses', 'HouseController', ['except' =>['create', 'edit']]);
 Route::resource('levels', 'LevelController', ['except' =>['create', 'edit']]);
@@ -31,7 +31,7 @@ Route::resource('users.tests', 'UserTestController', ['except' => ['edit', 'crea
 Route::resource('tracks', 'TrackController', ['except' =>['edit']]);
 Route::resource('tests', 'TestController', ['except' =>['create', 'edit']]);
 Route::resource('skills', 'SkillController', ['except' =>['edit']]);
-Route::resource('questions', 'QuestionController', ['except' =>['create', 'edit']]);
+Route::resource('questions', 'QuestionController', ['except' =>['edit']]);
 Route::resource('enrolments', 'EnrolmentController', ['except' => ['edit', 'create']]);
 Route::resource('skills.questions', 'SkillQuestionsController', ['except' => ['edit', 'create']]);
 Route::resource('tracks.skills', 'TrackSkillController', ['except' => ['edit', 'create']]);
