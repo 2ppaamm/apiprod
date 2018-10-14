@@ -26,8 +26,7 @@ class QuestionController extends Controller
     public function index()
     {
         $questions = Cache::remember('questions', 15/60, function(){
-            return Question::with(['skill.tracks.level','skill.tracks.field','type','solutions','author','difficulty',
-                'status'])->simplePaginate(100);
+            return Question::with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->simplePaginate(20);
         });
 //        return $questions->items();
         return response()->json(['next'=>$questions->nextPageUrl(), 'previous'=>$questions->previousPageUrl(),'questions'=>$questions->items()], 200);
