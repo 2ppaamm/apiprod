@@ -143,7 +143,6 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
      */
     public function updateImage(Request $request, Course $course)
     {
-return $course;
         $logon_user = Auth::user();
         if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update course image','code'=>401], 401);     
@@ -172,6 +171,6 @@ return $course;
             return response()->json(['message'=>'There are classes based on this course. Delete those classes first.','code'=>500],500);
         }
         $course->delete();
-        return response()->json(['message'=>'Course '.$course->name.' deleted','code'=>201], 201);
+        return response()->json(['message'=>'Course '.$course->name.' is deleted','code'=>201], 201);
     }
 }

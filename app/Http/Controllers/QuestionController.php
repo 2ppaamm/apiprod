@@ -43,17 +43,37 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateQuestionRequest $request)
+    public function store(Request $request)
     {
         $user = Auth::user();
         $question = $request->all();
         $question['user_id'] = $user->id;
-        $question->image = 'images/questions/'.$question->id.'.png';
-        Question::create($question);
+        $question = Question::create($question);
+
         if ($request->hasFile('question_image')) {
-            $file = $request->question_image->move(public_path('images/questions'), $question->id.'.png');            
+            $file = $request->question_image->move(public_path('images\questions\question_image'), $question->id.'.png');            
+            $question->image = 'images/questions/question_image'.$question->id.'.png';
         } 
-        return response()->json(['message' => 'Question correctly added', 'code'=>201]);
+
+        if ($request->hasFile('answer0_image')) {
+            $file = $request->answer0_image->move(public_path('images/questions/answers'), $question->id.'.answer0.png');            
+            $question->answer0_image = 'images/questions/answers'.$question->id.'.answer0.png';
+        }
+
+        if ($request->hasFile('answer1_image')) {
+            $file = $request->answer1_image->move(public_path('images/questions/answers'), $question->id.'.answer1.png');            
+            $question->answer1_image = 'images/questions/answers'.$question->id.'.answer1.png';
+        }
+
+        if ($request->hasFile('answer2_image')) {
+            $file = $request->answer2_image->move(public_path('images/questions/answers'), $question->id.'.answer2.png');            
+            $question->answer2_image = 'images/questions/answers'.$question->id.'.answer2.png';
+        } 
+        if ($request->hasFile('answer3_image')) {
+            $file = $request->answer3_image->move(public_path('images/questions/answers'), $question->id.'.answer3.png');            
+            $question->answer3_image = 'images/questions/answers'.$question->id.'.answer3.png';
+        } 
+        return response()->json(['message' => 'Question correctly added', 'question'=>$question, 'code'=>201]);
     }
 
     /**
@@ -62,14 +82,9 @@ class QuestionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Question $question)
     {
-        $question = Question::find($id);
-        if(!$question) {
-            return response()->json(['message'=>'This question does not exist', 'code'=>404]);
-        }
-
-        return response()->json(['question' => $question, 'code'=>200], 200);
+        return response()->json(['question' => $question, 'code'=>201], 201);
     }
 
     /**
@@ -79,19 +94,54 @@ class QuestionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, Question $question)
+    public function update(Request $request, Question $question)
     {
-        if(Gate::denies('modify_question', $question)){
+//        if(Gate::denies('modify_question', $question)){
+//            return response()->json(['message'=> 'Access denied. You are not authorized to modify this question.', 'code'=>403],403);
+//        }
+        $user = Auth::user();
+        if ($question->user_id != $user->id && !$user->is_admin) {
             return response()->json(['message'=> 'Access denied. You are not authorized to modify this question.', 'code'=>403],403);
         }
 
-        $field = $request->get('field');
-        $value = $request->get('value');
-     
-        $question->$field = $value;
-        $question->save();
+        $question->fill($request->all())->save();
 
-        return response()->json(['message'=>'Question fetched','question' => $question, 'code'=>200], 200);
+        if ($request->hasFile('question_image')) {
+
+            if (file_exists('images\questions\question_image/'.$question->id.'.png')) unlink('images/questions/question_image/'.$question->id.'.png'); 
+            $file = $request->question_image->move(public_path('images\questions\question_image/'), $question->id.'.png');
+
+           
+            $question->question_image = 'images/questions/question_image/'.$question->id.'.png';
+        } else $question->question_image = null; 
+
+
+        if ($request->hasFile('answer0_image')) {
+            $file = $request->answer0_image->move(public_path('images/questions/answers'), $question->id.'.answer0.png');            
+
+            if (file_exists('images\questions\answers'.$question->id.'answer0.png')) unlink('images/questions/answers'.$question->id.'.answer0.png'); 
+            
+            $question->answer0_image = 'images/questions/answers'.$question->id.'.answer0.png';
+        } else $question->answer0_image = null;
+
+        if ($request->hasFile('answer1_image')) {
+            $file = $request->answer1_image->move(public_path('images/questions/answers'), $question->id.'.answer1.png');            
+            if (file_exists('images\questions\answers'.$question->id.'.answer1.png')) unlink('images/questions/answers'.$question->id.'.answer1.png'); 
+            $question->answer1_image = 'images/questions/answers'.$question->id.'.answer1.png';
+        }  else $question->answer1_image = null;
+
+        if ($request->hasFile('answer2_image')) {
+            $file = $request->answer2_image->move(public_path('images/questions/answers'), $question->id.'.answer2.png');
+            if (file_exists('images\questions\answers'.$question->id.'.answer2.png')) unlink('images/questions/answers'.$question->id.'.answer2.png'); 
+            $question->answer2_image = 'images/questions/answers'.$question->id.'.answer2.png';
+        }  else $question->answer2_image = null; 
+
+        if ($request->hasFile('answer3_image')) {
+            $file = $request->answer3_image->move(public_path('images/questions/answers'), $question->id.'.answer3.png');            
+            if (file_exists('images\questions\answers'.$question->id.'.answer3.png')) unlink('images/questions/answers'.$question->id.'.answer3.png');            $question->answer3_image = 'images/questions/answers'.$question->id.'.answer3.png';
+        }  else $question->answer3_image = null;
+
+        return response()->json(['message'=>'Question updated','question' => $question, 'code'=>200], 200);
     }
 
     /**
@@ -100,9 +150,9 @@ class QuestionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Question $questions)
+    public function destroy(Question $question)
     {
-        $questions->delete();
+        $question->delete();
         return response()->json(['message'=>'Question has been deleted.'], 200);
     }
 }
