@@ -26,8 +26,7 @@ class QuestionController extends Controller
     public function index()
     {
         $questions = Cache::remember('questions', 15/60, function(){
-            return Question::with(['skill.tracks.level','skill.tracks.field','type','solutions','author','difficulty',
-                'status'])->simplePaginate(100);
+            return Question::with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->simplePaginate(20);
         });
 //        return $questions->items();
         return response()->json(['next'=>$questions->nextPageUrl(), 'previous'=>$questions->previousPageUrl(),'questions'=>$questions->items()], 200);
@@ -46,9 +45,14 @@ class QuestionController extends Controller
      */
     public function store(CreateQuestionRequest $request)
     {
-//        return Auth::user();
+        $user = Auth::user();
         $question = $request->all();
+        $question['user_id'] = $user->id;
+        $question->image = 'images/questions/'.$question->id.'.png';
         Question::create($question);
+        if ($request->hasFile('question_image')) {
+            $file = $request->question_image->move(public_path('images/questions'), $question->id.'.png');            
+        } 
         return response()->json(['message' => 'Question correctly added', 'code'=>201]);
     }
 
