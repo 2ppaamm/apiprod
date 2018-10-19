@@ -118,7 +118,7 @@ $user->is_admin=TRUE; //to be deleted in production
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Course $course)
-    {        
+    {   
         $logon_user = Auth::user();
 $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
         if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
@@ -126,11 +126,14 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
         }
 
         if ($request->hasFile('image')) {
-            if (file_exists('images/courses/'.$course->id.'png')) unlink('images/courses/'.$course->id.'.png'); 
+            if (file_exists('images/courses/'.$course->id.'.png')) unlink('images/courses/'.$course->id.'.png');
+
             $file = $request->image->move(public_path('images/courses'), $course->id.'.png');
+            $course->image = 'images/courses/'.$course->id.'.png';
         } 
-        
-        $course->fill($request->all())->save();
+
+        $course->fill($request->except('image'))->save();
+
         return response()->json(['message'=>'Course updated','course' => $course, 201], 201);
     }
 
