@@ -72,17 +72,16 @@ $user->is_admin=TRUE; //to be deleted in production
         if (!$user->is_admin){
             return response()->json(['message'=>'Only administrators can create a new courses', 'code'=>403],403);
         }
-        $values = $request->all();
+        $values = $request->except('image');
         $values['user_id'] = $user->id;
-
-        $course = Course::create($values);
-
         if ($request->hasFile('image')) {
-            $file = $request->image->move(public_path('images/courses'), $course->id.'.png');            
+            $timestamp = time();
+            $values['image'] = 'images/courses/'.$timestamp.'.png';
+
+            $file = $request->image->move(public_path('images/courses'), $timestamp.'.png');
         } 
 
-        $course->image = 'images/courses/'.$course->id.'.png';
-        $course->save();
+        $course = Course::create($values);
 
         return response()->json(['message'=>'Course is now added','code'=>201, 'course' => $course], 201);
     }
