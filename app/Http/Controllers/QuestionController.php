@@ -156,7 +156,7 @@ $user->is_admin = TRUE; //make everyone admin to delete at live
 
         $question->fill($request->except(['question_image','answer0_image','answer1_image','answer2_image','answer3_image']))->save();
 
-        return response()->json(['message'=>'Question updated','question' => $question, 'code'=>200], 200);
+        return response()->json(['message'=>'Question has been updated','question' => $question, 'code'=>200], 200);
     }
 
     /**
