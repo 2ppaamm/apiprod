@@ -127,9 +127,9 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
 
         if ($request->hasFile('image')) {
             if (file_exists('images/courses/'.$course->id.'.png')) unlink('images/courses/'.$course->id.'.png');
+            else $course->image = 'images/courses/'.$course->id.'.png';
 
             $file = $request->image->move(public_path('images/courses'), $course->id.'.png');
-            $course->image = 'images/courses/'.$course->id.'.png';
         } 
 
         $course->fill($request->except('image'))->save();
