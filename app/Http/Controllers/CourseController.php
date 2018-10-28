@@ -41,22 +41,16 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function copy(CreateCourseRequest $request, $id)
+    public function copy(CreateCourseRequest $request, Course $course)
     {
-        $course = Course::find($id)->replicate();
-        if (!$course) {
-            return response()->json(['message' => 'This course does not exist', 'code'=>404], 404);
-        }
-        $course->course = $request->input('course');
-        $course->description = $request->input('description');
-        $course->status_id = 1;
-        $course->save();
-        $tracks=Course::find($id)->tracks;
+        $new_course = $course->replicate();
+        $new_course->fill($request->except('image'))->save();
+        $tracks=$course->tracks;
         for ($i=0; $i<sizeof($tracks); $i++) {
-            $course->tracks()->attach($tracks[$i],['order'=>$tracks[$i]->pivot->order]);
+            $new_course->tracks()->attach($tracks[$i],['order'=>$tracks[$i]->pivot->order]);
         }
         $controller = new CourseTrackController;
-        return $controller->index($course->id);
+        return $controller->index($new_course->id);
     }
 
     /**

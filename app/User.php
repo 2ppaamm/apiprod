@@ -67,7 +67,7 @@ class User extends Model implements AuthenticatableContract,
     }
 
     public function houses() {
-        return $this->hasMany(House::class);
+        return $this->hasMany(House::class, 'house_id');
     }
 
     public function tracks() {
