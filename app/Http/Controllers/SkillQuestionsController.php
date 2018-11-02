@@ -23,12 +23,12 @@ class SkillQuestionsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Skill $skills)
-    {
-        $questions = $skills->questions->take(10);
+    public function index(Skill $skill)
+    {        
+        $questions = $skill->questions->random(5);
 
         if (sizeof($questions) <1) {
-            return response() ->json(['message' => 'There is no question for this skill.', 'code'=>404], 404);
+            return response() ->json(['message' => 'There is no question needed for this skill.', 'code'=>404], 404);
         }
 
         return response() -> json (['message'=>'Questions from skill fetched.','questions' => $questions], 200);
