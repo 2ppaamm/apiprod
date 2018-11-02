@@ -24,7 +24,7 @@ class HouseController extends Controller
      */
     public function index()
     {
-        return $houses = House::select('id','description','start_date','end_date')->get();
+        return $houses = House::with(['enrolment','tracks.skills','created_by'])->select('id','house','description','start_date','end_date')->get();
     }
 
     /**
@@ -35,18 +35,29 @@ class HouseController extends Controller
      */
     public function store(CreateHouseRequest $request)
     {
-        $values = $request->all();
+        $values = $request->except('image');
         $user = Auth::user();
-        $house = $user->houses()->create($values);
+        $values['user_id'] = $user->id;
+        $timestamp = time();
+        $course = Course::find($request->course_id);
         
-        //enrol user to the house in house_role_user
+        if ($request->hasFile('image')) {
+            $values['image'] = 'images/houses/'.$timestamp.'.png';
+            $request->image->move(public_path('images/houses'), $timestamp.'.png');
+        } else if (file_exists($course->image)) copy($course->image, public_path('images/houses'.$timestamp.'.png'));
+     //enrol user to the house in house_role_user
+        $house = House::create($values);
         $house->enrolledusers()->attach($user, ['role_id'=>4]);
 
-        //create tracks
+
+      //find course, move image and create tracks
         $tracks = Course::find($request->course_id)->tracks;
+
+
         for ($i=0; $i<sizeof($tracks); $i++) {
             $house->tracks()->attach($tracks[$i],['track_order'=>$tracks[$i]->pivot->track_order]);
         }
+
 //        $controller = new DashboardController;
 
         return response()->json(['message'=>$house->house . ' is now added as a new class.','code'=>201, 'class'=>$this->index()], 201);

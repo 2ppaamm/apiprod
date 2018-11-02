@@ -26,7 +26,6 @@ class CreateHouseRequest extends Request
         return [
             'course_id' => 'required|exists:courses,id',
             'house' => 'required',
-            'image' => 'required|active_url',
             'description' =>'required',
             'start_date' =>'required|date',
             'end_date' => 'required|date|after:start_date'

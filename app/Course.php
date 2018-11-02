@@ -13,7 +13,7 @@ class Course extends Model
     	return $this->hasMany(House::class);
     }
 
-    public function created_by() {                        //who created this track
+    public function created_by() {                        //who created this course
         return $this->belongsTo(User::class, 'user_id');
     }
 
