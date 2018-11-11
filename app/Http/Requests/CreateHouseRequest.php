@@ -27,6 +27,8 @@ class CreateHouseRequest extends Request
             'course_id' => 'required|exists:courses,id',
             'house' => 'required',
             'description' =>'required',
+            'currency' => 'required',
+            'price' => 'required',
             'start_date' =>'required|date',
             'end_date' => 'required|date|after:start_date'
         ];
