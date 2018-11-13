@@ -27,6 +27,10 @@ class HouseController extends Controller
         return $houses = House::with(['enrolment','tracks.skills','created_by'])->select('id','house','description','start_date','end_date')->get();
     }
 
+    public function create()
+    {
+        return response()->json(['courses'=>Course::select('id','course')->get(),'currency'=>['USD','SGD'],'code'=>201],201);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -82,12 +86,22 @@ class HouseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRequest $request, House $house)
+    public function update(Request $request, House $house)
     {
-        $field = $request->get('field');
-        $value = $request->get('value');
-        $house->update([$field=>$value]);
-        return response()->json(['message'=>'Update successful', 'class'=>$house, 'code'=>201], 201);
+        $values = $request->except('image');
+        $user = Auth::user();
+        $timestamp = time();
+        $course = Course::find($request->course_id);
+        
+        if ($request->hasFile('image')) {
+            if (file_exists($house->image)) unlink($house->image);
+            $house->image = 'images/houses/'.$timestamp.'.png';
+
+            $file = $request->image->move(public_path('images/houses'), $timestamp.'.png');
+        } 
+     //enrol user to the house in house_role_user
+        $house->fill($request->except('image'))->save();
+        return response()->json(['message'=>$house->house.' updated successful', 'class'=>$house, 'code'=>201], 201);
     }
 
     /**
