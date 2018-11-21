@@ -9,7 +9,8 @@
         "laravel/framework": "5.5.*",
         "maatwebsite/excel": "~2.0",
         "barryvdh/laravel-cors": "^0.9.3",
-        "auth0/login": "~4.0"
+        "auth0/login": "~4.0",
+        "guzzlehttp/guzzle": "^6.3"
             },
     "require-dev": {
         "filp/whoops": "~2.0",
