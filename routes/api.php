@@ -20,7 +20,7 @@ Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
 //Route::put('courseimage/{courses}', 'CourseController@updateImage');
 Route::resource('courses', 'CourseController', ['except' =>['create', 'edit']]);
-Route::resource('houses', 'HouseController', ['except' =>['create', 'edit']]);
+Route::resource('houses', 'HouseController', ['except' =>['edit']]);
 Route::resource('levels', 'LevelController', ['except' =>['create', 'edit']]);
 Route::resource('courses.houses', 'CourseHouseController', ['except' => ['edit', 'create']]);
 Route::resource('courses.users', 'CourseUserController', ['except' => ['edit', 'create']]);
