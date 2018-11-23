@@ -85,7 +85,7 @@ $logon_user->is_admin = TRUE;
         if ($request->hasFile('image')) {
             if (file_exists($user->image)) unlink($user->image);
             $timestamp = time();
-            $user->image = URL::current().'images/profiles/'.$timestamp.'.png';
+            $user->image = URL::to('/').'/images/profiles/'.$timestamp.'.png';
 
             $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
         } 
