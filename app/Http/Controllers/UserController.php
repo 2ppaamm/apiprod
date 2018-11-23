@@ -10,6 +10,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\User;
 use Auth;
 use App\Http\Requests\GameScoreRequest;
+use Illuminate\Support\Facades\URL;
 
 class UserController extends Controller
 {
@@ -84,7 +85,7 @@ $logon_user->is_admin = TRUE;
         if ($request->hasFile('image')) {
             if (file_exists($user->image)) unlink($user->image);
             $timestamp = time();
-            $user->image = public_path('images/profiles/'.$timestamp.'.png');
+            $user->image = URL::current().'images/profiles/'.$timestamp.'.png';
 
             $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
         } 
