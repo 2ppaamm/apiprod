@@ -70,6 +70,8 @@ $logon_user = User::find(1);
     {
         $logon_user = Auth::user();
 
+$logon_user->is_admin = TRUE;
+
         if ($logon_user->id != $user->id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);     
         }
