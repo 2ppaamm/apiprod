@@ -73,12 +73,15 @@ $logon_user = User::find(1);
         if ($logon_user->id != $user->id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);     
         }
+
         if ($request->email || $request->maxile_level || $request->game_level) {
             if (!$logon_user->is_admin) {
                 array_except($request,['email','maxile_level','game_level']);
             }
         }
-
+        
+        $user->fill($request->except('image'));
+        
         if ($request->hasFile('image')) {
             if (file_exists($user->image)) unlink($user->image);
             $timestamp = time();
@@ -87,7 +90,8 @@ $logon_user = User::find(1);
             $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
         } 
 //        $user->fill($request->all())->save();
-        $user->fill($request->except('image'))->save();
+
+        $user->save();
 
         return response()->json(['message'=>'User successfully updated.', 'user'=>$user,'code'=>201], 201);
     }
