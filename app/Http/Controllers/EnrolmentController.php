@@ -46,6 +46,7 @@ $user->is_admin=TRUE; //to remove for production
         $enrol_user = $request->role =="Student" ? $user : null;
         if ($request->role =="student") {
             $enrol_user = $user;
+        } else {
             $most_powerful = $user->enrolledClasses()->whereHouseId($request->house_id)->with('roles')->min('role_id');
             if (!$most_powerful || $most_powerful > $role_to_enrol->id && !$user->is_admin) {        // administrator 
                 return response()->json(['message'=>'No authorization to enrol', 'code'=>203], 203);
