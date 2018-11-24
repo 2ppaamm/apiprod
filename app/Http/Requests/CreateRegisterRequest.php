@@ -25,7 +25,6 @@ class CreateRegisterRequest extends Request
     {
         return [
             'role' => 'required|exists:roles,role',
-            'user_id' =>'required|exists:users,id',
             'transaction_id' => 'required',
             'places_alloted' => 'required|integer',
             'amount_paid' => 'required|regex:/^\d*(\.\d{2})?$/',
