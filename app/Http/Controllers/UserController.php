@@ -91,7 +91,7 @@ $logon_user->is_admin = TRUE;
         } 
 //        $user->fill($request->all())->save();
         $user->fill($request->except('image'))->save();
-
+$user->save();
         return response()->json(['message'=>'User successfully updated.', 'user'=>$user,'code'=>201], 201);
     }
 
