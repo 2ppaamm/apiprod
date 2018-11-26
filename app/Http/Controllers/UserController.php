@@ -108,13 +108,8 @@ class UserController extends Controller
         }
         $user->fill($request->all())->save();
         $user->fill($request->except('image'))->save();
-<<<<<<< HEAD
-$user->push();
-        return response()->json(['message'=>'User successfully updated.', 'user'=>$user,'code'=>201], 201);
-=======
         $user->push();
         return response()->json(['message'=>'User successfully updated.', 'user'=> $request->input('name'),'code'=>201], 201);
->>>>>>> b8cce36b1db49a0e2e8a94513d4392ad2ffe4eef
     }
 
     /**
