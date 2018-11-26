@@ -86,29 +86,32 @@ class UserController extends Controller
     {
         $logon_user = Auth::user();
 
-$logon_user->is_admin = true;
-
-        if ($logon_user->id != $user->id && !$logon_user->is_admin) {
-            return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);
-        }
-        if ($request->email || $request->maxile_level || $request->game_level) {
-            if (!$logon_user->is_admin) {
-                array_except($request, ['email','maxile_level','game_level']);
+        $logon_user->is_admin = true;
+        try {
+            if ($logon_user->id != $user->id && !$logon_user->is_admin) {
+                return response()->json(['message' => 'You have no access rights to update user.', 'code' => 401], 401);
             }
-        }
-
-        if ($request->hasFile('image')) {
-            if (file_exists($user->image)) {
-                unlink($user->image);
+            if ($request->email || $request->maxile_level || $request->game_level) {
+                if (!$logon_user->is_admin) {
+                    array_except($request, ['email', 'maxile_level', 'game_level']);
+                }
             }
-            $timestamp = time();
-            $user->image = URL::to('/').'/images/profiles/'.$timestamp.'.png';
+            if ($request->hasFile('image')) {
+                if (file_exists($user->image)) {
+                    unlink($user->image);
+                }
+                // return response()->json(['message' => 'existing file.', 'user' =>[], 'code' => 201], 201);
+                $timestamp = time();
+                $user->image = URL::to('/') . '/images/profiles/' . $timestamp . '.png';
 
-            $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
+                $file = $request->image->move(public_path('images/profiles'), $timestamp . '.png');
+            }
+            $user->fill($request->except('image'))->save();
+            $user->push();
+            return response()->json(['message' => 'User successfully updated.', 'user' => $user, 'code' => 201], 201);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'server has error.', 'user' => $th->getMessage(), 'code' => 201], 400);
         }
-        $user->fill($request->except('image'))->save();
-        $user->push();
-        return response()->json(['message'=>'User successfully updated.', 'user'=> $user,'code'=>201], 201);
     }
 
     /**
