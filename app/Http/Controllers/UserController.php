@@ -86,7 +86,7 @@ class UserController extends Controller
     {
         $logon_user = Auth::user();
 
-        $logon_user->is_admin = true;
+$logon_user->is_admin = true;
 
         if ($logon_user->id != $user->id && !$logon_user->is_admin) {
             return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);
@@ -106,9 +106,13 @@ class UserController extends Controller
 
             $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
         }
+<<<<<<< HEAD
         $user->fill($request->all())->save();
+=======
+        $user->fill($request->except('image'))->save();
+>>>>>>> master
         $user->push();
-        return response()->json(['message'=>'User successfully updated.', 'user'=> $request->input('name'),'code'=>201], 201);
+        return response()->json(['message'=>'User successfully updated.', 'user'=> $user,'code'=>201], 201);
     }
 
     /**
