@@ -25,7 +25,7 @@ class CreateUserRequest extends Request
     {
         return [
             'email' => 'required|unique:users|email',
-            'password'=>'required|regex:/^(?=.*\d)(?=.*[a-zA-Z])(?!.*[\W_\x7B-\xFF]).{6,15}$/',
+            'password' => 'required|string|min:6|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
         ];
     }
 
@@ -33,5 +33,4 @@ class CreateUserRequest extends Request
     {
         return response()->json(['message' => $errors,'code'=>422], 422);
     }
-
 }
