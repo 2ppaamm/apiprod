@@ -11,10 +11,12 @@ use App\User;
 use Auth;
 use App\Http\Requests\GameScoreRequest;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
 //        \Auth::login(User::find(2));
     }
 
@@ -27,7 +29,7 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $user = User::find(1);
-        return $user->is_admin ? response()->json(User::with('enrolledClasses.roles','logs')->get()): response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
+        return $user->is_admin ? response()->json(User::with('enrolledClasses.roles', 'logs')->get()): response()->json(['message' =>'not authorized to view users', 'code'=>401], 401);
     }
 
     /**
@@ -36,12 +38,25 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateUserRequest $request)
+    public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|unique:users|email',
+            'password' => 'required|string|min:6|regex:/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/',
+
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Signup is failed', 'data' => $validator->errors(), 'code' => 201]);
+        }
         $user = $request->all();
-        $user['password'] = bcrypt($request->password);
-        User::create($user);
-        return response()->json(['message' => 'User correctly added', 'data'=>$user, 'code'=>201]);
+        try {
+            $user['password'] = bcrypt($request->password);
+            User::create($user);
+            return response()->json(['message' => 'User correctly added', 'data' => $user, 'code' => 201]);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage(), 'data' => $user, 'code' => 200]);
+            //throw $th;
+        }
     }
 
     /**
@@ -51,11 +66,11 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
-    {        
+    {
         $logon_user = Auth::user();
-$logon_user = User::find(1);
-        if ($logon_user->id != $user->id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to view user','code'=>401], 401);     
+        $logon_user = User::find(1);
+        if ($logon_user->id != $user->id && !$logon_user->is_admin) {
+            return response()->json(['message' => 'You have no access rights to view user','code'=>401], 401);
         }
         return response()->json(['user'=>$user, 'code'=>201], 201);
     }
@@ -71,28 +86,30 @@ $logon_user = User::find(1);
     {
         $logon_user = Auth::user();
 
-$logon_user->is_admin = TRUE;
+        $logon_user->is_admin = true;
 
-        if ($logon_user->id != $user->id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);     
+        if ($logon_user->id != $user->id && !$logon_user->is_admin) {
+            return response()->json(['message' => 'You have no access rights to update user.', 'code'=>401], 401);
         }
         if ($request->email || $request->maxile_level || $request->game_level) {
             if (!$logon_user->is_admin) {
-                array_except($request,['email','maxile_level','game_level']);
+                array_except($request, ['email','maxile_level','game_level']);
             }
         }
 
         if ($request->hasFile('image')) {
-            if (file_exists($user->image)) unlink($user->image);
+            if (file_exists($user->image)) {
+                unlink($user->image);
+            }
             $timestamp = time();
             $user->image = URL::to('/').'/images/profiles/'.$timestamp.'.png';
 
             $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
-        } 
-//        $user->fill($request->all())->save();
+        }
+        $user->fill($request->all())->save();
         $user->fill($request->except('image'))->save();
-$user->save();
-        return response()->json(['message'=>'User successfully updated.', 'user'=>$user,'code'=>201], 201);
+        $user->push();
+        return response()->json(['message'=>'User successfully updated.', 'user'=> $request->input('name'),'code'=>201], 201);
     }
 
     /**
@@ -105,18 +122,20 @@ $user->save();
     {
         $users = findorfail($id);
         $logon_user = Auth::user();
-        if (!$logon_user->is_admin){
+        if (!$logon_user->is_admin) {
             return response()->json(['message' => 'You have no access rights to delete user', 'data'=>$user, 'code'=>401], 500);
         }
-        if (count($users->enrolledClasses)>0) return response()->json(['message'=>'User has existing classes and cannot be deleted.'], 400);
+        if (count($users->enrolledClasses)>0) {
+            return response()->json(['message'=>'User has existing classes and cannot be deleted.'], 400);
+        }
         $users->delete();
-        return response()->json(['message'=>'User has been deleted.'], 200);     
+        return response()->json(['message'=>'User has been deleted.'], 200);
     }
 
     public function game_score(GameScoreRequest $request)
     {
         $user = Auth::user();
-        if ($request->old_game_level != $user->game_level){
+        if ($request->old_game_level != $user->game_level) {
             return response()->json(['message'=>'Old game score is incorrect. Cannot update new score', 'code'=>500], 500);
         }
         $user->game_level = $request->new_game_level;
