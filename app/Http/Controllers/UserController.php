@@ -107,7 +107,6 @@ class UserController extends Controller
             $file = $request->image->move(public_path('images/profiles'), $timestamp.'.png');
         }
         $user->fill($request->all())->save();
-        $user->fill($request->except('image'))->save();
         $user->push();
         return response()->json(['message'=>'User successfully updated.', 'user'=> $request->input('name'),'code'=>201], 201);
     }
