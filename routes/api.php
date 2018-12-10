@@ -18,6 +18,8 @@ Route::post('/qa/answer', 'CheckAnswerController@answer');
 
 Route::resource('users', 'UserController');
 Route::post('courses/{courses}', 'CourseController@copy');
+Route::get('questions/search_init', 'QuestionController@search_init');
+Route::post('questions/search', 'QuestionController@search');
 //Route::put('courseimage/{courses}', 'CourseController@updateImage');
 Route::resource('courses', 'CourseController', ['except' =>['create', 'edit']]);
 Route::resource('houses', 'HouseController', ['except' =>['edit']]);

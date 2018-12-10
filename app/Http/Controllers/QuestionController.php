@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Gate;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Question;
+use App\Skill;
+use App\Track;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateRequest;
 
@@ -29,6 +31,38 @@ class QuestionController extends Controller
         });
 //        return $questions->items();
         return response()->json(['next'=>$questions->nextPageUrl(), 'previous'=>$questions->previousPageUrl(),'questions'=>$questions->items()], 200);
+    }
+
+    public function search_init(){
+        return response()->json(['levels'=>\App\Level::select('id','level','description')->get(), 'skills'=>\App\Skill::select('id','skill','description')->get(),'code'=>201],201);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $questions = null;
+        if ($request->skill){
+            $questions = Cache::remember('questions', 15/60, function() use ($request) {
+            return Question::whereSkillId($request->skill)->with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->get();
+                });
+        }
+        if ($request->level){
+            $questions = Cache::remember('questions',15/60, function() use ($request){
+            return Question::with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->whereIn('skill_id', Skill::whereHas('tracks', function ($query) use ($request) {
+                       $query->whereIn('id', \App\Level::find($request->level)->tracks()->pluck('id')->toArray());
+                        })->pluck('id')->toArray())->get();
+
+            });
+        }
+        if ($request->keyword){
+            $questions= Question::where('question','LIKE','%'.$request->keyword.'%')->get();
+        }
+
+//        return $questions->items();
+        return response()->json(['questions'=>$questions], 200);
     }
 
 
