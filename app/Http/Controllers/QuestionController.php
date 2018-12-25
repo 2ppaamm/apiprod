@@ -58,10 +58,10 @@ class QuestionController extends Controller
             });
         }
         if ($request->keyword){
-            $questions= Question::where('question','LIKE','%'.$request->keyword.'%')->get();
+            $questions = Cache::remember('questions',15/60, function() use ($request){
+            return Question::with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->where('question','LIKE','%'.$request->keyword.'%')->get();});
         }
 
-//        return $questions->items();
         return response()->json(['questions'=>$questions], 200);
     }
 
