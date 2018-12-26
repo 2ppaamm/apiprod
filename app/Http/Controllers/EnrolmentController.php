@@ -78,7 +78,7 @@ $user->is_admin=TRUE; //to remove for production
      */
     public function user_houses() {
         $user = Auth::user();
-return        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_maxile')->with('tracks.track_passed')->get();
+        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_maxile')->with('tracks.track_passed')->get();
 
         foreach ($houses as $house) {
           $house['course_maxile'] = (int)min($user->maxile_level,$house->course->end_maxile_score);//Enrolment::whereUserId($user->id)->whereHouseId($house->id)->whereRoleId(6)->pluck('progress')->first();
@@ -110,15 +110,7 @@ return        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_
             $class['students_completed_course'] = $class->studentEnrolment->where('expiry_date','<', new DateTime('today'))->count();         
             $class['chartdata']=[$class->studentEnrolment()->where('progress','<', 40)->count(),$class->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count(),$class->studentEnrolment()->where('progress','>=', 80)->count()];
             $class['tracksdata'] = $class->tracks()->pluck('track');
-            $class['barchartdata'] = [['data'=> 
-            \App\TrackUser::all()
-            //whereIn('track_id', House::find(1)->tracks()->pluck('id'))
-            //->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))
-            //->avg('track_maxile') 
-            ? 
-            1
-            //\App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile'): 
-            0 , 'label'=>'Average Maxile']];
+            $class['barchartdata'] = [['data'=> \App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile') ? \App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile'):0 , 'label'=>'Average Maxile']];
         }
 
         return response()->json(['message' =>'Successful retrieval of teacher enrolment.', 'houses'=>$houses, 'code'=>201], 201);
@@ -129,45 +121,10 @@ return        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(Enrolment $enrolment) {
-        return response()->json(['message' =>'Successful retrieval of enrolment.', 'enrolment'=>$enrolment, 'code'=>201], 201);
+    public function show($id) {
+        $house=House::findorfail($id);
+        $users = User::with('enrolment.roles')->whereHouseId($id)->get();
+        return response()->json(['message' =>'Successful retrieval of enrolment.', 'users'=>$users, 'code'=>201], 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  Enrolment  $Enrolment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Enrolment $enrolment)
-    {   
-        $logon_user = Auth::user();
-$logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
-        if ($logon_user->id != $enrolment->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update enrolment','code'=>401], 401);     
-        }
-
-        $enrolment->fill($request->all())->save();
-
-        return response()->json(['message'=>'Enrolment updated','enrolment' => $enrolment, 201], 201);
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  Enrolment  $enrolment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Enrolment $enrolment)
-    {
-        $logon_user = Auth::user();
-$logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
-        if ($logon_user->id != $enrolment->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to delete enrolment','code'=>401], 401);
-        } 
-        $enrolment->delete();
-        return response()->json(['message'=>'This enrolment has been deleted','code'=>201], 201);
-    }
 }
