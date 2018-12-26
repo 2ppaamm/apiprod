@@ -78,7 +78,7 @@ $user->is_admin=TRUE; //to remove for production
      */
     public function user_houses() {
         $user = Auth::user();
-        $houses = $user->studentHouse()->with('tracks.skills.skill_maxile')->with('tracks.track_passed')->get();
+return        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_maxile')->with('tracks.track_passed')->get();
 
         foreach ($houses as $house) {
           $house['course_maxile'] = (int)min($user->maxile_level,$house->course->end_maxile_score);//Enrolment::whereUserId($user->id)->whereHouseId($house->id)->whereRoleId(6)->pluck('progress')->first();
