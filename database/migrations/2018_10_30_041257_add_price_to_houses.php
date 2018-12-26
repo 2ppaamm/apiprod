@@ -16,6 +16,8 @@ class AddPriceToHouses extends Migration
         Schema::table('houses', function($table) {
             $table->integer('price');
             $table->string('currency')->default('SGD');
+            $table->integer('underperform')->default(40);
+            $table->integer('overperform')->default(90);            
         });        //
     }
 
@@ -29,6 +31,8 @@ class AddPriceToHouses extends Migration
         Schema::table('houses', function($table) {
             $table->dropColumn('price');
             $table->dropColumn('currency');
+            $table->dropColumn('underperform');
+            $table->dropColumn('overperform');
         });
     }
 }
