@@ -31,6 +31,8 @@ class AddPriceToHouses extends Migration
         Schema::table('houses', function($table) {
             $table->dropColumn('price');
             $table->dropColumn('currency');
+            $table->dropColumn('underperform');
+            $table->dropColumn('overperform');
         });
     }
 }
