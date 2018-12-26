@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Http\Requests\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-class CreateSkillRequest extends Request
+class CreateLevelRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,16 @@ class CreateSkillRequest extends Request
     public function rules()
     {
         return [
-        'skill' => 'required|max:255',
-        'description'=>'required',
-        'status_id' => 'required|exists:statuses,id',
-        'track_id' => 'required|exists:tracks,id'
+            'level'=>'required',
+            'description'=>'required',
+            'age'=>'required|digits_between:0,999',
+            'start_maxile_level'=>'required|integer|between:0,9999',
+            'end_maxile_level'=>'required|integer|between:100,9999|gt:start_maxile_level'
         ];
     }
 
-    public function response(array $errors)
-    {
+    
+    public function response(array $errors) {
         return response()->json(['message' => $errors,'code'=>422], 422);
     }
 }

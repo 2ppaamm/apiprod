@@ -42,8 +42,19 @@ class SkillController extends Controller
     public function store(CreateSkillRequest $request)
     {
         $user = Auth::user();
+$user->is_admin=TRUE; //to be deleted in productions
+
         $track_id = $request->track_id;
+
         $skill = Skill::firstOrCreate(['skill'=>$request->skill,'description'=>$request->description, 'status_id'=>$request->status_id, 'user_id'=>$user->id]);
+        if ($request->hasFile('lesson_link')) {
+            $timestamp = time();
+            $skill->lesson_link = 'videos/skills/'.$timestamp.'.mp4';
+
+            $file = $request->lesson_link->move(public_path('videos/skills'), $timestamp.'.mp4');
+
+            $skill->save();
+        }
 
         $track = \App\Track::findorfail($track_id);
         if ($track) {
@@ -64,12 +75,22 @@ class SkillController extends Controller
     public function update(Request $request, Skill $skill)
     {
         $logon_user = Auth::user();
+$logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
         if ($logon_user->id != $skill->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update course','code'=>401], 401);     
+            return response()->json(['message' => 'You have no access rights to update skill','code'=>401], 401);     
         }
-        $skill->fill($request->all())->save();
 
-        return response()->json(['message'=>'Skill update.','skill' => $skill, 'code'=>200], 200);
+        if ($request->hasFile('lesson_link')) {
+            if (file_exists($skill->lesson_link)) unlink($skill->lesson_link);
+            $timestamp = time();
+            $skill->lesson_link = 'videos/skills/'.$timestamp.'.mp4';
+
+            $file = $request->lesson_link->move(public_path('videos/skills'), $timestamp.'.mp4');
+        } 
+
+        $skill->fill($request->except('lesson_link'))->save();
+
+        return response()->json(['message'=>'skill updated','skill' => $skill, 201], 201);
     }
 
     /**

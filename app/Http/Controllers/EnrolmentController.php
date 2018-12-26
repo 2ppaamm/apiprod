@@ -121,10 +121,45 @@ return        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($id) {
-        $house=House::findorfail($id);
-        $users = User::with('enrolment.roles')->whereHouseId($id)->get();
-        return response()->json(['message' =>'Successful retrieval of enrolment.', 'users'=>$users, 'code'=>201], 201);
+    public function show(Enrolment $enrolment) {
+        return response()->json(['message' =>'Successful retrieval of enrolment.', 'enrolment'=>$enrolment, 'code'=>201], 201);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Enrolment  $Enrolment
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Enrolment $enrolment)
+    {   
+        $logon_user = Auth::user();
+$logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
+        if ($logon_user->id != $enrolment->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to update enrolment','code'=>401], 401);     
+        }
+
+        $enrolment->fill($request->all())->save();
+
+        return response()->json(['message'=>'Enrolment updated','enrolment' => $enrolment, 201], 201);
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Enrolment  $enrolment
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Enrolment $enrolment)
+    {
+        $logon_user = Auth::user();
+$logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
+        if ($logon_user->id != $enrolment->user_id && !$logon_user->is_admin) {            
+            return response()->json(['message' => 'You have no access rights to delete enrolment','code'=>401], 401);
+        } 
+        $enrolment->delete();
+        return response()->json(['message'=>'This enrolment has been deleted','code'=>201], 201);
+    }
 }

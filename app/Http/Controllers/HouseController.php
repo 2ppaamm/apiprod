@@ -75,7 +75,7 @@ class HouseController extends Controller
      */
     public function show(House $house)
     {
-        return response()->json(['message'=> 'Class is as displayed.', 'code'=>200, 'house'=>$house],200);
+        return response()->json(['message'=> 'Class is as displayed.', 'code'=>201, 'house'=>$house],201);
     }
 
 

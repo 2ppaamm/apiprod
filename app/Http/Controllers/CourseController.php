@@ -132,27 +132,6 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
     }
 
     /**
-     * Upload course image in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  Course  $course
-     * @return \Illuminate\Http\Response
-     */
-    public function updateImage(Request $request, Course $course)
-    {
-        $logon_user = Auth::user();
-        if ($logon_user->id != $course->user_id && !$logon_user->is_admin) {            
-            return response()->json(['message' => 'You have no access rights to update course image','code'=>401], 401);     
-        }
-        if ($request->hasFile('image')) {
-            unlink('images/courses/'.$course->id.'.png'); 
-            $file = $request->image->move(public_path('images/courses'), $course->id.'.png');
-        } 
-        
-        return response()->json(['message'=>'Course Image updated','course' => $course, 201], 201);
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  Course  $course

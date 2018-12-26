@@ -21,6 +21,7 @@ class LoadController extends Controller
      */
     public function loadall()
     {
+        ini_set('max_execution_time', 300);
         $currentuser =  \App\User::whereId(1)->first();
         Auth::login($currentuser);
         $this->loadusers();
