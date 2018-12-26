@@ -8,7 +8,7 @@ class Role extends Model
 {
     use RecordLog;
 
-    protected $fillable = ['name', 'label'];
+    protected $fillable = ['role', 'description'];
 
     /**
      * The attributes excluded from the model's JSON form.
