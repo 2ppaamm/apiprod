@@ -111,7 +111,7 @@ return        $houses = $user->studentHouse()->with('tracks.checkedSkills.skill_
             $class['chartdata']=[$class->studentEnrolment()->where('progress','<', 40)->count(),$class->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count(),$class->studentEnrolment()->where('progress','>=', 80)->count()];
             $class['tracksdata'] = $class->tracks()->pluck('track');
             $class['barchartdata'] = [['data'=> 
-            \App\TrackUser::all()''
+            \App\TrackUser::all()
             //whereIn('track_id', House::find(1)->tracks()->pluck('id'))
             //->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))
             //->avg('track_maxile') 
