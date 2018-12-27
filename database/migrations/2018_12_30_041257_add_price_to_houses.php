@@ -18,7 +18,11 @@ class AddPriceToHouses extends Migration
             $table->string('currency')->default('SGD');
             $table->integer('underperform')->default(40);
             $table->integer('overperform')->default(90);            
-        });        //
+            $table->integer('framework_id')->unsigned()->after('id');
+            $table->foreign('framework_id')->references('id')->on('frameworks');
+            $table->integer('start_framework')->default(0);
+            $table->integer('end_framework')->default(1300);                        
+        }); 
     }
 
     /**
@@ -33,6 +37,10 @@ class AddPriceToHouses extends Migration
             $table->dropColumn('currency');
             $table->dropColumn('underperform');
             $table->dropColumn('overperform');
+            $table->dropForeign(['framework_id']);
+            $table->dropColumn('framework_id');
+            $table->dropColumn('start_framework');
+            $table->dropColumn('end_framework');
         });
     }
 }

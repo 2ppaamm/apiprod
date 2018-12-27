@@ -27,6 +27,10 @@ class House extends Model
     	return $this->belongsTo(Course::class);
     }
 
+    public function framework(){
+        return $this->belongsTo(Framework::class);
+    }
+
     public function tracks(){
     	return $this->belongsToMany(Track::class)->withPivot('track_order','start_date', 'end_date')->orderBy('track_order');
     }
