@@ -102,7 +102,7 @@ $user->is_admin=TRUE; //to remove for production
      */
     public function teacher_houses() {
         $user = User::find(1);//Auth::user();
-        $houses = $user->teachHouse()->with(['tracks.owner','tracks.skills.user','tracks.field','tracks.status','tracks.level','enrolledStudents.fieldMaxile','enrolledStudents.tracksPassed','enrolledStudents.completedtests'])->get();
+        $houses = $user->teachHouse()->with(['framework','tracks.owner','tracks.skills.user','tracks.field','tracks.status','tracks.level','enrolledStudents.fieldMaxile','enrolledStudents.tracksPassed','enrolledStudents.completedtests'])->get();
         foreach ($houses as $class) {
             $class['average_progress']=$class->studentEnrolment->avg('progress');
             $class['lowest_progress'] = $class->studentEnrolment->min('progress');
