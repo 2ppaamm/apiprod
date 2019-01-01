@@ -108,7 +108,7 @@ $user->is_admin=TRUE; //to remove for production
             $class['lowest_progress'] = $class->studentEnrolment->min('progress');
             $class['highest_progress'] = $class->studentEnrolment->max('progress');
             $class['students_completed_course'] = $class->studentEnrolment->where('expiry_date','<', new DateTime('today'))->count();         
-            $class['chartdata']=[$class->studentEnrolment()->where('progress','<', 40)->count(),$class->studentEnrolment()->where('progress','>=', 40)->where('progress', '<',80)->whereRoleId(6)->count(),$class->studentEnrolment()->where('progress','>=', 80)->count()];
+            $class['chartdata']=[$class->studentEnrolment()->where('progress','<', $class->underperform)->count(),$class->studentEnrolment()->where('progress','>=', $class->underperform)->where('progress', '<',$class->overperform)->whereRoleId(6)->count(),$class->studentEnrolment()->where('progress','>=', $class->overperform)->count()];
             $class['tracksdata'] = $class->tracks()->pluck('track');
 //            $class['barchartdata'] = [['data'=> \App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile') ? \App\TrackUser::whereIn('track_id', House::find(1)->tracks()->pluck('id'))->whereIn('user_id', House::find(1)->enrolledStudents()->pluck('id'))->avg('track_maxile'):0 , 'label'=>'Average Maxile']];
         }
