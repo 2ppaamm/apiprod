@@ -10,7 +10,7 @@ class House extends Model
 {
     use RecordLog;
     
-    protected $fillable = ['house', 'description', 'user_id','course_id','image', 'status_id', 'start_date', 'end_date','framework_id', 'price','currency','start_framework','end_framework'];
+    protected $fillable = ['house', 'description', 'user_id','course_id','image', 'status_id', 'start_date', 'end_date','framework_id', 'price','currency','start_framework','end_framework', 'underperform','overperform'];
 
     /**
      * The attributes excluded from the model's JSON form.
