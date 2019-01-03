@@ -71,14 +71,13 @@ class TrackController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Track $track)
     {
-        $track = Track::find($id);
         if (!$track) {
             return response()->json(['message' => 'This track does not exist.', 'code'=>404], 404);
         }
 
-        return Track::whereId($id)->with('skills.questions')->get();
+        return response()->json(['message'=>'Track with skills and questions fetched.','tracks'=>$track->with('skills.questions')->get(),'code'=>201],201);
     }
 
     /**
@@ -88,9 +87,8 @@ class TrackController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Track $track)
     {
-        $track = Track::find($id);
         $logon_user = Auth::user();
         if ($logon_user->id != $track->user_id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to update track','code'=>401], 401);     

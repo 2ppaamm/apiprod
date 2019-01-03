@@ -12,7 +12,7 @@ class Skill extends Model
     use RecordLog;
     
     protected $hidden = ['user_id', 'create_at', 'updated_at','pivot'];
-    protected $fillable = ['skill', 'description', 'track_id','image', 'status_id', 'user_id', 'lesson_link'];
+    protected $fillable = ['skill', 'description', 'track_id','image', 'status_id', 'user_id', 'lesson_link', 'check'];
 
     // Relationships
     public function user(){

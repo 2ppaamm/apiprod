@@ -144,4 +144,11 @@ class UserController extends Controller
         $user->save();
         return User::profile($user->id);
     }
+
+    public function performance($id)
+    {
+        return response()->json(['message'=>'User performance retrieved',
+            'performance'=>User::whereId($id)->with('tracksPassed','completedTests','fieldMaxile','tracksFailed','incompletetests')->get(),'code'=>200
+    ], 200);
+    }
 }

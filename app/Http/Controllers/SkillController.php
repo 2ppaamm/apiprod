@@ -99,9 +99,9 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Skill $skills)
+    public function show(Skill $skill)
     {
-        return response()->json(['message'=>'Skill fetched.', 'skill'=>$skills, 'code'=>201],201);
+        return response()->json(['message'=>'Skill fetched.', 'skill'=>$skill, 'code'=>201],201);
     }
 
     /**

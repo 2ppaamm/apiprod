@@ -17,6 +17,7 @@ Route::post('/qa', 'CheckAnswerController@index');
 Route::post('/qa/answer', 'CheckAnswerController@answer');
 
 Route::resource('users', 'UserController');
+Route::get('users/{users}/performance', 'UserController@performance');
 Route::post('courses/{courses}', 'CourseController@copy');
 Route::get('questions/search_init', 'QuestionController@search_init');
 Route::post('questions/search', 'QuestionController@search');

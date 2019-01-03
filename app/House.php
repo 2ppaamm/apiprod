@@ -53,9 +53,7 @@ class House extends Model
     }
 
     public function enrolledUsers(){    	
-        return $this->belongsToMany(User::class, 'house_role_user')->withPivot('role_id','mastercode', 'progress', 'payment_email','purchaser_id')->with(['roles'=>function($query){
-    			$query->select('role', 'role_id')->groupBy('role');
-    	}])->groupBy('user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'house_role_user')->withPivot('role_id','mastercode', 'progress', 'payment_email','purchaser_id')->withTimestamps();
     }
 
     public function enrolment(){
