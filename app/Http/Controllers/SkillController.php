@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Skill;
+use App\Track;
 use App\Http\Requests\UpdateRequest;
 use App\Http\Requests\CreateSkillRequest;
 use Auth;
@@ -27,10 +28,11 @@ class SkillController extends Controller
 
     public function create(){
         $user=Auth::user();
-        $public_skills = $user->is_admin ? null: Skill::whereStatusId(3)->select('id','skill')->get();
-        $my_skills = $user->is_admin? Skill::select('id','skill')->get():$user->skills()->select('id','skill')->get();
+$user->is_admin=TRUE;
+        $public_tracks = $user->is_admin ? null: Track::whereStatusId(3)->select('id','track')->get();
+        $my_tracks = $user->is_admin? Track::select('id','track')->get():$user->tracks()->select('id','track')->get();
 
-        return response()->json(['statuses'=>\App\Status::select('id','status','description')->get(), 'my_skills'=>$my_skills, 'public_skills'=>$public_skills]);
+        return response()->json(['statuses'=>\App\Status::select('id','status','description')->get(), 'my_tracks'=>$my_tracks, 'public_tracks'=>$public_tracks]);
     }
 
     /**
@@ -118,5 +120,9 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
         }
         $skills->delete();
         return response()->json(['message'=>'Skill has been deleted.'], 200);
+    }
+
+    public function usersPassed(Skill $skill) {
+        return $skill;
     }
 }
