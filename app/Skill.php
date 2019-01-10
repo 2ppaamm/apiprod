@@ -124,11 +124,7 @@ class Skill extends Model
         return $this->users()->updateExistingPivot($userid, $record);
     }
 
-    public function users_passed(){
-        return $this->users()->wherePivot('skill_passed','=',TRUE)->get();
-    }
-
     public function users_failed(){
-        return $this->users()->wherePivot('skills_passed','=',FALSE)->wherePivot('noOfFails','>',3)->get();
+        return $this->users()->wherePivot('skill_passed','=',FALSE)->wherePivot('noOfFails','>',3)->get();
     }
 }

@@ -22,8 +22,7 @@ class SkillController extends Controller
      */
     public function index()
     {
-        return $skills = Skill::with('tracks')
-        ->select('id','skill','description')->get();        
+        return $skills = Skill::with('tracks')->with('questions')->get();        
     }
 
     public function create(){
@@ -60,7 +59,7 @@ $user->is_admin=TRUE; //to be deleted in productions
 
         $track = \App\Track::findorfail($track_id);
         if ($track) {
-           $track->skills()->syncWithoutDetaching($skill->id,['skill_order'=>$track->maxSkill($track)? $houses->maxSkill($track)->skill_order + 1:1]);
+ return          $track->skills()->syncWithoutDetaching($skill->id,['skill_order'=>$track->maxSkill($track)? $houses->maxSkill($track)->skill_order + 1:1]);
         }
 
         $new_skill = Skill::whereId($skill->id)->with(['status','user'])->first();
@@ -122,7 +121,35 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
         return response()->json(['message'=>'Skill has been deleted.'], 200);
     }
 
-    public function usersPassed(Skill $skill) {
-        return $skill;
+    public function usersPassed($id) {
+        $skill = Skill::findOrFail($id);
+        return response()->json(['message'=>'Users who passed/attempted/failed this skill.','passed'=>$skill->users()->wherePivot('skill_passed','=',TRUE)->get(),'failed'=>$skill->users()->wherePivot('skill_passed','=',FALSE)->wherePivot('noOfFails','<',4)->get(),'attempted'=>$skill->users()->wherePivot('skill_passed','=',FALSE)->wherePivot('noOfFails','<',4)->get(),'code'=>201], 201);
+        
     }
+
+    public function search(Request $request)
+    {
+        $skills = null;
+        if ($request->track){
+            $skills = Cache::remember('skills', 15/60, function() use ($request) {
+                   return Track::find($request->track)->skills;
+                });
+        }
+        if ($request->level){
+            $skills = Cache::remember('questions',15/60, function() use ($request){
+            return Skill::with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->whereIn('skill_id', Skill::whereHas('tracks', function ($query) use ($request) {
+                       $query->whereIn('id', \App\Level::find($request->level)->tracks()->pluck('id')->toArray());
+                        })->pluck('id')->toArray())->get();
+
+            });
+        }
+        if ($request->keyword){
+            $questions = Cache::remember('questions',15/60, function() use ($request){
+            return Question::with('solutions','author','difficulty', 'skill.tracks.level','skill.tracks.field','type','status')->where('question','LIKE','%'.$request->keyword.'%')->get();});
+        }
+
+        return response()->json(['questions'=>$questions], 200);
+    }
+
+
 }
