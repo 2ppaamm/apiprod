@@ -22,7 +22,7 @@ class SkillController extends Controller
      */
     public function index()
     {
-        return $skills = Skill::with('tracks')->with('questions')->get();        
+        return $skills = Skill::with(['tracks','questions','user','houses','courses'])->get();        
     }
 
     public function create(){
