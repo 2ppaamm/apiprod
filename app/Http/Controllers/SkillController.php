@@ -60,7 +60,7 @@ $user->is_admin=TRUE; //to be deleted in productions
 
         $track = \App\Track::findorfail($track_id);
         if ($track) {
- return          $track->skills()->syncWithoutDetaching($skill->id,['skill_order'=>$track->maxSkill($track)? $houses->maxSkill($track)->skill_order + 1:1]);
+           $track->skills()->sync($skill->id,['skill_order'=>$track->maxSkill($track)? $houses->maxSkill($track)->skill_order + 1:1], FALSE);
         }
 
         $new_skill = Skill::whereId($skill->id)->with(['status','user'])->first();
@@ -90,9 +90,14 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
             $file = $request->lesson_link->move(public_path('videos/skills'), $timestamp.'.mp4');
         } 
 
-        $skill->fill($request->except('lesson_link'))->save();
+        $track = \App\Track::findorfail($request->track_id);
+        if ($track) {
+           $track->skills()->sync($skill->id,['skill_order'=>$track->maxSkill($track)? $houses->maxSkill($track)->skill_order + 1:1], FALSE);
+        }
 
-        return response()->json(['message'=>'skill updated','skill' => $skill, 201], 201);
+        $skill->fill($request->except('lesson_link','track_id'))->save();
+
+        return response()->json(['message'=>'skill updated','skill' => $skill, 'code'=>201], 201);
     }
 
     /**

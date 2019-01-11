@@ -27,7 +27,9 @@ class CreateSkillRequest extends Request
         'skill' => 'required|max:255',
         'description'=>'required',
         'status_id' => 'required|exists:statuses,id',
-        'track_id' => 'required|exists:tracks,id'
+        'track_id' => 'required|exists:tracks,id',
+        'lesson_link'=> 'mimes:mov, avi,mpeg,quicktime,mp4',
+        'image' => 'mimes:jpeg,bmp,png'
         ];
     }
 
