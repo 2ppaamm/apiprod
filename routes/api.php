@@ -40,6 +40,7 @@ Route::resource('tracks', 'TrackController', ['except' =>['edit']]);
 Route::resource('tests', 'TestController', ['except' =>['create', 'edit']]);
 Route::resource('types', 'TypeController');
 Route::get('skills/{skills}/passed','SkillController@usersPassed');
+Route::post('skills/search', 'SkillController@search');
 Route::resource('skills', 'SkillController', ['except' =>['edit']]);
 Route::resource('questions', 'QuestionController', ['except' =>['edit']]);
 Route::resource('enrolments', 'EnrolmentController', ['except' => ['edit', 'create']]);
