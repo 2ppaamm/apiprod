@@ -74,7 +74,7 @@ $user->is_admin=TRUE; //to be deleted in productions
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Skill $skill)
+    public function update(CreateSkillRequest $request, Skill $skill)
     {
         $logon_user = Auth::user();
 $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admin
@@ -117,13 +117,17 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Skill $skills)
+    public function destroy(Skill $skill)
     {
-        if(sizeof($skills->questions) > 0)
+        if(sizeof($skill->questions) > 0)
         {
             return response()->json(['message'=>'There are questions in this skill. Delete all questions first.'], 409);
         }
-        $skills->delete();
+        if(sizeof($skill->tracks) > 0)
+        {
+            return response()->json(['message'=>'There are tracks that uses this skill. Delete all links to tracks first.'], 409);
+        }
+        $skill->delete();
         return response()->json(['message'=>'Skill has been deleted.'], 200);
     }
 
