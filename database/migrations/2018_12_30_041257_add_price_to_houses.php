@@ -18,7 +18,7 @@ class AddPriceToHouses extends Migration
             $table->string('currency')->default('SGD');
             $table->integer('underperform')->default(40);
             $table->integer('overperform')->default(90);            
-            $table->integer('framework_id')->unsigned()->after('id')->default(1);
+            $table->integer('framework_id')->unsigned()->nullable();
             $table->foreign('framework_id')->references('id')->on('frameworks');
             $table->integer('start_framework')->default(0);
             $table->integer('end_framework')->default(1300);                        

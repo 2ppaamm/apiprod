@@ -97,7 +97,7 @@ class HouseController extends Controller
             if (file_exists($house->image)) unlink($house->image);
             $house->image = 'images/houses/'.$timestamp.'.png';
 
-            $file = $request->image->move(public_path('images/houses'), $timestamp.'.png');
+            $file = $request->image->move(public_path('images/houses/'), $timestamp.'.png');
         } 
      //enrol user to the house in house_role_user
         $house->fill($request->except('image'))->save();
