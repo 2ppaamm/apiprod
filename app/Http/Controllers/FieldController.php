@@ -89,7 +89,7 @@ $logon_user->is_admin = TRUE; //to be deleted for live, this makes everyone admi
         if ($logon_user->id != $field->user_id && !$logon_user->is_admin) {            
             return response()->json(['message' => 'You have no access rights to delete field','code'=>401], 401);
         } 
-        $fields->delete();
+        $field->delete();
         return response()->json(['message'=>'This field has been deleted','code'=>201], 201);
     }
 }
