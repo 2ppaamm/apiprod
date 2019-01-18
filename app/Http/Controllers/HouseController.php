@@ -24,7 +24,7 @@ class HouseController extends Controller
      */
     public function index()
     {
-        return $houses = House::with(['enrolment','tracks.skills','created_by'])->select('id','house','description','start_date','end_date')->get();
+        return $houses = House::with(['enrolment','tracks.skills','created_by'])->select('id','house','description','start_date','end_date','image')->get();
     }
 
     public function create()
@@ -101,6 +101,7 @@ class HouseController extends Controller
         } 
      //enrol user to the house in house_role_user
         $house->fill($request->except('image'))->save();
+        $house->tracks()->sync($request->tracks, false);
         return response()->json(['message'=>$house->house.' updated successful', 'class'=>$house, 'code'=>201], 201);
     }
 

@@ -24,7 +24,6 @@ class HouseTrackController extends Controller
      */
  
 	public function index(House $house){
-        return $house;
         $house = $house->tracks()-> with(['unit'=>function($query){$query->select('number_of','unit');} ])
                 ->select('description','id','track','level_id')->with('level')
                 ->with(['skills' => function ($query) {

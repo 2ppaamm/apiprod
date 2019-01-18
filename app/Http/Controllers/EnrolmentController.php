@@ -101,8 +101,12 @@ $user->is_admin=TRUE; //to remove for production
      * @return \Illuminate\Http\Response
      */
     public function teacher_houses() {
-        $user = User::find(1);//Auth::user();
-        $houses = $user->teachHouse()->with(['framework','tracks.owner','tracks.skills.user','tracks.field','tracks.status','tracks.level','enrolledStudents'])->get();
+        $user = Auth::user();
+        if ($user->is_admin){
+            $houses = $user->roleHouse()->with(['framework','tracks.owner','tracks.skills.user','tracks.field','tracks.status','tracks.level','enrolledStudents'])->get();
+        } else {
+            $houses = House::with(['framework','tracks.owner','tracks.skills.user','tracks.field','tracks.status','tracks.level','enrolledStudents'])->get();
+        }
         foreach ($houses as $class) {
             $class['average_progress']=$class->studentEnrolment->avg('progress');
             $class['lowest_progress'] = $class->studentEnrolment->min('progress');
