@@ -77,7 +77,7 @@ class TrackController extends Controller
             return response()->json(['message' => 'This track does not exist.', 'code'=>404], 404);
         }
 
-        return response()->json(['message'=>'Track with skills and questions fetched.','tracks'=>$track,'skills'=>$track->skills,'code'=>201],201);
+        return response()->json(['message'=>'Track with skills.','tracks'=>$track,'skills'=>$track->skills,'code'=>201],201);
     }
 
     /**
